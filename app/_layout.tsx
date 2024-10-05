@@ -7,6 +7,8 @@ import { Button, SafeAreaView, useColorScheme } from "react-native";
 import AuthProvider, { useAuthContext } from "@/context/AuthContext";
 import DrawerContent from "@/components/drawer/DrawerContent";
 import ThemeProvider from "@/context/ThemeContext";
+import LoginScreen from "@/components/authentication/Login";
+import RegisterScreen from "@/components/authentication/Register";
 
 const AuthenticatedLayout = () => {
   return (
@@ -24,19 +26,20 @@ const AuthenticatedLayout = () => {
 };
 
 const UnAuthenticatedLayout = () => {
-  const { authenticateUser } = useAuthContext();
-  let colorScheme = useColorScheme();
+  const [showLoginPage, setShowLoginPage] = useState(true);
 
-  console.log("Color Scheme", colorScheme);
-  return (
-    <SafeAreaView>
-      <Button
-        onPress={() => {
-          authenticateUser();
-        }}
-        title="Login"
-      />
-    </SafeAreaView>
+  return showLoginPage ? (
+    <LoginScreen
+      showRegisterScreen={() => {
+        setShowLoginPage(false);
+      }}
+    />
+  ) : (
+    <RegisterScreen
+      showLoginScreen={() => {
+        setShowLoginPage(true);
+      }}
+    />
   );
 };
 

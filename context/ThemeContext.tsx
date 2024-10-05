@@ -21,10 +21,8 @@ type ThemeProviderT = {
   children: React.ReactNode;
 };
 
-// type ThemeT = ThemeContextT["themeValue"];
-
 const ThemeProvider = ({ children }: ThemeProviderT) => {
-  const [currentTheme, setCurrentTheme] = useState<CurrentThemeT>("light");
+  const [currentTheme, setCurrentTheme] = useState<CurrentThemeT>("dark");
 
   const theme = themes[currentTheme];
 
