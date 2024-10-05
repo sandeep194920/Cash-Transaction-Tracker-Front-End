@@ -3,8 +3,10 @@ import Drawer from "expo-router/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Stack } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Button, SafeAreaView } from "react-native";
+import { Button, SafeAreaView, useColorScheme } from "react-native";
 import AuthProvider, { useAuthContext } from "@/context/AuthContext";
+import DrawerContent from "@/components/drawer/DrawerContent";
+import ThemeProvider from "@/context/ThemeContext";
 
 const AuthenticatedLayout = () => {
   return (
@@ -13,6 +15,7 @@ const AuthenticatedLayout = () => {
         screenOptions={{
           headerShown: false,
         }}
+        drawerContent={DrawerContent}
       >
         <Drawer.Screen name="(app)" />
       </Drawer>
@@ -22,7 +25,9 @@ const AuthenticatedLayout = () => {
 
 const UnAuthenticatedLayout = () => {
   const { authenticateUser } = useAuthContext();
+  let colorScheme = useColorScheme();
 
+  console.log("Color Scheme", colorScheme);
   return (
     <SafeAreaView>
       <Button
@@ -42,9 +47,11 @@ const Layout = () => {
 
 const RootLayout = () => {
   return (
-    <AuthProvider>
-      <Layout />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <Layout />
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

@@ -1,12 +1,12 @@
 import { View, Text } from "react-native";
 import React from "react";
 
-const StackUsers = () => {
+const UserProfile = () => {
   return (
     <View>
-      <Text>Users Screen</Text>
+      <Text>UserProfile</Text>
     </View>
   );
 };
 
-export default StackUsers;
+export default UserProfile;
