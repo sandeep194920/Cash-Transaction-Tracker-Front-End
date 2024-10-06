@@ -22,7 +22,7 @@ type ThemeProviderT = {
 };
 
 const ThemeProvider = ({ children }: ThemeProviderT) => {
-  const [currentTheme, setCurrentTheme] = useState<CurrentThemeT>("dark");
+  const [currentTheme, setCurrentTheme] = useState<CurrentThemeT>("light");
 
   const theme = themes[currentTheme];
 

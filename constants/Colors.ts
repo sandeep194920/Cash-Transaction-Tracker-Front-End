@@ -7,6 +7,7 @@
 
 const colors = {
   yellow_shade_1: "#F5C518",
+  // yellow_shade_2: "#DA9B1A",
   orange_shade_1: "#ED7738",
   black: "#000000",
   white: "#FFFFFF",

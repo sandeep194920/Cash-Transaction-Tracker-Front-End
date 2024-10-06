@@ -6,6 +6,9 @@ import SocialButtons from "./SocialButtons";
 import { authStyles } from "./authStyles";
 import { Formik } from "formik";
 import { loginValidationSchema } from "@/utils/validationSchema";
+import axios from "axios";
+import Toast from "react-native-toast-message";
+import { useRouter } from "expo-router";
 
 type LoginScreenPropsT = {
   showRegisterScreen: () => void;
@@ -14,6 +17,66 @@ type LoginScreenPropsT = {
 const LoginScreen = ({ showRegisterScreen }: LoginScreenPropsT) => {
   const { theme } = useThemeContext();
   const { authenticateUser } = useAuthContext();
+  const router = useRouter();
+
+  const login = async (email: string, password: string) => {
+    try {
+      const response = await axios.post(
+        "http://192.168.29.210:5001/login-user",
+        {
+          email,
+          password,
+        }
+      );
+
+      if (response.status === 200) {
+        Toast.show({
+          type: "success",
+          text1: response.data.message,
+        });
+
+        // Assuming authenticateUser will set the user as authenticated
+        authenticateUser(true);
+        router.push("/(app)/");
+
+        return {
+          success: true,
+          message: response.data.message,
+        };
+      }
+
+      return {
+        success: false,
+        message: response.data.message || "Unexpected response from server",
+      };
+    } catch (error: any) {
+      if (error.response) {
+        const message =
+          error.response.data.message || "An error occurred during login";
+        console.log(message);
+        Toast.show({
+          type: "error",
+          text1: message,
+        });
+        return {
+          success: false,
+          message,
+        };
+      } else if (error.request) {
+        console.log("Network error:", error.message);
+        return {
+          success: false,
+          message: "Network error. Please try again.",
+        };
+      } else {
+        console.log("Error:", error.message);
+        return {
+          success: false,
+          message: "An unknown error occurred. Please try again.",
+        };
+      }
+    }
+  };
 
   return (
     <Formik
@@ -22,7 +85,7 @@ const LoginScreen = ({ showRegisterScreen }: LoginScreenPropsT) => {
       onSubmit={(values) => {
         // Handle the form submission
         // authenticateUser();
-        console.log("Login form submitted");
+        login(values.email, values.password);
       }}
     >
       {({
@@ -48,6 +111,7 @@ const LoginScreen = ({ showRegisterScreen }: LoginScreenPropsT) => {
           </Text>
 
           <TextInput
+            autoCapitalize="none"
             placeholder="Email"
             placeholderTextColor={theme.colors.secondaryText}
             style={[
@@ -69,6 +133,7 @@ const LoginScreen = ({ showRegisterScreen }: LoginScreenPropsT) => {
           )}
 
           <TextInput
+            autoCapitalize="none"
             placeholder="Password"
             placeholderTextColor={theme.colors.secondaryText}
             secureTextEntry

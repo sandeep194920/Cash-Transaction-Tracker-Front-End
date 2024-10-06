@@ -9,6 +9,7 @@ import DrawerContent from "@/components/drawer/DrawerContent";
 import ThemeProvider from "@/context/ThemeContext";
 import LoginScreen from "@/components/authentication/Login";
 import RegisterScreen from "@/components/authentication/Register";
+import Toast from "react-native-toast-message";
 
 const AuthenticatedLayout = () => {
   return (
@@ -45,7 +46,13 @@ const UnAuthenticatedLayout = () => {
 
 const Layout = () => {
   const { isLoggedIn } = useAuthContext();
-  return isLoggedIn ? <AuthenticatedLayout /> : <UnAuthenticatedLayout />;
+  return isLoggedIn ? (
+    <AuthenticatedLayout />
+  ) : (
+    <>
+      <UnAuthenticatedLayout />
+    </>
+  );
 };
 
 const RootLayout = () => {
@@ -53,6 +60,7 @@ const RootLayout = () => {
     <ThemeProvider>
       <AuthProvider>
         <Layout />
+        <Toast position="top" topOffset={50} />
       </AuthProvider>
     </ThemeProvider>
   );
