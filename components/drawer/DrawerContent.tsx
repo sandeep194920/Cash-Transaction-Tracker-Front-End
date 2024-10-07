@@ -1,18 +1,24 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { useColorScheme } from "react-native";
-import { themes } from "@/constants/Colors"; // Assuming your themes are defined here
 import { useRouter } from "expo-router";
 import { useThemeContext } from "@/context/ThemeContext";
+import { useAuthContext } from "@/context/AuthContext";
+import Toast from "react-native-toast-message";
 
 const CustomDrawerContent = (props: any) => {
-  const navigation = useNavigation();
-  const colorScheme = useColorScheme();
   const { theme } = useThemeContext();
   const router = useRouter();
+  const { authenticateUser } = useAuthContext();
+
+  const logoutHandler = () => {
+    Toast.show({
+      type: "success",
+      text1: "Logging out.. Hope to see you soon!",
+    });
+    authenticateUser(false);
+  };
 
   return (
     <DrawerContentScrollView
@@ -80,7 +86,7 @@ const CustomDrawerContent = (props: any) => {
         icon={({ color, size }) => (
           <Icon name="logout" color={theme.colors.primary} size={size} />
         )}
-        onPress={() => {}}
+        onPress={logoutHandler}
         inactiveTintColor={theme.colors.secondaryText}
         labelStyle={[
           styles.inactiveLabel,
