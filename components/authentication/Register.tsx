@@ -9,9 +9,10 @@ import axios from "axios";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { useAuthContext } from "@/context/AuthContext";
+import { CurrentAuthScreenT } from "./Authentication";
 
 type RegisterScreenPropsT = {
-  showLoginScreen: () => void;
+  showAuthScreen: (screenName: CurrentAuthScreenT) => void;
 };
 
 type RegisterT = {
@@ -20,16 +21,14 @@ type RegisterT = {
   password: string;
 };
 
-const RegisterScreen = ({ showLoginScreen }: RegisterScreenPropsT) => {
+const RegisterScreen = ({ showAuthScreen }: RegisterScreenPropsT) => {
   const { theme } = useThemeContext();
-  const router = useRouter();
-  const { authenticateUser } = useAuthContext();
+  const { setUnverifiedUser } = useAuthContext();
 
   const register = async ({ name, email, password }: RegisterT) => {
-    console.log("Sandeep");
     try {
       const response = await axios.post(
-        "http://192.168.29.210:5001/register-user",
+        "http://192.168.29.210:5001/api/register-user",
         {
           name,
           email,
@@ -39,14 +38,15 @@ const RegisterScreen = ({ showLoginScreen }: RegisterScreenPropsT) => {
 
       // Handle success based on the status code or response data
       if (response.status === 201) {
-        console.log("User registered successfully:", response.data.message);
         Toast.show({
           type: "success",
           text1: response.data.message,
+          text2: "Please verify the email",
         });
 
-        authenticateUser(true);
-        router.push("/(app)/");
+        // Set registration successful but not verified in BE
+        setUnverifiedUser(email);
+        showAuthScreen("VerifyEmail");
 
         return {
           success: true,
@@ -66,7 +66,6 @@ const RegisterScreen = ({ showLoginScreen }: RegisterScreenPropsT) => {
         const message =
           error.response.data.message ||
           "An error occurred during registration";
-        console.log(message);
         Toast.show({
           type: "error",
           text1: message,
@@ -223,7 +222,7 @@ const RegisterScreen = ({ showLoginScreen }: RegisterScreenPropsT) => {
             >
               Already have an account?{" "}
             </Text>
-            <TouchableOpacity onPress={showLoginScreen}>
+            <TouchableOpacity onPress={() => showAuthScreen("Login")}>
               <Text
                 style={[authStyles.linkText, { color: theme.colors.primary }]}
               >

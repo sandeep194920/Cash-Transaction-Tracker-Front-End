@@ -10,6 +10,7 @@ import ThemeProvider from "@/context/ThemeContext";
 import LoginScreen from "@/components/authentication/Login";
 import RegisterScreen from "@/components/authentication/Register";
 import Toast from "react-native-toast-message";
+import Authentication from "@/components/authentication/Authentication";
 
 const AuthenticatedLayout = () => {
   return (
@@ -27,32 +28,12 @@ const AuthenticatedLayout = () => {
 };
 
 const UnAuthenticatedLayout = () => {
-  const [showLoginPage, setShowLoginPage] = useState(true);
-
-  return showLoginPage ? (
-    <LoginScreen
-      showRegisterScreen={() => {
-        setShowLoginPage(false);
-      }}
-    />
-  ) : (
-    <RegisterScreen
-      showLoginScreen={() => {
-        setShowLoginPage(true);
-      }}
-    />
-  );
+  return <Authentication />;
 };
 
 const Layout = () => {
   const { isLoggedIn } = useAuthContext();
-  return isLoggedIn ? (
-    <AuthenticatedLayout />
-  ) : (
-    <>
-      <UnAuthenticatedLayout />
-    </>
-  );
+  return isLoggedIn ? <AuthenticatedLayout /> : <UnAuthenticatedLayout />;
 };
 
 const RootLayout = () => {

@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState } from "react";
 const AuthContext = createContext({
   isLoggedIn: false,
   authenticateUser: (state?: boolean) => {},
+  registeredUnverifiedUser: "",
+  setUnverifiedUser: (email: string) => {},
 });
 
 type AuthProviderT = {
@@ -12,15 +14,21 @@ type AuthProviderT = {
 
 const AuthProvider = ({ children }: AuthProviderT) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [registeredUnverifiedUser, setRegisteredUnverifiedUser] = useState("");
 
   const authenticateUser = (loginState = true) => {
-    console.log("Setting user to logged In state", loginState);
     setIsLoggedIn(loginState);
+  };
+
+  const setUnverifiedUser = (email: string) => {
+    setRegisteredUnverifiedUser(email);
   };
 
   const appValues = {
     isLoggedIn,
     authenticateUser,
+    registeredUnverifiedUser,
+    setUnverifiedUser,
   };
 
   return (
