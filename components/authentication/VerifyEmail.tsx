@@ -14,6 +14,7 @@ import { authStyles } from "./authStyles";
 import { VERIFY_EMAIL_TIMER } from "@/constants/Timers";
 import { formatTime } from "@/utils/timerFormat";
 import { useAuthContext } from "@/context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const EmailVerificationScreen = () => {
   const [code, setCode] = useState("");
@@ -45,8 +46,8 @@ const EmailVerificationScreen = () => {
   }, [isResendEnabled]);
 
   const verifyEmail = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const response = await axios.post(
         "http://192.168.29.210:5001/api/verify-email",
         { email: registeredUnverifiedUser, verificationCode: code }
@@ -59,8 +60,7 @@ const EmailVerificationScreen = () => {
         });
 
         // Redirect to main app page after success
-
-        authenticateUser(true);
+        authenticateUser(true, response.data.token);
         router.push("/(app)/");
       }
     } catch (error: any) {

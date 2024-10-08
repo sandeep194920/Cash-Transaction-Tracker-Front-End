@@ -26,8 +26,8 @@ const RegisterScreen = ({ showAuthScreen }: RegisterScreenPropsT) => {
   const { setIsLoading } = useAuthContext();
 
   const register = async ({ name, email, password }: RegisterT) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const response = await axios.post(
         "http://192.168.29.210:5001/api/register-user",
         {
