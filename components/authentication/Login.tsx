@@ -17,11 +17,13 @@ type LoginScreenPropsT = {
 
 const LoginScreen = ({ showAuthScreen }: LoginScreenPropsT) => {
   const { theme } = useThemeContext();
-  const { authenticateUser, setUnverifiedUser } = useAuthContext();
+  const { authenticateUser, setUnverifiedUser, setIsLoading } =
+    useAuthContext();
   const router = useRouter();
 
   const login = async (email: string, password: string) => {
     try {
+      setIsLoading(true);
       const response = await axios.post(
         "http://192.168.29.210:5001/api/login-user",
         {
@@ -81,6 +83,8 @@ const LoginScreen = ({ showAuthScreen }: LoginScreenPropsT) => {
           message: "An unknown error occurred. Please try again.",
         };
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 

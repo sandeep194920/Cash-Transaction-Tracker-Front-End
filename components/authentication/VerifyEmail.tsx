@@ -22,6 +22,7 @@ const EmailVerificationScreen = () => {
   const router = useRouter();
   const { theme } = useThemeContext(); // Access your theme
   const { authenticateUser, registeredUnverifiedUser } = useAuthContext();
+  const { setIsLoading } = useAuthContext();
 
   const formattedTime = useMemo(() => {
     return formatTime(timer);
@@ -45,6 +46,7 @@ const EmailVerificationScreen = () => {
 
   const verifyEmail = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.post(
         "http://192.168.29.210:5001/api/verify-email",
         { email: registeredUnverifiedUser, verificationCode: code }
@@ -77,6 +79,8 @@ const EmailVerificationScreen = () => {
           message,
         };
       }
+    } finally {
+      setIsLoading(false);
     }
   };
   const resendCode = async () => {
