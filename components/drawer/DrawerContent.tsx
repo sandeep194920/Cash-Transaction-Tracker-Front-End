@@ -1,11 +1,12 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAuthContext } from "@/context/AuthContext";
 import Toast from "react-native-toast-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CustomDrawerContent = (props: any) => {
   const { theme } = useThemeContext();
@@ -28,6 +29,21 @@ const CustomDrawerContent = (props: any) => {
         flex: 1,
       }}
     >
+      {/* Profile Section */}
+      <View style={styles.profileContainer}>
+        <Image
+          source={require("@/assets/images/person.png")} // Replace with your image path
+          style={[
+            styles.profileImage,
+            { backgroundColor: theme.colors.primary },
+          ]}
+        />
+
+        <Text style={[styles.profileName, { color: theme.colors.text }]}>
+          John Doe {/* Replace with the actual name */}
+        </Text>
+      </View>
+
       {/* Drawer Items */}
       <DrawerItem
         label="Home"
@@ -61,7 +77,6 @@ const CustomDrawerContent = (props: any) => {
       />
 
       {/* Settings with Expandable Theme Options */}
-
       <DrawerItem
         label="Settings"
         icon={({ color, size }) => (
@@ -104,6 +119,22 @@ const styles = StyleSheet.create({
   },
   inactiveLabel: {
     fontWeight: "normal",
+  },
+  profileContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 25, // To make the image circular
+    marginRight: 20,
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: "600",
   },
   settingsContainer: {
     flexDirection: "row",

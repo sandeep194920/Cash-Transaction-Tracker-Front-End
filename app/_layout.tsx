@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Drawer from "expo-router/drawer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Stack } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Button, SafeAreaView, useColorScheme } from "react-native";
 import AuthProvider, { useAuthContext } from "@/context/AuthContext";
 import DrawerContent from "@/components/drawer/DrawerContent";
 import ThemeProvider from "@/context/ThemeContext";
-import LoginScreen from "@/components/authentication/Login";
-import RegisterScreen from "@/components/authentication/Register";
 import Toast from "react-native-toast-message";
 import Authentication from "@/components/authentication/Authentication";
-import Loading from "@/components/Loading";
 
 const AuthenticatedLayout = () => {
   return (

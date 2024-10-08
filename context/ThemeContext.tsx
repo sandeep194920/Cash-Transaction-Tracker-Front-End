@@ -1,5 +1,6 @@
 import { themes } from "@/constants/Colors";
-import React, { createContext, useContext, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 type ThemeT = typeof themes;
 
@@ -28,7 +29,20 @@ const ThemeProvider = ({ children }: ThemeProviderT) => {
 
   const switchTheme = (theme: CurrentThemeT) => {
     setCurrentTheme(theme);
+    AsyncStorage.setItem("theme", theme);
   };
+
+  // Fetch theme from AsyncStorage when the app loads
+  useEffect(() => {
+    const loadTheme = async () => {
+      const storedTheme = await AsyncStorage.getItem("theme");
+      if (storedTheme && themes[storedTheme as CurrentThemeT]) {
+        setCurrentTheme(storedTheme as CurrentThemeT);
+      }
+    };
+
+    loadTheme(); // Call the function to load the theme
+  }, []);
 
   const appValues = {
     currentTheme,

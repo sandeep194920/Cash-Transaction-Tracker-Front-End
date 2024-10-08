@@ -98,16 +98,6 @@ const ListItems = () => {
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      {/* Toggle between light and dark themes */}
-      {/* <Switch
-        value={isDarkTheme}
-        onValueChange={() => setIsDarkTheme(!isDarkTheme)}
-        trackColor={{
-          false: lightTheme.colors.primary,
-          true: darkTheme.colors.primary,
-        }}
-      /> */}
-
       <FlatList
         data={DATA}
         renderItem={renderItem}

@@ -6,7 +6,7 @@ import ListItems from "@/components/ListItem";
 
 const Home = () => {
   const router = useRouter();
-  const { authenticateUser } = useAuthContext();
+  const { isLoggedIn } = useAuthContext();
   // return (
   //   <View>
   //     <Text>Stack Home</Text>
