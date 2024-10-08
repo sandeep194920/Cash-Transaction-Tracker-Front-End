@@ -1,11 +1,18 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 
 const AuthContext = createContext({
   isLoggedIn: false,
   authenticateUser: (state?: boolean) => {},
   registeredUnverifiedUser: "",
   setUnverifiedUser: (email: string) => {},
+  isLoading: false,
+  setIsLoading: (() => {}) as Dispatch<SetStateAction<boolean>>,
 });
 
 type AuthProviderT = {
@@ -15,6 +22,7 @@ type AuthProviderT = {
 const AuthProvider = ({ children }: AuthProviderT) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [registeredUnverifiedUser, setRegisteredUnverifiedUser] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const authenticateUser = (loginState = true) => {
     setIsLoggedIn(loginState);
@@ -29,6 +37,8 @@ const AuthProvider = ({ children }: AuthProviderT) => {
     authenticateUser,
     registeredUnverifiedUser,
     setUnverifiedUser,
+    isLoading,
+    setIsLoading,
   };
 
   return (

@@ -7,7 +7,6 @@ import { Formik } from "formik";
 import { registerValidationSchema } from "@/utils/validationSchema";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import { useRouter } from "expo-router";
 import { useAuthContext } from "@/context/AuthContext";
 import { CurrentAuthScreenT } from "./Authentication";
 
@@ -24,9 +23,11 @@ type RegisterT = {
 const RegisterScreen = ({ showAuthScreen }: RegisterScreenPropsT) => {
   const { theme } = useThemeContext();
   const { setUnverifiedUser } = useAuthContext();
+  const { setIsLoading } = useAuthContext();
 
   const register = async ({ name, email, password }: RegisterT) => {
     try {
+      setIsLoading(true);
       const response = await axios.post(
         "http://192.168.29.210:5001/api/register-user",
         {
@@ -76,19 +77,19 @@ const RegisterScreen = ({ showAuthScreen }: RegisterScreenPropsT) => {
         };
       } else if (error.request) {
         // Network errors or no response from the server
-        console.log("Network error:", error.message);
         return {
           success: false,
           message: "Network error. Please try again.",
         };
       } else {
         // Something else went wrong
-        console.log("Error:", error.message);
         return {
           success: false,
           message: "An unknown error occurred. Please try again.",
         };
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 

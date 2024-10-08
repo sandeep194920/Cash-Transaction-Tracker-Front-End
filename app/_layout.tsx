@@ -11,6 +11,7 @@ import LoginScreen from "@/components/authentication/Login";
 import RegisterScreen from "@/components/authentication/Register";
 import Toast from "react-native-toast-message";
 import Authentication from "@/components/authentication/Authentication";
+import Loading from "@/components/Loading";
 
 const AuthenticatedLayout = () => {
   return (
