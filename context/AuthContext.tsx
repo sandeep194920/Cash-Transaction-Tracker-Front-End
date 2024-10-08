@@ -11,11 +11,30 @@ import React, {
 } from "react";
 import Toast from "react-native-toast-message";
 
-const AuthContext = createContext({
+type UserDataT = {
+  name: string;
+  email: string;
+  phone: string;
+};
+
+type CreateContextT = {
+  isLoggedIn: boolean;
+  authenticateUser: (state?: boolean, token?: string) => void;
+  registeredUnverifiedUser: string;
+  setUnverifiedUser: (email: string) => void;
+  userData: UserDataT | null;
+  isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
+};
+
+const AuthContext = createContext<CreateContextT>({
   isLoggedIn: false,
-  authenticateUser: (state?: boolean, token = "") => {},
+  authenticateUser:
+    (state?: boolean, token = "") =>
+    () => {},
   registeredUnverifiedUser: "",
-  setUnverifiedUser: (email: string) => {},
+  setUnverifiedUser: (email: string) => () => {},
+  userData: null,
   isLoading: false,
   setIsLoading: (() => {}) as Dispatch<SetStateAction<boolean>>,
 });
@@ -24,17 +43,11 @@ type AuthProviderT = {
   children: React.ReactNode;
 };
 
-type UserDataT = {
-  name: string;
-  email: string;
-  phone: string;
-};
-
 const AuthProvider = ({ children }: AuthProviderT) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [registeredUnverifiedUser, setRegisteredUnverifiedUser] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [userData, setUserData] = useState<null | undefined | UserDataT>();
+  const [userData, setUserData] = useState<UserDataT | null>(null);
 
   // Fetch user data from BE based on token
   const fetchUserData = async (token: string) => {
@@ -45,7 +58,7 @@ const AuthProvider = ({ children }: AuthProviderT) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUserData(response.data); // Set user data
+      setUserData(response.data as UserDataT); // Set user data
     } catch (error) {
       console.log("Failed to fetch user data", error);
       Toast.show({
@@ -94,6 +107,7 @@ const AuthProvider = ({ children }: AuthProviderT) => {
     authenticateUser,
     registeredUnverifiedUser,
     setUnverifiedUser,
+    userData,
     isLoading,
     setIsLoading,
   };

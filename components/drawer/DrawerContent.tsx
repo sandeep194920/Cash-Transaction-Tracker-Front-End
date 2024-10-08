@@ -6,12 +6,15 @@ import { useRouter } from "expo-router";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAuthContext } from "@/context/AuthContext";
 import Toast from "react-native-toast-message";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import Loading from "../Loading";
 
 const CustomDrawerContent = (props: any) => {
   const { theme } = useThemeContext();
   const router = useRouter();
-  const { authenticateUser } = useAuthContext();
+  const { authenticateUser, userData } = useAuthContext();
+
+  if (!userData) return <Loading />;
+  const { name, email } = userData;
 
   const logoutHandler = () => {
     Toast.show({
@@ -39,9 +42,16 @@ const CustomDrawerContent = (props: any) => {
           ]}
         />
 
-        <Text style={[styles.profileName, { color: theme.colors.text }]}>
-          John Doe {/* Replace with the actual name */}
-        </Text>
+        <View style={styles.profileTextContainer}>
+          <Text style={[styles.profileName, { color: theme.colors.text }]}>
+            {name}
+          </Text>
+          <Text
+            style={[styles.profileEmail, { color: theme.colors.secondaryText }]}
+          >
+            {email}
+          </Text>
+        </View>
       </View>
 
       {/* Drawer Items */}
@@ -126,6 +136,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 15,
   },
+  profileTextContainer: {
+    gap: 3,
+  },
   profileImage: {
     width: 40,
     height: 40,
@@ -135,6 +148,10 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 18,
     fontWeight: "600",
+  },
+  profileEmail: {
+    fontSize: 14,
+    fontWeight: "400", // Smaller font and lighter weight for the email
   },
   settingsContainer: {
     flexDirection: "row",
