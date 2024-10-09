@@ -18,7 +18,7 @@ const AppLayout = () => {
             backgroundColor: theme.colors.primary,
           },
 
-          headerTitle: "Home",
+          headerTitle: "Customers",
           headerLeft: () => {
             return (
               <Ionicons
@@ -33,6 +33,27 @@ const AppLayout = () => {
           },
         }}
       />
+      <Stack.Screen
+        name="user_profile"
+        options={{
+          headerTitle: "Profile",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="customer_details"
+        options={{
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
       <Stack.Screen
         name="settings"
         options={{
