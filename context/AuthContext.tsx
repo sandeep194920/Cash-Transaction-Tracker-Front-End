@@ -1,4 +1,4 @@
-import { URLS } from "@/constants/URLs";
+import { APP_URL } from "@/constants/URLs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import React, {
@@ -53,7 +53,7 @@ const AuthProvider = ({ children }: AuthProviderT) => {
   const fetchUserData = async (token: string) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${URLS["LOCAL"]}/user-data`, {
+      const response = await axios.get(`${APP_URL}/user-data`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

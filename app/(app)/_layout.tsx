@@ -1,5 +1,5 @@
 import React from "react";
-import { Stack, useNavigation } from "expo-router";
+import { Stack, useNavigation, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerActions } from "@react-navigation/native";
 import { useThemeContext } from "@/context/ThemeContext";
@@ -58,6 +58,18 @@ const AppLayout = () => {
         name="settings"
         options={{
           headerTitle: "Settings",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="add_customer"
+        options={{
+          presentation: "modal",
+          headerTitle: "Add New Customer",
           headerTintColor: theme.colors.buttonText,
           headerStyle: {
             backgroundColor: theme.colors.primary,

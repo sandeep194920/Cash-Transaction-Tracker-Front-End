@@ -1,59 +1,46 @@
-import { StyleSheet, Text, View, Pressable, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  FlatList,
+  ListRenderItemInfo,
+} from "react-native";
 import React, { useState } from "react";
 import { Stack, useLocalSearchParams, Link } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useThemeContext } from "@/context/ThemeContext";
 import CustomerDetail from "@/components/Customers/CustomerDetail";
+import { CustomerT } from "@/types";
+
+type TransactionT = {
+  _id: string;
+  date: string;
+  price: number;
+  amountPaid: number;
+};
 
 const CustomerDetails = () => {
   const { theme } = useThemeContext();
   const { customerName } = useLocalSearchParams();
-  const [expandedItem, setExpandedItem] = useState(null);
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [transactions, setTransactions] = useState([
     {
-      id: "1",
+      _id: "1",
       date: "Wed, 3rd Sep 2020",
       price: -10,
       amountPaid: 150,
       remainingBalance: -50,
     },
     {
-      id: "2",
+      _id: "2",
       date: "Mon, 5th Oct 2020",
       price: 100,
       amountPaid: 10,
       remainingBalance: -10,
     },
     {
-      id: "3",
-      date: "Mon, 5th Oct 2020",
-      price: 100,
-      amountPaid: 10,
-      remainingBalance: -10,
-    },
-    {
-      id: "4",
-      date: "Mon, 5th Oct 2020",
-      price: 100,
-      amountPaid: 10,
-      remainingBalance: -10,
-    },
-    {
-      id: "5",
-      date: "Mon, 5th Oct 2020",
-      price: 100,
-      amountPaid: 10,
-      remainingBalance: -10,
-    },
-    {
-      id: "6",
-      date: "Mon, 5th Oct 2020",
-      price: 100,
-      amountPaid: 10,
-      remainingBalance: -10,
-    },
-    {
-      id: "7",
+      _id: "3",
       date: "Mon, 5th Oct 2020",
       price: 100,
       amountPaid: 10,
@@ -61,16 +48,19 @@ const CustomerDetails = () => {
     },
   ]);
 
-  const renderItem = ({ item }: any) => (
-    <CustomerDetail
-      item={item}
-      theme={theme}
-      expanded={expandedItem === item.id}
-      setExpanded={() =>
-        setExpandedItem(expandedItem === item.id ? null : item.id)
-      }
-    />
-  );
+  const renderItem = ({ ...props }: ListRenderItemInfo<TransactionT>) => {
+    const { item } = props;
+    return (
+      <CustomerDetail
+        item={item}
+        theme={theme}
+        expanded={expandedItem === item._id}
+        setExpanded={() =>
+          setExpandedItem(expandedItem === item._id ? null : item._id)
+        }
+      />
+    );
+  };
 
   return (
     <>
@@ -88,7 +78,7 @@ const CustomerDetails = () => {
           data={transactions}
           renderItem={renderItem}
           contentContainerStyle={styles.list}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
         />
       </View>
       <View

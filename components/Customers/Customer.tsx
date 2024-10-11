@@ -1,3 +1,4 @@
+import { useThemeContext } from "@/context/ThemeContext";
 import { Link } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -10,10 +11,11 @@ import {
 import { Menu, MenuDivider, MenuItem } from "react-native-material-menu";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Customer = ({ item, theme, expanded, setExpanded }: any) => {
+const Customer = ({ item, expanded, setExpanded }: any) => {
   const [visible, setVisible] = useState(false);
   const showMenu = () => setVisible(true);
   const hideMenu = () => setVisible(false);
+  const { theme } = useThemeContext();
 
   return (
     <Link
@@ -67,7 +69,7 @@ const Customer = ({ item, theme, expanded, setExpanded }: any) => {
           <View style={styles.amountSection}>
             <Icon name="attach-money" size={18} color={theme.colors.primary} />
             <Text style={[styles.amount, { color: theme.colors.text }]}>
-              {item.amountPaid}
+              {item.totalBalance}
             </Text>
           </View>
         </View>
@@ -75,10 +77,38 @@ const Customer = ({ item, theme, expanded, setExpanded }: any) => {
         {/* Expandable Section with Phone, Edit/Delete buttons */}
         {expanded && (
           <View style={[styles.expandedContent]}>
-            <Icon name="phone" size={24} color={theme.colors.primary} />
-            <Text style={[styles.phone, { color: theme.colors.secondaryText }]}>
-              {item.phone}
-            </Text>
+            <View style={[styles.expandedRow]}>
+              <Icon name="phone" size={18} color={theme.colors.primaryLight} />
+              <Text
+                style={[styles.phone, { color: theme.colors.secondaryText }]}
+              >
+                {item.phone}
+              </Text>
+            </View>
+
+            <View style={[styles.expandedRow]}>
+              <Icon name="email" size={18} color={theme.colors.primaryLight} />
+              <Text
+                style={[styles.phone, { color: theme.colors.secondaryText }]}
+              >
+                {item.email}
+              </Text>
+            </View>
+
+            {item.address && (
+              <View style={[styles.expandedRow]}>
+                <Icon
+                  name="house"
+                  size={18}
+                  color={theme.colors.primaryLight}
+                />
+                <Text
+                  style={[styles.phone, { color: theme.colors.secondaryText }]}
+                >
+                  {item.address}
+                </Text>
+              </View>
+            )}
           </View>
         )}
 
@@ -145,11 +175,13 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   expandedContent: {
-    gap: 4,
+    marginVertical: 16,
+    gap: 10,
+  },
+  expandedRow: {
+    gap: 8,
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 16,
-    marginBottom: 8,
   },
   phone: {
     fontSize: 14,

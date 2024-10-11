@@ -9,6 +9,7 @@ import axios from "axios";
 import Toast from "react-native-toast-message";
 import { useAuthContext } from "@/context/AuthContext";
 import { CurrentAuthScreenT } from "./Authentication";
+import { APP_URL } from "@/constants/URLs";
 
 type RegisterScreenPropsT = {
   showAuthScreen: (screenName: CurrentAuthScreenT) => void;
@@ -28,14 +29,11 @@ const RegisterScreen = ({ showAuthScreen }: RegisterScreenPropsT) => {
   const register = async ({ name, email, password }: RegisterT) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://192.168.29.210:5001/api/register-user",
-        {
-          name,
-          email,
-          password,
-        }
-      );
+      const response = await axios.post(`${APP_URL}/register-user`, {
+        name,
+        email,
+        password,
+      });
 
       // Handle success based on the status code or response data
       if (response.status === 201) {

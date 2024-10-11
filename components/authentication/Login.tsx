@@ -11,6 +11,7 @@ import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { CurrentAuthScreenT } from "./Authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { APP_URL } from "@/constants/URLs";
 
 type LoginScreenPropsT = {
   showAuthScreen: (screenName: CurrentAuthScreenT) => void;
@@ -25,13 +26,10 @@ const LoginScreen = ({ showAuthScreen }: LoginScreenPropsT) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://192.168.29.210:5001/api/login-user",
-        {
-          email,
-          password,
-        }
-      );
+      const response = await axios.post(`${APP_URL}/login-user`, {
+        email,
+        password,
+      });
 
       if (response.status === 200) {
         Toast.show({

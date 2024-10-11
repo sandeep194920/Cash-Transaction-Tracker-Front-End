@@ -15,6 +15,7 @@ import { VERIFY_EMAIL_TIMER } from "@/constants/Timers";
 import { formatTime } from "@/utils/timerFormat";
 import { useAuthContext } from "@/context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { APP_URL } from "@/constants/URLs";
 
 const EmailVerificationScreen = () => {
   const [code, setCode] = useState("");
@@ -48,10 +49,10 @@ const EmailVerificationScreen = () => {
   const verifyEmail = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://192.168.29.210:5001/api/verify-email",
-        { email: registeredUnverifiedUser, verificationCode: code }
-      );
+      const response = await axios.post(`${APP_URL}/verify-email`, {
+        email: registeredUnverifiedUser,
+        verificationCode: code,
+      });
 
       if (response.status === 200) {
         Toast.show({
@@ -88,7 +89,7 @@ const EmailVerificationScreen = () => {
     setIsResendEnabled(false);
     // Call your API to resend the verification code here
     try {
-      await axios.post("http://192.168.29.210:5001/api/resend-verification", {
+      await axios.post(`${APP_URL}/resend-verification`, {
         email: registeredUnverifiedUser,
       });
       Toast.show({

@@ -2,118 +2,68 @@ import { useThemeContext } from "@/context/ThemeContext";
 import React, { useState } from "react";
 import {
   View,
-  Text,
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Alert,
-  Button,
+  Text,
+  ListRenderItemInfo,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Customer from "./Customer";
-
-// Sample Data
-const DATA = [
-  {
-    id: "1",
-    name: "John Doe",
-    amountPaid: "$200",
-    phone: "123-456-7890",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    amountPaid: "$150",
-    phone: "987-654-3210",
-  },
-  {
-    id: "3",
-    name: "Jane Smith",
-    amountPaid: "$150",
-    phone: "987-654-3210",
-  },
-  {
-    id: "4",
-    name: "Jane Smith",
-    amountPaid: "$150",
-    phone: "987-654-3210",
-  },
-  {
-    id: "5",
-    name: "Jane Smith",
-    amountPaid: "$150",
-    phone: "987-654-3210",
-  },
-  {
-    id: "6",
-    name: "Jane Smith",
-    amountPaid: "$150",
-    phone: "987-654-3210",
-  },
-  {
-    id: "7",
-    name: "Jane Smith",
-    amountPaid: "$150",
-    phone: "987-654-3210",
-  },
-  {
-    id: "8",
-    name: "Jane Smith",
-    amountPaid: "$150",
-    phone: "987-654-3210",
-  },
-  {
-    id: "9",
-    name: "Jane Smith",
-    amountPaid: "$150",
-    phone: "987-654-3210",
-  },
-  {
-    id: "10",
-    name: "Jane Smith",
-    amountPaid: "$150",
-    phone: "987-654-3210",
-  },
-
-  // Add more items as needed
-];
+import { useRouter } from "expo-router";
+import Loading from "../Loading";
+import useCustomers from "@/hooks/useCustomers";
+import { CustomerT } from "@/types";
 
 const CustomersList = () => {
-  const [expandedItem, setExpandedItem] = useState(null);
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const { theme } = useThemeContext();
+  const { customers, isLoadingCustomers } = useCustomers();
+  const router = useRouter();
 
-  const renderItem = ({ item }: any) => (
-    <Customer
-      item={item}
-      theme={theme}
-      expanded={expandedItem === item.id}
-      setExpanded={() =>
-        setExpandedItem(expandedItem === item.id ? null : item.id)
-      }
-    />
-  );
+  if (isLoadingCustomers) return <Loading />;
+
+  const renderItem = ({ ...props }: ListRenderItemInfo<CustomerT>) => {
+    const { item } = props;
+    return (
+      <Customer
+        item={item}
+        theme={theme}
+        expanded={expandedItem === item._id}
+        setExpanded={() =>
+          setExpandedItem(expandedItem === item._id ? null : item._id)
+        }
+      />
+    );
+  };
 
   return (
     <>
       <View
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
-        <FlatList
-          data={DATA}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.list}
-        />
+        {!customers?.length ? (
+          <Text style={styles.noCustomersText}>
+            Let's add your first lucky customer! Press the + button below
+          </Text>
+        ) : (
+          <FlatList
+            data={customers}
+            renderItem={renderItem}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={styles.list}
+          />
+        )}
       </View>
       <View
         style={{ backgroundColor: theme.colors.background, paddingBottom: 20 }}
       >
-        <Icon
+        <TouchableOpacity
+          onPress={() => router.push("/(app)/add_customer")}
           style={{ alignSelf: "center" }}
-          name="add-circle"
-          size={50}
-          color={theme.colors.primary}
-        />
+        >
+          <Icon name="add-circle" size={50} color={theme.colors.primary} />
+        </TouchableOpacity>
       </View>
     </>
   );
@@ -123,9 +73,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    justifyContent: "center",
   },
   list: {
     paddingBottom: 10,
+  },
+  noCustomersText: {
+    alignSelf: "center",
+    fontWeight: "semibold",
+    fontSize: 20,
+    padding: "5%",
+    lineHeight: 35,
   },
 });
 
