@@ -6,7 +6,8 @@ import * as Yup from "yup";
 import { authStyles } from "@/components/authentication/authStyles";
 import { Stack, useRouter } from "expo-router"; // Import useRouter
 import Icon from "react-native-vector-icons/AntDesign";
-import useCustomers, { AddCustomerT } from "@/hooks/useCustomers";
+import useCustomers from "@/hooks/useCustomers";
+import { AddCustomerT } from "@/types";
 
 // Validation schema for adding a customer
 const addCustomerValidationSchema = Yup.object().shape({

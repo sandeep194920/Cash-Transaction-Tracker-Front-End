@@ -1,25 +1,19 @@
 import { useThemeContext } from "@/context/ThemeContext";
 import { Link } from "expo-router";
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Pressable,
-} from "react-native";
-import { Menu, MenuDivider, MenuItem } from "react-native-material-menu";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import MenuOptionsOnCard from "../Menu";
+import { commonStyles } from "@/commonStyles";
 
 const Customer = ({ item, expanded, setExpanded }: any) => {
-  const [visible, setVisible] = useState(false);
-  const showMenu = () => setVisible(true);
-  const hideMenu = () => setVisible(false);
   const { theme } = useThemeContext();
-
   return (
     <Link
-      style={[styles.card, { backgroundColor: theme.colors.inputBackground }]}
+      style={[
+        commonStyles.card,
+        { backgroundColor: theme.colors.inputBackground },
+      ]}
       asChild
       href={{
         pathname: "/(app)/customer_details",
@@ -28,31 +22,17 @@ const Customer = ({ item, expanded, setExpanded }: any) => {
     >
       <Pressable>
         {/* Row with Name, Icon, Amount Paid */}
-        <View style={styles.row}>
+        <View style={commonStyles.cardRow}>
           <View style={styles.nameSection}>
             <Icon name="person" size={24} color={theme.colors.primary} />
             <Text style={[styles.name, { color: theme.colors.text }]}>
               {item.name}
             </Text>
           </View>
-          <Menu
-            visible={visible}
-            anchor={
-              <TouchableOpacity onPress={showMenu}>
-                <Icon name="more-vert" size={24} color={theme.colors.primary} />
-              </TouchableOpacity>
-            }
-            onRequestClose={hideMenu}
-          >
-            <MenuItem onPress={() => alert("Edit transaction")}>Edit</MenuItem>
-            <MenuItem onPress={() => alert("Delete transaction")}>
-              Delete
-            </MenuItem>
-            <MenuDivider />
-          </Menu>
+          <MenuOptionsOnCard />
         </View>
 
-        <View style={styles.row}>
+        <View style={commonStyles.cardRow}>
           <View style={styles.nameSection}>
             <Icon
               name="account-balance-wallet"
@@ -143,12 +123,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 3,
   },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
   nameSection: {
     flexDirection: "row",
     alignItems: "center",
@@ -167,7 +141,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 14,
   },
-
   amount: {
     fontSize: 14,
   },
