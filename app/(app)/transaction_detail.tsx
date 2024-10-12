@@ -1,15 +1,14 @@
-import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
-  SafeAreaView,
   ListRenderItemInfo,
 } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 import MenuOptionsOnCard from "@/components/Menu";
 import { commonStyles } from "@/commonStyles";
+import { Stack, useLocalSearchParams } from "expo-router";
 
 const transaction = {
   date: "Wed, 24th Sep",
@@ -44,6 +43,7 @@ const balance = amountPaid - total;
 
 const TransactionDetail = () => {
   const { theme } = useThemeContext();
+  const { transactionDate } = useLocalSearchParams();
   const gross = 100;
   const tax = gross * 0.015; // Assuming 1.5% tax
   const total = gross + tax;
@@ -61,6 +61,11 @@ const TransactionDetail = () => {
           { backgroundColor: theme.colors.inputBackground },
         ]}
       >
+        <Stack.Screen
+          options={{
+            headerTitle: transactionDate as string,
+          }}
+        />
         {/* Row with Name, Icon, Amount Paid */}
         <View style={[commonStyles.cardRow]}>
           <View style={commonStyles.rowSection}>
@@ -88,11 +93,11 @@ const TransactionDetail = () => {
     >
       <View style={[commonStyles.flex1]}>
         {/* Centered Transaction Date */}
-        <View style={styles.dateSection}>
+        {/* <View style={styles.dateSection}>
           <Text style={[styles.date, { color: theme.colors.text }]}>
             {transaction.date}
           </Text>
-        </View>
+        </View> */}
 
         {/* List of items using FlatList */}
         <FlatList
@@ -174,6 +179,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    paddingTop: 20,
     justifyContent: "center",
   },
   listContainer: {

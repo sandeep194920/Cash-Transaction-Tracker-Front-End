@@ -21,7 +21,7 @@ const colors = {
   grey_shade_5: "#E0E0E0",
   grey_shade_6: "#F7F7F7",
   grey_shade_7: "#fffcfc",
-  red_shade_1: "#f04d3e",
+  red_shade_1: "#FF0000",
   red_shade_2: "#f04d3e",
   green_shade_1: "#25b82f",
   blue_shade_1: "#4267B2",

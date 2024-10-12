@@ -13,8 +13,8 @@ const Customer = ({ item, theme, expanded, setExpanded }: any) => {
       ]}
       asChild
       href={{
-        pathname: "/(app)/customer_details",
-        params: { customerName: item.name },
+        pathname: "/(app)/transaction_detail",
+        params: { transactionDate: item.date },
       }}
     >
       <Pressable>

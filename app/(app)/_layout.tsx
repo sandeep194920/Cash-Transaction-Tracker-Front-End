@@ -76,6 +76,16 @@ const AppLayout = () => {
           },
         }}
       />
+
+      <Stack.Screen
+        name="transaction_detail"
+        options={{
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
     </Stack>
   );
 };
