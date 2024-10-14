@@ -5,7 +5,7 @@
 
 // Theme-based colors (dark/light)
 
-const colors = {
+export const colors = {
   yellow_shade_1: "#F5C518",
   yellow_shade_2: "#e4ce75",
 
@@ -21,13 +21,41 @@ const colors = {
   grey_shade_5: "#E0E0E0",
   grey_shade_6: "#F7F7F7",
   grey_shade_7: "#fffcfc",
-  red_shade_1: "#FF0000",
+  red_shade_1: "#f14c4c",
   red_shade_2: "#f04d3e",
   green_shade_1: "#25b82f",
   blue_shade_1: "#4267B2",
+} as const;
+
+export type ColorsT = (typeof colors)[keyof typeof colors];
+
+type SocialButtonT = {
+  color: string;
+  background: string;
 };
 
-export const themes = {
+type ColorsCategoryT = {
+  primary: ColorsT;
+  primaryLight: ColorsT;
+  background: ColorsT;
+  text: ColorsT;
+  success: ColorsT;
+  error: ColorsT;
+  secondaryText: ColorsT;
+  lightText: ColorsT;
+  inputBackground: ColorsT;
+  border: ColorsT;
+  buttonText: ColorsT;
+  socialButtons: {
+    google: SocialButtonT;
+    fb: SocialButtonT;
+  };
+};
+type ThemeT = {
+  colors: ColorsCategoryT;
+};
+
+export const themes: Record<"dark" | "light", ThemeT> = {
   dark: {
     colors: {
       primary: colors.yellow_shade_1,

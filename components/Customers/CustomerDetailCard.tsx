@@ -3,10 +3,27 @@ import { Link } from "expo-router";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import MenuOptionsOnCard from "../Menu";
+import { useThemeContext } from "@/context/ThemeContext";
+import { TransactionT } from "@/types";
 
-const Customer = ({ item, theme, expanded, setExpanded }: any) => {
+type CustomerDetailCardT = {
+  item: TransactionT;
+  expanded: boolean;
+  setExpanded: (value: boolean) => void;
+};
+
+const CustomerDetailCard = ({
+  item,
+  expanded,
+  setExpanded,
+}: CustomerDetailCardT) => {
+  const { theme } = useThemeContext();
+
   return (
     <Link
+      onPress={() => {
+        console.log("Clicked on customer of id", item._id);
+      }}
       style={[
         commonStyles.card,
         { backgroundColor: theme.colors.inputBackground },
@@ -71,7 +88,7 @@ const Customer = ({ item, theme, expanded, setExpanded }: any) => {
           <View style={commonStyles.rowSection}>
             <Icon name="attach-money" size={18} color={theme.colors.error} />
             <Text style={[styles.amount, { color: theme.colors.text }]}>
-              {item.remainingBalance}
+              {item.balanceAmount}
             </Text>
           </View>
         </View>
@@ -146,4 +163,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Customer;
+export default CustomerDetailCard;

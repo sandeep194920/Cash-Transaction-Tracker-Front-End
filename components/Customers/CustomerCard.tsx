@@ -1,13 +1,30 @@
 import { useThemeContext } from "@/context/ThemeContext";
 import { Link } from "expo-router";
-import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import MenuOptionsOnCard from "../Menu";
 import { commonStyles } from "@/commonStyles";
+import { CustomerT } from "@/types";
+import { useAppContext } from "@/context/AppContext";
 
-const Customer = ({ item, expanded, setExpanded }: any) => {
+type CustomerCardT = {
+  customer: CustomerT;
+  expanded: boolean;
+  setExpanded: (value: boolean) => void;
+};
+
+const CustomerCard = ({ customer, expanded, setExpanded }: CustomerCardT) => {
+  const {
+    _id: customerID,
+    name,
+    totalBalance,
+    phone,
+    address,
+    email,
+  } = customer;
   const { theme } = useThemeContext();
+  const { setCurrentCustomer } = useAppContext();
+
   return (
     <Link
       style={[
@@ -15,9 +32,12 @@ const Customer = ({ item, expanded, setExpanded }: any) => {
         { backgroundColor: theme.colors.inputBackground },
       ]}
       asChild
+      onPress={() => {
+        setCurrentCustomer(customer);
+      }}
       href={{
         pathname: "/(app)/customer_details",
-        params: { customerName: item.name },
+        params: { customerName: name },
       }}
     >
       <Pressable>
@@ -26,7 +46,7 @@ const Customer = ({ item, expanded, setExpanded }: any) => {
           <View style={styles.nameSection}>
             <Icon name="person" size={24} color={theme.colors.primary} />
             <Text style={[styles.name, { color: theme.colors.text }]}>
-              {item.name}
+              {name}
             </Text>
           </View>
           <MenuOptionsOnCard />
@@ -49,7 +69,7 @@ const Customer = ({ item, expanded, setExpanded }: any) => {
           <View style={styles.amountSection}>
             <Icon name="attach-money" size={18} color={theme.colors.primary} />
             <Text style={[styles.amount, { color: theme.colors.text }]}>
-              {item.totalBalance}
+              {totalBalance}
             </Text>
           </View>
         </View>
@@ -62,7 +82,7 @@ const Customer = ({ item, expanded, setExpanded }: any) => {
               <Text
                 style={[styles.phone, { color: theme.colors.secondaryText }]}
               >
-                {item.phone}
+                {phone}
               </Text>
             </View>
 
@@ -71,11 +91,11 @@ const Customer = ({ item, expanded, setExpanded }: any) => {
               <Text
                 style={[styles.phone, { color: theme.colors.secondaryText }]}
               >
-                {item.email}
+                {email}
               </Text>
             </View>
 
-            {item.address && (
+            {address && (
               <View style={[styles.expandedRow]}>
                 <Icon
                   name="house"
@@ -85,7 +105,7 @@ const Customer = ({ item, expanded, setExpanded }: any) => {
                 <Text
                   style={[styles.phone, { color: theme.colors.secondaryText }]}
                 >
-                  {item.address}
+                  {address}
                 </Text>
               </View>
             )}
@@ -166,4 +186,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Customer;
+export default CustomerCard;

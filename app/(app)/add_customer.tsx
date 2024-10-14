@@ -4,10 +4,12 @@ import { useThemeContext } from "@/context/ThemeContext";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { authStyles } from "@/components/authentication/authStyles";
-import { Stack, useRouter } from "expo-router"; // Import useRouter
+import { Stack, router } from "expo-router";
 import Icon from "react-native-vector-icons/AntDesign";
 import useCustomers from "@/hooks/useCustomers";
 import { AddCustomerT } from "@/types";
+import Button from "@/components/Button";
+import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
 
 // Validation schema for adding a customer
 const addCustomerValidationSchema = Yup.object().shape({
@@ -20,7 +22,6 @@ const addCustomerValidationSchema = Yup.object().shape({
 
 const AddCustomerScreen = () => {
   const { theme } = useThemeContext();
-  const router = useRouter();
   const { addCustomer } = useCustomers();
 
   const addCustomerHandler = (values: AddCustomerT) => {
@@ -37,22 +38,7 @@ const AddCustomerScreen = () => {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.dismiss()}
-              style={{ marginRight: 10 }}
-            >
-              <Icon
-                name="arrowleft"
-                size={24}
-                color={theme.colors.buttonText}
-              />
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      <HeaderLeftBackArrow />
 
       <Formik
         initialValues={{ name: "", email: "", phone: "", address: "" }}
@@ -164,22 +150,13 @@ const AddCustomerScreen = () => {
               value={values.address}
             />
 
-            <TouchableOpacity
-              onPress={() => handleSubmit()}
-              style={[
-                authStyles.button,
-                { backgroundColor: theme.colors.primary },
-              ]}
-            >
-              <Text
-                style={[
-                  authStyles.buttonText,
-                  { color: theme.colors.buttonText },
-                ]}
-              >
-                Add Customer
-              </Text>
-            </TouchableOpacity>
+            <Button
+              color={theme.colors.primary}
+              borderColor={theme.colors.primary}
+              textColor={theme.colors.primary}
+              title="Add Customer"
+              pressHandler={() => handleSubmit()}
+            />
           </View>
         )}
       </Formik>

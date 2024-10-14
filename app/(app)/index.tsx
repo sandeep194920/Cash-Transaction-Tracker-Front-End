@@ -1,11 +1,11 @@
 import React from "react";
 import CustomersList from "@/components/Customers/CustomersList";
 import TransactionDetail from "./transaction_detail";
-import AddTransactionScreen from "./add_transaction";
+import AddItem from "./add_item";
 
 const Home = () => {
   return <CustomersList />;
-  // return <AddTransactionScreen />;
+  // return <AddItem />;
 };
 
 export default Home;

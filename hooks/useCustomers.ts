@@ -7,6 +7,7 @@ import Toast from "react-native-toast-message";
 
 function useCustomers() {
   const queryClient = useQueryClient();
+
   // Fetch customers
   const fetchCustomers = async (): Promise<CustomerT[]> => {
     const token = await AsyncStorage.getItem("token");
@@ -18,23 +19,25 @@ function useCustomers() {
     return response.data?.customers || [];
   };
 
+  // Always call hooks first
   const {
     isLoading: isLoadingCustomers,
     data: customers,
-    error,
+    error: customersError,
   } = useQuery({
     queryKey: ["customers"],
     queryFn: fetchCustomers,
   });
 
-  if (error) {
+  // Handle errors after all hooks are called
+  if (customersError) {
     Toast.show({
       type: "error",
-      text1: error.message || "An error occurred",
+      text1: customersError.message || "An error occurred",
     });
     return {
       success: false,
-      message: error.message || "Error occurred",
+      message: customersError.message || "Error occurred",
     };
   }
 
@@ -66,7 +69,6 @@ function useCustomers() {
   const { mutate: addCustomer, isPending } = useMutation({
     mutationFn: addNewCustomer,
     onSuccess: () => {
-      // Invalidate and refetch the customer list when a new customer is added
       queryClient.invalidateQueries({ queryKey: ["customers"] });
       Toast.show({
         type: "success",
@@ -80,11 +82,13 @@ function useCustomers() {
       });
     },
   });
+
+  // Return all necessary data and functions
   return {
-    addCustomer,
     customers,
     isLoadingCustomers,
-    isPending, // TODO: isPending is not working for some reason. Take a closer look later
+    addCustomer,
+    isPending, // TODO: This isPending doesn't work for some reason. Do test it.
   };
 }
 

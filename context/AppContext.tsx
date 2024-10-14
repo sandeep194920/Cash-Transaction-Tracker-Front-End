@@ -1,7 +1,8 @@
 import { APP_URL } from "@/constants/URLs";
+import { CustomerT, ItemT, TransactionT } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import React, {
   createContext,
   Dispatch,
@@ -22,12 +23,32 @@ type CreateContextT = {
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
   addCustomer: (props: AddCustomerT) => void;
+  currentCustomer: CustomerT | null;
+  setCurrentCustomer: Dispatch<React.SetStateAction<CustomerT | null>>;
+  orderedItems: ItemT[];
+  addItem: (item: ItemT) => void;
+  taxPercentage: number;
+  currentTransactionInProgress: TransactionT | null;
+  setCurrentTransactionInProgress: Dispatch<
+    React.SetStateAction<TransactionT | null>
+  >;
 };
 
 const AppContext = createContext<CreateContextT>({
   isLoading: false,
   setIsLoading: (() => {}) as Dispatch<SetStateAction<boolean>>,
   addCustomer: () => {},
+  currentCustomer: null,
+  setCurrentCustomer: (() => {}) as Dispatch<
+    React.SetStateAction<CustomerT | null>
+  >,
+  orderedItems: [],
+  addItem: () => {},
+  taxPercentage: 0,
+  currentTransactionInProgress: null,
+  setCurrentTransactionInProgress: (() => {}) as Dispatch<
+    SetStateAction<TransactionT | null>
+  >,
 });
 
 type AppProviderT = {
@@ -36,7 +57,15 @@ type AppProviderT = {
 
 const AppProvider = ({ children }: AppProviderT) => {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [orderedItems, setOrderedItems] = useState<ItemT[]>([]);
+  const [taxPercentage, setTaxPercentage] = useState(13);
+  const [currentCustomer, setCurrentCustomer] = useState<null | CustomerT>(
+    null
+  );
+  const [currentTransactionInProgress, setCurrentTransactionInProgress] =
+    useState<TransactionT | null>(null);
+
+  // CUSTOMER FUNCTIONS
 
   const addCustomer = async ({ name, email, phone, address }: AddCustomerT) => {
     setIsLoading(true);
@@ -87,10 +116,31 @@ const AppProvider = ({ children }: AppProviderT) => {
     }
   };
 
+  // TRANSACTION FUNCTIONS
+  const addItem = ({ name, price, quantity }: ItemT) => {
+    setOrderedItems((prevItems) => {
+      return [
+        ...prevItems,
+        {
+          name,
+          quantity,
+          price,
+        },
+      ];
+    });
+  };
+
   const appValues = {
     isLoading,
     setIsLoading,
     addCustomer,
+    currentCustomer,
+    setCurrentCustomer,
+    orderedItems,
+    addItem,
+    taxPercentage,
+    currentTransactionInProgress,
+    setCurrentTransactionInProgress,
   };
 
   return (

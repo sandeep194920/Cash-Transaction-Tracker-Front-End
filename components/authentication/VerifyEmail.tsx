@@ -7,21 +7,19 @@ import {
   StyleSheet,
 } from "react-native";
 import axios from "axios";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useThemeContext } from "@/context/ThemeContext"; // Make sure you have this context
 import { authStyles } from "./authStyles";
 import { VERIFY_EMAIL_TIMER } from "@/constants/Timers";
 import { formatTime } from "@/utils/timerFormat";
 import { useAuthContext } from "@/context/AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { APP_URL } from "@/constants/URLs";
 
 const EmailVerificationScreen = () => {
   const [code, setCode] = useState("");
   const [timer, setTimer] = useState(VERIFY_EMAIL_TIMER); // 2 mins timer
   const [isResendEnabled, setIsResendEnabled] = useState(false);
-  const router = useRouter();
   const { theme } = useThemeContext(); // Access your theme
   const { authenticateUser, registeredUnverifiedUser } = useAuthContext();
   const { setIsLoading } = useAuthContext();

@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAuthContext } from "@/context/AuthContext";
 import Toast from "react-native-toast-message";
@@ -10,7 +10,6 @@ import Loading from "../Loading";
 
 const CustomDrawerContent = (props: any) => {
   const { theme } = useThemeContext();
-  const router = useRouter();
   const { authenticateUser, userData } = useAuthContext();
 
   if (!userData) return <Loading />;

@@ -1,24 +1,16 @@
 import {
   StyleSheet,
-  Text,
   View,
-  Pressable,
   FlatList,
   ListRenderItemInfo,
+  TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import { Stack, useLocalSearchParams, Link } from "expo-router";
+import { Stack, useLocalSearchParams, Link, router } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useThemeContext } from "@/context/ThemeContext";
-import CustomerDetail from "@/components/Customers/CustomerDetail";
-import { CustomerT } from "@/types";
-
-type TransactionT = {
-  _id: string;
-  date: string;
-  price: number;
-  amountPaid: number;
-};
+import CustomerDetailCard from "@/components/Customers/CustomerDetailCard";
+import { TransactionT } from "@/types";
 
 const CustomerDetails = () => {
   const { theme } = useThemeContext();
@@ -30,30 +22,29 @@ const CustomerDetails = () => {
       date: "Wed, 3rd Sep 2020",
       price: -10,
       amountPaid: 150,
-      remainingBalance: -50,
+      balanceAmount: 0,
     },
     {
       _id: "2",
       date: "Mon, 5th Oct 2020",
       price: 100,
       amountPaid: 10,
-      remainingBalance: -10,
+      balanceAmount: 0,
     },
     {
       _id: "3",
       date: "Mon, 5th Oct 2020",
       price: 100,
       amountPaid: 10,
-      remainingBalance: -10,
+      balanceAmount: 0,
     },
   ]);
 
   const renderItem = ({ ...props }: ListRenderItemInfo<TransactionT>) => {
     const { item } = props;
     return (
-      <CustomerDetail
+      <CustomerDetailCard
         item={item}
-        theme={theme}
         expanded={expandedItem === item._id}
         setExpanded={() =>
           setExpandedItem(expandedItem === item._id ? null : item._id)
@@ -84,12 +75,12 @@ const CustomerDetails = () => {
       <View
         style={{ backgroundColor: theme.colors.background, paddingBottom: 20 }}
       >
-        <Icon
+        <TouchableOpacity
+          onPress={() => router.push("/(app)/add_transaction")}
           style={{ alignSelf: "center" }}
-          name="add-circle"
-          size={50}
-          color={theme.colors.primary}
-        />
+        >
+          <Icon name="add-circle" size={50} color={theme.colors.primary} />
+        </TouchableOpacity>
       </View>
     </>
   );

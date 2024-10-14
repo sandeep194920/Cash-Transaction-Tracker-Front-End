@@ -9,8 +9,8 @@ import {
   ListRenderItemInfo,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import Customer from "./Customer";
-import { useRouter } from "expo-router";
+import CustomerCard from "./CustomerCard";
+import { router } from "expo-router";
 import Loading from "../Loading";
 import useCustomers from "@/hooks/useCustomers";
 import { CustomerT } from "@/types";
@@ -19,19 +19,17 @@ const CustomersList = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const { theme } = useThemeContext();
   const { customers, isLoadingCustomers } = useCustomers();
-  const router = useRouter();
 
   if (isLoadingCustomers) return <Loading />;
 
   const renderItem = ({ ...props }: ListRenderItemInfo<CustomerT>) => {
-    const { item } = props;
+    const { item: customer } = props;
     return (
-      <Customer
-        item={item}
-        theme={theme}
-        expanded={expandedItem === item._id}
+      <CustomerCard
+        customer={customer}
+        expanded={expandedItem === customer._id}
         setExpanded={() =>
-          setExpandedItem(expandedItem === item._id ? null : item._id)
+          setExpandedItem(expandedItem === customer._id ? null : customer._id)
         }
       />
     );
@@ -50,7 +48,7 @@ const CustomersList = () => {
           <FlatList
             data={customers}
             renderItem={renderItem}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(customer) => customer._id}
             contentContainerStyle={styles.list}
           />
         )}

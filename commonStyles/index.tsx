@@ -26,4 +26,18 @@ export const commonStyles = StyleSheet.create({
   flex1: {
     flex: 1,
   },
+
+  // TEXT STYLES
+  placeAtCenter: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  // OTHER STYLES
+  separator: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+    marginBottom: 10,
+  },
 });
