@@ -19,6 +19,17 @@ type AddCustomerT = {
   address: string;
 };
 
+type AppProviderT = {
+  children: React.ReactNode;
+};
+
+type TransactionType = {
+  transactionDate?: Date;
+  items?: ItemT[];
+  taxPercentage?: number;
+  amountPaid?: number;
+};
+
 type CreateContextT = {
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
@@ -28,10 +39,8 @@ type CreateContextT = {
   orderedItems: ItemT[];
   addItem: (item: ItemT) => void;
   taxPercentage: number;
-  currentTransactionInProgress: TransactionT | null;
-  setCurrentTransactionInProgress: Dispatch<
-    React.SetStateAction<TransactionT | null>
-  >;
+  unsettledTransaction: TransactionType | null;
+  updateCurrentTransaction: (values: TransactionType) => void;
 };
 
 const AppContext = createContext<CreateContextT>({
@@ -45,15 +54,9 @@ const AppContext = createContext<CreateContextT>({
   orderedItems: [],
   addItem: () => {},
   taxPercentage: 0,
-  currentTransactionInProgress: null,
-  setCurrentTransactionInProgress: (() => {}) as Dispatch<
-    SetStateAction<TransactionT | null>
-  >,
+  unsettledTransaction: null,
+  updateCurrentTransaction: () => {},
 });
-
-type AppProviderT = {
-  children: React.ReactNode;
-};
 
 const AppProvider = ({ children }: AppProviderT) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -62,8 +65,10 @@ const AppProvider = ({ children }: AppProviderT) => {
   const [currentCustomer, setCurrentCustomer] = useState<null | CustomerT>(
     null
   );
-  const [currentTransactionInProgress, setCurrentTransactionInProgress] =
-    useState<TransactionT | null>(null);
+  const [unsettledTransaction, setUnsettledTransaction] =
+    useState<TransactionType | null>({
+      transactionDate: new Date(),
+    });
 
   // CUSTOMER FUNCTIONS
 
@@ -130,6 +135,13 @@ const AppProvider = ({ children }: AppProviderT) => {
     });
   };
 
+  const updateCurrentTransaction = (values: TransactionType) => {
+    console.log("values", values);
+    setUnsettledTransaction(() => {
+      return { ...unsettledTransaction, ...values };
+    });
+  };
+
   const appValues = {
     isLoading,
     setIsLoading,
@@ -139,8 +151,8 @@ const AppProvider = ({ children }: AppProviderT) => {
     orderedItems,
     addItem,
     taxPercentage,
-    currentTransactionInProgress,
-    setCurrentTransactionInProgress,
+    unsettledTransaction,
+    updateCurrentTransaction,
   };
 
   return (

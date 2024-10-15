@@ -15,29 +15,12 @@ import { ItemT } from "@/types";
 import { useAppContext } from "@/context/AppContext";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import useTransaction from "@/hooks/useTransaction";
-
-const transaction = {
-  date: "Wed, 24th Sep",
-  items: [
-    // { name: "Roti", quantity: 20, price: 200 },
-    // { name: "Curry", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-    // { name: "Idli", quantity: 20, price: 200 },
-  ],
-};
+import DatePicker from "@/components/DateSelection";
+import Toast from "react-native-toast-message";
 
 const AddTransactionScreen = () => {
   const { theme } = useThemeContext();
-  const { orderedItems, taxPercentage, setCurrentTransactionInProgress } =
+  const { orderedItems, taxPercentage, updateCurrentTransaction } =
     useAppContext();
   const { transactionTotalAmount, transactionAmountWithoutTax } =
     useTransaction();
@@ -86,12 +69,14 @@ const AddTransactionScreen = () => {
 
   const saveTransactionHandler = () => {
     try {
-      // console.log("The ordered items are", orderedItems);
-      // setCurrentTransactionInProgress(savedState => {
-      //   return {...savedState, items:orderedItems,  }
-      // })
       router.push("/(app)/confirm_transaction");
-    } catch (error) {}
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Something went wrong. Please try again later!",
+      });
+      return;
+    }
   };
 
   return (
@@ -103,17 +88,11 @@ const AddTransactionScreen = () => {
       >
         <View style={[commonStyles.flex1]}>
           {!orderedItems.length ? (
-            <View style={commonStyles.rowSection}>
-              <Text style={[styles.date, { color: theme.colors.text }]}>
-                {transaction.date}
-              </Text>
-            </View>
+            <DatePicker />
           ) : (
             <View style={[styles.dateSection]}>
-              <View></View>
-              <Text style={[styles.date, { color: theme.colors.text }]}>
-                {transaction.date}
-              </Text>
+              <View />
+              <DatePicker />
               <Icon
                 name="add-circle"
                 onPress={addItemHandler}
