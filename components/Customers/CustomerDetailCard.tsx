@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import MenuOptionsOnCard from "../Menu";
 import { useThemeContext } from "@/context/ThemeContext";
 import { TransactionT } from "@/types";
+import { formattedDate } from "@/utils/dateTime";
 
 type CustomerDetailCardT = {
   item: TransactionT;
@@ -19,6 +20,12 @@ const CustomerDetailCard = ({
 }: CustomerDetailCardT) => {
   const { theme } = useThemeContext();
 
+  const { day: dayLong, date } = formattedDate({ date: item.transactionDate });
+  const { day: dayShort } = formattedDate({
+    date: item.transactionDate,
+    type: "short",
+  });
+
   return (
     <Link
       onPress={() => {
@@ -31,7 +38,7 @@ const CustomerDetailCard = ({
       asChild
       href={{
         pathname: "/(app)/transaction_detail",
-        params: { transactionDate: item.date },
+        params: { transactionDate: `${dayShort}, ${date}` },
       }}
     >
       <Pressable>
@@ -39,7 +46,7 @@ const CustomerDetailCard = ({
         <View style={[commonStyles.cardRow, { marginBottom: 10 }]}>
           <View style={commonStyles.rowSection}>
             <Text style={[styles.header, { color: theme.colors.text }]}>
-              {item.date}
+              {`${dayLong}, ${date}`}
             </Text>
           </View>
           <MenuOptionsOnCard />
@@ -56,7 +63,7 @@ const CustomerDetailCard = ({
           <View style={commonStyles.rowSection}>
             <Icon name="attach-money" size={18} color={theme.colors.error} />
             <Text style={[styles.amount, { color: theme.colors.text }]}>
-              {item.price}
+              {item.grossPrice}
             </Text>
           </View>
         </View>

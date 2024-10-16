@@ -6,39 +6,18 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
-import { Stack, useLocalSearchParams, Link, router } from "expo-router";
+import { Stack, useLocalSearchParams, router } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useThemeContext } from "@/context/ThemeContext";
 import CustomerDetailCard from "@/components/Customers/CustomerDetailCard";
 import { TransactionT } from "@/types";
+import useTransactions from "@/hooks/useTransactions";
 
 const CustomerDetails = () => {
   const { theme } = useThemeContext();
   const { customerName } = useLocalSearchParams();
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const [transactions, setTransactions] = useState([
-    {
-      _id: "1",
-      date: "Wed, 3rd Sep 2020",
-      price: -10,
-      amountPaid: 150,
-      balanceAmount: 0,
-    },
-    {
-      _id: "2",
-      date: "Mon, 5th Oct 2020",
-      price: 100,
-      amountPaid: 10,
-      balanceAmount: 0,
-    },
-    {
-      _id: "3",
-      date: "Mon, 5th Oct 2020",
-      price: 100,
-      amountPaid: 10,
-      balanceAmount: 0,
-    },
-  ]);
+  const { customerTransactions } = useTransactions();
 
   const renderItem = ({ ...props }: ListRenderItemInfo<TransactionT>) => {
     const { item } = props;
@@ -66,7 +45,7 @@ const CustomerDetails = () => {
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
         <FlatList
-          data={transactions}
+          data={customerTransactions}
           renderItem={renderItem}
           contentContainerStyle={styles.list}
           keyExtractor={(item) => item._id}
@@ -84,17 +63,6 @@ const CustomerDetails = () => {
       </View>
     </>
   );
-};
-
-// Helper function to calculate total balance
-const calculateTotalBalance = (transactions: any[]) => {
-  return transactions.reduce((acc, t) => acc + t.remainingBalance, 0);
-};
-
-// Helper function to calculate balance color (positive or negative)
-const calculateBalanceColor = (transactions: any[]) => {
-  const totalBalance = calculateTotalBalance(transactions);
-  return totalBalance >= 0 ? "green" : "red";
 };
 
 export default CustomerDetails;

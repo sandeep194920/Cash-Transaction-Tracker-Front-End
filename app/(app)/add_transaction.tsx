@@ -69,6 +69,9 @@ const AddTransactionScreen = () => {
 
   const saveTransactionHandler = () => {
     try {
+      updateCurrentTransaction({
+        items: orderedItems,
+      });
       router.push("/(app)/confirm_transaction");
     } catch (error) {
       Toast.show({
@@ -87,7 +90,7 @@ const AddTransactionScreen = () => {
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
         <View style={[commonStyles.flex1]}>
-          {!orderedItems.length ? (
+          {!orderedItems?.length ? (
             <DatePicker />
           ) : (
             <View style={[styles.dateSection]}>
@@ -103,7 +106,7 @@ const AddTransactionScreen = () => {
           )}
 
           {/* List of items using FlatList */}
-          {!orderedItems.length ? (
+          {!orderedItems?.length ? (
             <View style={[commonStyles.placeAtCenter, { gap: 20 }]}>
               <Button
                 title="Add Item"
@@ -171,7 +174,7 @@ const AddTransactionScreen = () => {
             </Text>
           </View>
         </View>
-        {orderedItems.length ? (
+        {orderedItems?.length ? (
           <Button
             title="Save Transaction"
             fontSize={16}

@@ -3,7 +3,7 @@ import { View, Text, Platform, StyleSheet } from "react-native";
 import DateTimePicker, {
   EvtTypes,
 } from "@react-native-community/datetimepicker";
-import { formatDate } from "@/utils/dateTime";
+import { formattedDate } from "@/utils/dateTime";
 import { commonStyles } from "@/commonStyles";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useThemeContext } from "@/context/ThemeContext";
@@ -31,7 +31,10 @@ const DatePicker = () => {
     setShow(false);
   };
 
-  const { date: formattedDate } = formatDate(currentDate, "long");
+  // const { date: formattedDate } = formattedDate(currentDate, "long");
+  const { day: longDay, date } = formattedDate({ date: currentDate });
+  const longDate = `${longDay} ${date}`;
+
   return (
     <View style={[commonStyles.rowSection]}>
       {show ? (
@@ -51,7 +54,7 @@ const DatePicker = () => {
             size={24}
             color={theme.colors.primary}
           />
-          <Text style={[styles.date]}>{formattedDate}</Text>
+          <Text style={[styles.date]}>{longDate}</Text>
         </View>
       )}
     </View>

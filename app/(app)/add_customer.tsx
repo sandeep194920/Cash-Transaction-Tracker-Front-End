@@ -153,7 +153,7 @@ const AddCustomerScreen = () => {
             <Button
               color={theme.colors.primary}
               borderColor={theme.colors.primary}
-              textColor={theme.colors.primary}
+              textColor={theme.colors.buttonText}
               title="Add Customer"
               pressHandler={() => handleSubmit()}
             />

@@ -17,11 +17,16 @@ export type CustomerT = {
 
 export type TransactionT = {
   _id: string;
-  date: string;
-  price: number;
-  amountPaid: number;
+  transactionDate: Date;
+  grossPrice: number;
+  totalPrice: number;
   balanceAmount: number;
+  items: ItemT[];
+  taxPercentage: number;
+  amountPaid: number;
 };
+
+export type PartialTransactionT = Partial<TransactionT>;
 
 export type ItemT = {
   name: string;

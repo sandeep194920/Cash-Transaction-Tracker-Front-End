@@ -1,5 +1,5 @@
 import { APP_URL } from "@/constants/URLs";
-import { CustomerT, ItemT, TransactionT } from "@/types";
+import { CustomerT, ItemT, PartialTransactionT } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { router } from "expo-router";
@@ -23,13 +23,6 @@ type AppProviderT = {
   children: React.ReactNode;
 };
 
-type TransactionType = {
-  transactionDate?: Date;
-  items?: ItemT[];
-  taxPercentage?: number;
-  amountPaid?: number;
-};
-
 type CreateContextT = {
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
@@ -39,8 +32,8 @@ type CreateContextT = {
   orderedItems: ItemT[];
   addItem: (item: ItemT) => void;
   taxPercentage: number;
-  unsettledTransaction: TransactionType | null;
-  updateCurrentTransaction: (values: TransactionType) => void;
+  unsettledTransaction: PartialTransactionT;
+  updateCurrentTransaction: (values: PartialTransactionT) => void;
 };
 
 const AppContext = createContext<CreateContextT>({
@@ -54,7 +47,7 @@ const AppContext = createContext<CreateContextT>({
   orderedItems: [],
   addItem: () => {},
   taxPercentage: 0,
-  unsettledTransaction: null,
+  unsettledTransaction: {},
   updateCurrentTransaction: () => {},
 });
 
@@ -66,12 +59,12 @@ const AppProvider = ({ children }: AppProviderT) => {
     null
   );
   const [unsettledTransaction, setUnsettledTransaction] =
-    useState<TransactionType | null>({
+    useState<PartialTransactionT>({
       transactionDate: new Date(),
+      taxPercentage: 13,
     });
 
   // CUSTOMER FUNCTIONS
-
   const addCustomer = async ({ name, email, phone, address }: AddCustomerT) => {
     setIsLoading(true);
     try {
@@ -135,8 +128,7 @@ const AppProvider = ({ children }: AppProviderT) => {
     });
   };
 
-  const updateCurrentTransaction = (values: TransactionType) => {
-    console.log("values", values);
+  const updateCurrentTransaction = (values: PartialTransactionT) => {
     setUnsettledTransaction(() => {
       return { ...unsettledTransaction, ...values };
     });

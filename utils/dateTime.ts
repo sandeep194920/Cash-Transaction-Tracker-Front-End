@@ -12,7 +12,7 @@ type FormattedDate = {
   day: string;
 };
 
-export const formatDate = (
+const formatDate = (
   dateInput: Date | string,
   dayType: "short" | "long" = "long"
 ): FormattedDate => {
@@ -33,6 +33,20 @@ export const formatDate = (
     date: formattedDate,
     day: day,
   };
+};
+
+// const { day, date } = formatDate(item.transactionDate);
+// const dayShort = formatDate(item.transactionDate, "short").day;
+// const formattedDate = `${day}, ${date}`;
+// const formattedShortDate = `${dayShort}, ${date}`;
+
+type FormattedDateT = {
+  date: Date | string;
+  type?: "short" | "long";
+};
+
+export const formattedDate = ({ date, type = "long" }: FormattedDateT) => {
+  return type === "long" ? formatDate(date, "long") : formatDate(date, "short");
 };
 
 // Example usage:

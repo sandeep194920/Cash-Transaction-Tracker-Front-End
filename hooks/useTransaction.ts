@@ -20,15 +20,6 @@ const useTransaction = () => {
 
     const totalAmount = orderPrice + currentBalance;
 
-    console.log(
-      "taxAmount",
-      taxAmount,
-      "orderPrice",
-      orderPrice,
-      "totalAmount",
-      totalAmount
-    );
-
     return { grossPrice, orderPrice, totalAmount };
   }, [orderedItems, taxPercentage]);
 

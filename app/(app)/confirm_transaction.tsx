@@ -7,15 +7,13 @@ import { useAppContext } from "@/context/AppContext";
 import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
 import useTransaction from "@/hooks/useTransaction";
 import useTransactions from "@/hooks/useTransactions";
+import { router } from "expo-router";
 
 const ConfirmTransactionModal = () => {
   const { theme } = useThemeContext();
-  const { currentCustomer } = useAppContext();
+  const { currentCustomer, updateCurrentTransaction } = useAppContext();
   const { transactionTotalAmount, transactionAmountWithTax } = useTransaction();
-  //   const { addTransaction } = useTransactions();
-  if (!currentCustomer) return;
-
-  const { name, totalBalance: currentBalance } = currentCustomer;
+  const { createNewTransaction } = useTransactions();
 
   // Form validation schema using Yup
   const validationSchema = yup.object().shape({
@@ -29,6 +27,13 @@ const ConfirmTransactionModal = () => {
       ),
   });
 
+  const addTransactionHandler = () => {
+    if (createNewTransaction) {
+      createNewTransaction();
+      router.dismiss();
+    }
+  };
+
   // Formik for form handling
   const formik = useFormik({
     initialValues: {
@@ -36,10 +41,14 @@ const ConfirmTransactionModal = () => {
     },
     validationSchema,
     onSubmit: (values) => {
-      // Handle form submission here (e.g., save to server, update state)
-      console.log("Amount Paid:", values.amountPaid);
+      const { amountPaid } = values;
+      updateCurrentTransaction({ amountPaid: +amountPaid });
+      addTransactionHandler();
     },
   });
+
+  if (!currentCustomer) return null;
+  const { name, totalBalance: currentBalance } = currentCustomer;
 
   return (
     <>
