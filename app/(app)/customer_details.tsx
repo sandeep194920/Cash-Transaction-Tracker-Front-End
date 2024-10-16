@@ -12,12 +12,13 @@ import { useThemeContext } from "@/context/ThemeContext";
 import CustomerDetailCard from "@/components/Customers/CustomerDetailCard";
 import { TransactionT } from "@/types";
 import useTransactions from "@/hooks/useTransactions";
+import Loading from "@/components/Loading";
 
 const CustomerDetails = () => {
   const { theme } = useThemeContext();
   const { customerName } = useLocalSearchParams();
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const { customerTransactions } = useTransactions();
+  const { customerTransactions, isLoadingTransactions } = useTransactions();
 
   const renderItem = ({ ...props }: ListRenderItemInfo<TransactionT>) => {
     const { item } = props;
@@ -31,6 +32,8 @@ const CustomerDetails = () => {
       />
     );
   };
+
+  if (isLoadingTransactions) return <Loading />;
 
   return (
     <>

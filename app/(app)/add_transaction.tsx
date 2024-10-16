@@ -109,8 +109,8 @@ const AddTransactionScreen = () => {
           {!orderedItems?.length ? (
             <View style={[commonStyles.placeAtCenter, { gap: 20 }]}>
               <Button
-                title="Add Item"
-                width={120}
+                title="Add First Item"
+                width={140}
                 height={40}
                 fontSize={14}
                 color={theme.colors.primary}

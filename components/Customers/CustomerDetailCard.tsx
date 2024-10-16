@@ -5,7 +5,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import MenuOptionsOnCard from "../Menu";
 import { useThemeContext } from "@/context/ThemeContext";
 import { TransactionT } from "@/types";
-import { formattedDate } from "@/utils/dateTime";
+import { formattedDateStr } from "@/utils/dateTime";
 
 type CustomerDetailCardT = {
   item: TransactionT;
@@ -20,11 +20,7 @@ const CustomerDetailCard = ({
 }: CustomerDetailCardT) => {
   const { theme } = useThemeContext();
 
-  const { day: dayLong, date } = formattedDate({ date: item.transactionDate });
-  const { day: dayShort } = formattedDate({
-    date: item.transactionDate,
-    type: "short",
-  });
+  const { dateLong, dateShort } = formattedDateStr(item.transactionDate);
 
   return (
     <Link
@@ -38,7 +34,7 @@ const CustomerDetailCard = ({
       asChild
       href={{
         pathname: "/(app)/transaction_detail",
-        params: { transactionDate: `${dayShort}, ${date}` },
+        params: { transactionDate: dateShort },
       }}
     >
       <Pressable>
@@ -46,7 +42,7 @@ const CustomerDetailCard = ({
         <View style={[commonStyles.cardRow, { marginBottom: 10 }]}>
           <View style={commonStyles.rowSection}>
             <Text style={[styles.header, { color: theme.colors.text }]}>
-              {`${dayLong}, ${date}`}
+              {dateLong}
             </Text>
           </View>
           <MenuOptionsOnCard />

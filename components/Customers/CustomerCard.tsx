@@ -14,14 +14,7 @@ type CustomerCardT = {
 };
 
 const CustomerCard = ({ customer, expanded, setExpanded }: CustomerCardT) => {
-  const {
-    _id: customerID,
-    name,
-    totalBalance,
-    phone,
-    address,
-    email,
-  } = customer;
+  const { name, totalBalance, phone, address, email } = customer;
   const { theme } = useThemeContext();
   const { setCurrentCustomer } = useAppContext();
 
@@ -37,7 +30,7 @@ const CustomerCard = ({ customer, expanded, setExpanded }: CustomerCardT) => {
       }}
       href={{
         pathname: "/(app)/customer_details",
-        params: { customerName: name },
+        params: { customerName: name.split(" ")[0] },
       }}
     >
       <Pressable>

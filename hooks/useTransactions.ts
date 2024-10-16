@@ -10,7 +10,6 @@ function useTransactions() {
   const queryClient = useQueryClient();
   const { currentCustomer } = useAppContext();
   const { unsettledTransaction } = useAppContext();
-
   const fetchCustomerTransactions = async (): Promise<TransactionT[]> => {
     if (!currentCustomer?._id) {
       console.log("No customer ID provided");
@@ -33,13 +32,14 @@ function useTransactions() {
     data: customerTransactions,
     // error: transactionsError,
   } = useQuery({
-    queryKey: ["customer_transactions"],
+    queryKey: ["customer_transactions", currentCustomer?._id],
     queryFn: fetchCustomerTransactions,
+    staleTime: 60 * 1000,
   });
 
   // Create new transaction
   const addNewTransaction = async () => {
-    if (!unsettledTransaction || !currentCustomer) {
+    if (!unsettledTransaction || !currentCustomer?._id) {
       Toast.show({
         type: "error",
         text1: "Something went wrong. Please try again later!",

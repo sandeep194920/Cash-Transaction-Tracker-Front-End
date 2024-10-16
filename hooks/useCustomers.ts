@@ -16,7 +16,8 @@ function useCustomers() {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data?.customers || [];
+    console.log("Customers response", response.data.customers);
+    return response.data.customers || [];
   };
 
   // Always call hooks first

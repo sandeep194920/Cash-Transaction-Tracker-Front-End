@@ -7,14 +7,16 @@ export const formatTime = (secondsRemaining: number) => {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
+type DayT = "short" | "long";
+
 type FormattedDate = {
   date: string;
   day: string;
 };
 
-const formatDate = (
+export const formatDate = (
   dateInput: Date | string,
-  dayType: "short" | "long" = "long"
+  dayType: DayT = "long"
 ): FormattedDate => {
   // If dateInput is not a Date object, create a Date object from it
   const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
@@ -35,18 +37,13 @@ const formatDate = (
   };
 };
 
-// const { day, date } = formatDate(item.transactionDate);
-// const dayShort = formatDate(item.transactionDate, "short").day;
-// const formattedDate = `${day}, ${date}`;
-// const formattedShortDate = `${dayShort}, ${date}`;
-
-type FormattedDateT = {
-  date: Date | string;
-  type?: "short" | "long";
-};
-
-export const formattedDate = ({ date, type = "long" }: FormattedDateT) => {
-  return type === "long" ? formatDate(date, "long") : formatDate(date, "short");
+export const formattedDateStr = (date: Date | string) => {
+  const long = formatDate(date, "long");
+  const short = formatDate(date, "short");
+  return {
+    dateLong: `${long.day}, ${long.date}`,
+    dateShort: `${short.day}, ${short.date}`,
+  };
 };
 
 // Example usage:
