@@ -27,11 +27,11 @@ const ConfirmTransactionModal = () => {
       ),
   });
 
-  const addTransactionHandler = () => {
-    if (createNewTransaction) {
-      createNewTransaction();
-      router.dismiss();
-    }
+  const addTransactionHandler = async () => {
+    createNewTransaction();
+    /*route. navigate is the best option here (instead of replace/push)- When it navigates back to customer_details, it removes other
+       underlying routes and gives proper way to go back (back button) from transactions screen to customers screen*/
+    router.navigate("/(app)/customer_details");
   };
 
   // Formik for form handling

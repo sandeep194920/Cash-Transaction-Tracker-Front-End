@@ -1,9 +1,10 @@
-import { CustomerT, ItemT, PartialTransactionT } from "@/types";
+import { CustomerT, ItemT, PartialTransactionT, TransactionT } from "@/types";
 import React, {
   createContext,
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
@@ -15,12 +16,14 @@ type CreateContextT = {
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
   currentCustomer: CustomerT | null;
-  setCurrentCustomer: Dispatch<React.SetStateAction<CustomerT | null>>;
+  setCurrentCustomer: Dispatch<SetStateAction<CustomerT | null>>;
   orderedItems: ItemT[];
   addItem: (item: ItemT) => void;
   taxPercentage: number;
   unsettledTransaction: PartialTransactionT;
   updateCurrentTransaction: (values: PartialTransactionT) => void;
+  newlyAddedTransaction: TransactionT | null;
+  setNewlyAddedTransaction: Dispatch<SetStateAction<TransactionT | null>>;
 };
 
 const AppContext = createContext<CreateContextT>({
@@ -35,6 +38,10 @@ const AppContext = createContext<CreateContextT>({
   taxPercentage: 0,
   unsettledTransaction: {},
   updateCurrentTransaction: () => {},
+  newlyAddedTransaction: null,
+  setNewlyAddedTransaction: (() => {}) as Dispatch<
+    SetStateAction<TransactionT | null>
+  >,
 });
 
 const AppProvider = ({ children }: AppProviderT) => {
@@ -50,6 +57,10 @@ const AppProvider = ({ children }: AppProviderT) => {
       transactionDate: new Date(),
       taxPercentage: 13,
     });
+
+  // A newly added transaction - For showing  on UI - animation purpose
+  const [newlyAddedTransaction, setNewlyAddedTransaction] =
+    useState<TransactionT | null>(null);
 
   // TRANSACTION FUNCTIONS
   const addItem = ({ name, price, quantity }: ItemT) => {
@@ -81,6 +92,8 @@ const AppProvider = ({ children }: AppProviderT) => {
     taxPercentage,
     unsettledTransaction,
     updateCurrentTransaction,
+    newlyAddedTransaction,
+    setNewlyAddedTransaction,
   };
 
   return (

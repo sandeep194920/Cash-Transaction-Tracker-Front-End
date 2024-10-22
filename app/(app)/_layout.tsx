@@ -51,6 +51,7 @@ const AppLayout = () => {
           headerStyle: {
             backgroundColor: theme.colors.primary,
           },
+          headerTitle: "Details",
         }}
       />
 

@@ -16,7 +16,6 @@ function useCustomers() {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Customers response", response.data.customers);
     return response.data.customers || [];
   };
 

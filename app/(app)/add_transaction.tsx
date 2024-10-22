@@ -13,7 +13,6 @@ import { router, Stack } from "expo-router";
 import Button from "@/components/Button";
 import { ItemT } from "@/types";
 import { useAppContext } from "@/context/AppContext";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import useTransaction from "@/hooks/useTransaction";
 import DatePicker from "@/components/DateSelection";
 import Toast from "react-native-toast-message";
@@ -74,6 +73,7 @@ const AddTransactionScreen = () => {
       });
       router.push("/(app)/confirm_transaction");
     } catch (error) {
+      console.log("error", error);
       Toast.show({
         type: "error",
         text1: "Something went wrong. Please try again later!",
@@ -94,14 +94,8 @@ const AddTransactionScreen = () => {
             <DatePicker />
           ) : (
             <View style={[styles.dateSection]}>
-              <View />
+              {/* <View /> */}
               <DatePicker />
-              <Icon
-                name="add-circle"
-                onPress={addItemHandler}
-                size={40}
-                color={theme.colors.primary}
-              />
             </View>
           )}
 
@@ -175,17 +169,22 @@ const AddTransactionScreen = () => {
           </View>
         </View>
         {orderedItems?.length ? (
-          <Button
-            title="Save Transaction"
-            fontSize={16}
-            color={theme.colors.primary}
-            textColor={theme.colors.buttonText}
-            // pressHandler={() => {
-            //   router.push("/(app)/confirm_transaction");
-
-            // }}
-            pressHandler={saveTransactionHandler}
-          />
+          <View style={{ gap: 20 }}>
+            <Button
+              title="Add Next Item"
+              fontSize={16}
+              color={theme.colors.primary}
+              textColor={theme.colors.buttonText}
+              pressHandler={addItemHandler}
+            />
+            <Button
+              title="Save Transaction"
+              fontSize={16}
+              color={theme.colors.primary}
+              textColor={theme.colors.buttonText}
+              pressHandler={saveTransactionHandler}
+            />
+          </View>
         ) : null}
       </View>
     </SafeAreaView>
@@ -203,7 +202,8 @@ const styles = StyleSheet.create({
   },
   dateSection: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
   },
