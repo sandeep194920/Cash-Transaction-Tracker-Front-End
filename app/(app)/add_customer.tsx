@@ -1,15 +1,15 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, TextInput } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { authStyles } from "@/components/authentication/authStyles";
-import { Stack, router } from "expo-router";
-import Icon from "react-native-vector-icons/AntDesign";
+import { router } from "expo-router";
 import useCustomers from "@/hooks/useCustomers";
 import { AddCustomerT } from "@/types";
 import Button from "@/components/Button";
 import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
+import Loading from "@/components/Loading";
 
 // Validation schema for adding a customer
 const addCustomerValidationSchema = Yup.object().shape({
@@ -22,7 +22,8 @@ const addCustomerValidationSchema = Yup.object().shape({
 
 const AddCustomerScreen = () => {
   const { theme } = useThemeContext();
-  const { addCustomer } = useCustomers();
+  const { addCustomer, isCustomerAdding, isCustomerAddingNotCompleted } =
+    useCustomers();
 
   const addCustomerHandler = (values: AddCustomerT) => {
     if (!addCustomer) return;
@@ -32,9 +33,26 @@ const AddCustomerScreen = () => {
       phone: values.phone,
       address: values.address,
     });
-
-    router.dismiss();
   };
+
+  useEffect(() => {
+    /*
+  
+    Initally, isCustomerAdding -> false and isCustomerAddingNotCompleted -> true (so !false and !true) will yield false so the router.dismiss will not run.
+
+    When customer is adding, isCustomerAdding -> true, and isCustomerAddingNotCompleted -> false (so !true and !false ) is false, so it will not run.
+
+    When customer is added, isCustomerAdding -> false and isCustomerAddingNotCompleted -> false (so it will give true)
+
+    */
+    if (!isCustomerAdding && !isCustomerAddingNotCompleted) {
+      router.dismiss();
+    }
+  }, [isCustomerAddingNotCompleted, isCustomerAdding]);
+
+  if (isCustomerAdding) {
+    return <Loading />;
+  }
 
   return (
     <>
@@ -155,7 +173,7 @@ const AddCustomerScreen = () => {
               borderColor={theme.colors.primary}
               textColor={theme.colors.buttonText}
               title="Add Customer"
-              pressHandler={() => handleSubmit()}
+              pressHandler={handleSubmit}
             />
           </View>
         )}

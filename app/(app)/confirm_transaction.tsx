@@ -8,12 +8,19 @@ import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
 import useTransaction from "@/hooks/useTransaction";
 import useTransactions from "@/hooks/useTransactions";
 import { router } from "expo-router";
+import { useEffect } from "react";
+import Loading from "@/components/Loading";
+import { commonStyles } from "@/commonStyles";
 
 const ConfirmTransactionModal = () => {
   const { theme } = useThemeContext();
   const { currentCustomer, updateCurrentTransaction } = useAppContext();
   const { transactionTotalAmount, transactionAmountWithTax } = useTransaction();
-  const { createNewTransaction } = useTransactions();
+  const {
+    createNewTransaction,
+    isTransactionAdding,
+    isTransactionAddingNotCompleted,
+  } = useTransactions();
 
   // Form validation schema using Yup
   const validationSchema = yup.object().shape({
@@ -31,7 +38,7 @@ const ConfirmTransactionModal = () => {
     createNewTransaction();
     /*route. navigate is the best option here (instead of replace/push)- When it navigates back to customer_details, it removes other
        underlying routes and gives proper way to go back (back button) from transactions screen to customers screen*/
-    router.navigate("/(app)/customer_details");
+    // router.navigate("/(app)/customer_details");
   };
 
   // Formik for form handling
@@ -50,10 +57,35 @@ const ConfirmTransactionModal = () => {
   if (!currentCustomer) return null;
   const { name, totalBalance: currentBalance } = currentCustomer;
 
+  useEffect(() => {
+    /*
+  
+    Initally, isTransactionAdding -> false and isTransactionAddingNotCompleted -> true (so !false and !true) will yield false so the router.dismiss will not run.
+
+    When customer is adding, isTransactionAdding -> true, and isTransactionAddingNotCompleted -> false (so !true and !false ) is false, so it will not run.
+
+    When customer is added, isTransactionAdding -> false and isTransactionAddingNotCompleted -> false (so it will give true)
+
+    */
+    if (!isTransactionAdding && !isTransactionAddingNotCompleted) {
+      router.navigate("/(app)/customer_details");
+    }
+  }, [isTransactionAdding, isTransactionAddingNotCompleted]);
+
+  if (isTransactionAdding) {
+    return <Loading />;
+  }
+
   return (
     <>
       <HeaderLeftBackArrow />
-      <View style={styles.modalContainer}>
+      <View
+        style={[
+          styles.modalContainer,
+          commonStyles.flex1,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <Text style={[styles.label, { color: theme.colors.text }]}>
           Order Amount:
         </Text>
@@ -77,7 +109,13 @@ const ConfirmTransactionModal = () => {
 
         {/* Input field for amount paid */}
         <TextInput
-          style={[styles.input, { borderColor: theme.colors.text }]}
+          style={[
+            styles.input,
+            {
+              borderColor: theme.colors.secondaryText,
+              color: theme.colors.text,
+            },
+          ]}
           placeholder="Enter Amount Paid Today"
           placeholderTextColor={theme.colors.secondaryText}
           value={formik.values.amountPaid}
@@ -107,6 +145,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     elevation: 5,
+    gap: 10,
   },
   label: {
     fontSize: 16,

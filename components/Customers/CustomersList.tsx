@@ -11,16 +11,13 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import CustomerCard from "./CustomerCard";
 import { router } from "expo-router";
-import Loading from "../Loading";
 import useCustomers from "@/hooks/useCustomers";
 import { CustomerT } from "@/types";
 
 const CustomersList = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const { theme } = useThemeContext();
-  const { customers, isLoadingCustomers } = useCustomers();
-
-  if (isLoadingCustomers) return <Loading />;
+  const { customers } = useCustomers();
 
   const renderItem = ({ ...props }: ListRenderItemInfo<CustomerT>) => {
     const { item: customer } = props;

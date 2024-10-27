@@ -15,6 +15,7 @@ function useTransactions() {
       console.log("No customer ID provided");
       return [];
     }
+    console.log("Fetching all transactions.....");
     const token = await AsyncStorage.getItem("token");
     const response = await axios.get(`${APP_URL}/customer/transactions`, {
       headers: {
@@ -24,6 +25,7 @@ function useTransactions() {
         customerID: currentCustomer._id,
       },
     });
+    console.log("The response.data.transactions", response.data.transactions);
     return response.data.transactions || [];
   };
 
@@ -31,11 +33,11 @@ function useTransactions() {
     isLoading: isLoadingTransactions,
     data: customerTransactions,
     // error: transactionsError,
-  } = useQuery({
-    queryKey: ["customer_transactions", currentCustomer?._id],
-    queryFn: fetchCustomerTransactions,
-    staleTime: 60 * 1000,
-  });
+    refetch: refetchAllTransactions,
+  } = useQuery(
+    ["customer_transactions", currentCustomer?._id],
+    fetchCustomerTransactions
+  );
 
   // Create new transaction
 
@@ -44,11 +46,7 @@ function useTransactions() {
 
   const addNewTransaction = async () => {
     if (!unsettledTransaction || !currentCustomer?._id) {
-      Toast.show({
-        type: "error",
-        text1: "Something went wrong. Please try again later!",
-      });
-      return;
+      return null;
     }
     const token = await AsyncStorage.getItem("token");
     const { transactionDate, taxPercentage, amountPaid, items } =
@@ -71,7 +69,11 @@ function useTransactions() {
     return response.data;
   };
 
-  const { mutate: createNewTransaction, isPending } = useMutation({
+  const {
+    mutate: createNewTransaction,
+    isLoading: isTransactionAdding,
+    isIdle: isTransactionAddingNotCompleted,
+  } = useMutation({
     mutationFn: addNewTransaction,
 
     /* INFO: Approach 1 - once the new transaction is created, I fetch that new transaction and append it
@@ -114,12 +116,18 @@ function useTransactions() {
     /* INFO: Approach 3 - Combination of above 2 approaches */
 
     onSuccess: (result) => {
-      queryClient.invalidateQueries({
-        queryKey: ["customer_transactions", currentCustomer?._id],
-      });
-
       setNewlyAddedTransaction(result["transaction"]);
+      console.log("The new transaction is", result["transaction"]._id);
+      console.log("Refetching transactions");
+      refetchAllTransactions();
+      // queryClient.invalidateQueries([
+      //   "customer_transactions",
+      //   currentCustomer?._id,
+      // ]);
 
+      // console.log("Invalidating transactions");
+      // refetchAllTransactions();
+      // console.log("All transactions are", customerTransactions);
       Toast.show({
         type: "success",
         text1: "Transaction added successfully",
@@ -140,6 +148,8 @@ function useTransactions() {
     isLoadingTransactions,
     customerTransactions,
     createNewTransaction,
+    isTransactionAdding,
+    isTransactionAddingNotCompleted,
   };
 }
 

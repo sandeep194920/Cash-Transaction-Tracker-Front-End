@@ -51,6 +51,7 @@ const AppProvider = ({ children }: AppProviderT) => {
   const [currentCustomer, setCurrentCustomer] = useState<null | CustomerT>(
     null
   );
+  const [test, setTest] = useState(false);
 
   const [unsettledTransaction, setUnsettledTransaction] =
     useState<PartialTransactionT>({

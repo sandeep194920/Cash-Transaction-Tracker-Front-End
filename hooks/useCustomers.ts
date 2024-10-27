@@ -19,25 +19,21 @@ function useCustomers() {
     return response.data.customers || [];
   };
 
-  // Always call hooks first
   const {
     isLoading: isLoadingCustomers,
     data: customers,
     error: customersError,
-  } = useQuery({
-    queryKey: ["customers"],
-    queryFn: fetchCustomers,
-  });
+  } = useQuery(["customers"], fetchCustomers);
 
   // Handle errors after all hooks are called
   if (customersError) {
     Toast.show({
       type: "error",
-      text1: customersError.message || "An error occurred",
+      text1: "An error occurred",
     });
     return {
       success: false,
-      message: customersError.message || "Error occurred",
+      message: "Error occurred",
     };
   }
 
@@ -66,7 +62,11 @@ function useCustomers() {
     return response.data;
   };
 
-  const { mutate: addCustomer, isPending } = useMutation({
+  const {
+    mutate: addCustomer,
+    isLoading: isCustomerAdding,
+    isIdle: isCustomerAddingNotCompleted,
+  } = useMutation({
     mutationFn: addNewCustomer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customers"] });
@@ -88,7 +88,8 @@ function useCustomers() {
     customers,
     isLoadingCustomers,
     addCustomer,
-    isPending, // TODO: This isPending doesn't work for some reason. Do test it.
+    isCustomerAdding,
+    isCustomerAddingNotCompleted,
   };
 }
 

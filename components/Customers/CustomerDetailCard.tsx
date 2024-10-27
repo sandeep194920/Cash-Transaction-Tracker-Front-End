@@ -12,14 +12,14 @@ type CustomerDetailCardT = {
   item: TransactionT;
   expanded: boolean;
   setExpanded: (value: boolean) => void;
-  isNewItem: boolean;
+  isNewlyAddedItem: boolean;
 };
 
 const CustomerDetailCard = ({
   item,
   expanded,
   setExpanded,
-  isNewItem = false,
+  isNewlyAddedItem = false,
 }: CustomerDetailCardT) => {
   const { theme } = useThemeContext();
 
@@ -37,7 +37,8 @@ const CustomerDetailCard = ({
 
   useEffect(() => {
     // Trigger animation on mount or when card becomes visible
-    // if (!isNewItem) return;
+    if (!isNewlyAddedItem) return;
+    console.log("REACHED");
     // triggger animation only for newly added item
     Animated.sequence([
       Animated.timing(scaleAnim, {
@@ -71,7 +72,7 @@ const CustomerDetailCard = ({
       }}
       style={[
         commonStyles.card,
-        { backgroundColor: theme.colors.inputBackground, height: 190 },
+        { backgroundColor: theme.colors.inputBackground },
       ]}
       asChild
       href={{
@@ -85,7 +86,6 @@ const CustomerDetailCard = ({
             {
               transform: [{ scale: scaleAnim }], // Scale animation (native)
               backgroundColor: theme.colors.inputBackground,
-              height: 190,
               borderRadius: 10,
             },
           ]}
