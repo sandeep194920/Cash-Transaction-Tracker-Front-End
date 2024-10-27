@@ -6,7 +6,7 @@ import {
   ListRenderItemInfo,
   TouchableOpacity,
 } from "react-native";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Stack, useLocalSearchParams, router } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useThemeContext } from "@/context/ThemeContext";
@@ -21,33 +21,45 @@ const CustomerDetails = () => {
   const { theme } = useThemeContext();
   const { customerName } = useLocalSearchParams();
 
-  const { currentCustomer, isLoading, newlyAddedTransaction } = useAppContext();
+  const {
+    currentCustomer,
+    isLoading,
+    newlyAddedTransaction,
+    setNewlyAddedTransaction,
+  } = useAppContext();
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const { customerTransactions, isLoadingTransactions } = useTransactions();
 
   // Reference to FlatList
-  const flatListRef = useRef<FlatList>(null);
-  const renderItem = ({ ...props }: ListRenderItemInfo<TransactionT>) => {
-    const { item } = props;
-    // Check if the current item is the newly added transaction
-    const isNewlyAddedItem = newlyAddedTransaction?._id === item._id;
+  const flatListRef = useRef<FlatList<TransactionT>>(null);
 
-    return (
-      <CustomerDetailCard
-        isNewlyAddedItem={isNewlyAddedItem}
-        item={item}
-        expanded={expandedItem === item._id}
-        setExpanded={() =>
-          setExpandedItem(expandedItem === item._id ? null : item._id)
-        }
-      />
-    );
-  };
+  const renderItem = useCallback(
+    ({ ...props }: ListRenderItemInfo<TransactionT>) => {
+      const { item } = props;
+      // Check if the current item is the newly added transaction
+      const isNewlyAddedItem = newlyAddedTransaction?._id === item._id;
+
+      return (
+        <CustomerDetailCard
+          isNewlyAddedItem={isNewlyAddedItem}
+          item={item}
+          expanded={expandedItem === item._id}
+          setExpanded={() =>
+            setExpandedItem(expandedItem === item._id ? null : item._id)
+          }
+        />
+      );
+    },
+    [newlyAddedTransaction, expandedItem]
+  );
 
   useEffect(() => {
     // Scroll to end when a new transaction is added
     if (newlyAddedTransaction?._id) {
-      flatListRef.current?.scrollToEnd({ animated: true });
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+        setNewlyAddedTransaction(null);
+      }, 1000);
     }
   }, [newlyAddedTransaction]);
 
@@ -109,11 +121,11 @@ const CustomerDetails = () => {
             contentContainerStyle={styles.list}
             keyExtractor={(item) => item._id}
             // for scrolling, we need this getItemLayout prop to be present on this Flatlist.
-            getItemLayout={(data, index) => ({
-              length: 100, // Replace with the height of each item
-              offset: 100 * index + 1,
-              index,
-            })}
+            // getItemLayout={(data, index) => ({
+            //   length: 100, // Replace with the height of each item
+            //   offset: 100 * index,
+            //   index,
+            // })}
           />
         ) : null}
       </View>

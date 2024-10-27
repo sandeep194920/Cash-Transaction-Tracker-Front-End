@@ -15,7 +15,6 @@ function useTransactions() {
       console.log("No customer ID provided");
       return [];
     }
-    console.log("Fetching all transactions.....");
     const token = await AsyncStorage.getItem("token");
     const response = await axios.get(`${APP_URL}/customer/transactions`, {
       headers: {
@@ -25,7 +24,6 @@ function useTransactions() {
         customerID: currentCustomer._id,
       },
     });
-    console.log("The response.data.transactions", response.data.transactions);
     return response.data.transactions || [];
   };
 
