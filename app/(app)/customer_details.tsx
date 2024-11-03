@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Stack, useLocalSearchParams, router } from "expo-router";
+import { Stack, router } from "expo-router";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useThemeContext } from "@/context/ThemeContext";
 import CustomerDetailCard from "@/components/Customers/CustomerDetailCard";
@@ -19,7 +19,6 @@ import { useAppContext } from "@/context/AppContext";
 
 const CustomerDetails = () => {
   const { theme } = useThemeContext();
-  const { customerName } = useLocalSearchParams();
 
   const {
     currentCustomer,
@@ -30,7 +29,6 @@ const CustomerDetails = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const { customerTransactions, isLoadingTransactions } = useTransactions();
 
-  // Reference to FlatList
   const flatListRef = useRef<FlatList<TransactionT>>(null);
 
   const renderItem = useCallback(
@@ -71,7 +69,7 @@ const CustomerDetails = () => {
     <>
       <Stack.Screen
         options={{
-          headerTitle: customerName ? (customerName as string) : "Details",
+          headerTitle: currentCustomer.name ? currentCustomer.name : "Details",
         }}
       />
 

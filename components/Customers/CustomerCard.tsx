@@ -1,21 +1,29 @@
 import { useThemeContext } from "@/context/ThemeContext";
 import { Link } from "expo-router";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Animated } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import MenuOptionsOnCard from "../Menu";
 import { commonStyles } from "@/commonStyles";
 import { CustomerT } from "@/types";
 import { useAppContext } from "@/context/AppContext";
+import useCardAnimation from "@/hooks/useCardAnimation";
 
 type CustomerCardT = {
   customer: CustomerT;
   expanded: boolean;
   setExpanded: (value: boolean) => void;
+  isNewlyAddedItem: boolean;
 };
 
-const CustomerCard = ({ customer, expanded, setExpanded }: CustomerCardT) => {
+const CustomerCard = ({
+  customer,
+  expanded,
+  setExpanded,
+  isNewlyAddedItem = false,
+}: CustomerCardT) => {
   const { name, totalBalance, phone, address, email } = customer;
   const { theme } = useThemeContext();
+  const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
   const { setCurrentCustomer } = useAppContext();
 
   return (
@@ -34,85 +42,127 @@ const CustomerCard = ({ customer, expanded, setExpanded }: CustomerCardT) => {
       }}
     >
       <Pressable>
-        {/* Row with Name, Icon, Amount Paid */}
-        <View style={commonStyles.cardRow}>
-          <View style={styles.nameSection}>
-            <Icon name="person" size={24} color={theme.colors.primary} />
-            <Text style={[styles.name, { color: theme.colors.text }]}>
-              {name}
-            </Text>
-          </View>
-          <MenuOptionsOnCard />
-        </View>
-
-        <View style={commonStyles.cardRow}>
-          <View style={styles.nameSection}>
-            <Icon
-              name="account-balance-wallet"
-              size={24}
-              color={theme.colors.primary}
-            />
-
-            <Text
-              style={[styles.amountDescription, { color: theme.colors.text }]}
-            >
-              Balance
-            </Text>
-          </View>
-          <View style={styles.amountSection}>
-            <Icon name="attach-money" size={18} color={theme.colors.primary} />
-            <Text style={[styles.amount, { color: theme.colors.text }]}>
-              {totalBalance}
-            </Text>
-          </View>
-        </View>
-
-        {/* Expandable Section with Phone, Edit/Delete buttons */}
-        {expanded && (
-          <View style={[styles.expandedContent]}>
-            <View style={[styles.expandedRow]}>
-              <Icon name="phone" size={18} color={theme.colors.primaryLight} />
-              <Text
-                style={[styles.phone, { color: theme.colors.secondaryText }]}
-              >
-                {phone}
-              </Text>
-            </View>
-
-            <View style={[styles.expandedRow]}>
-              <Icon name="email" size={18} color={theme.colors.primaryLight} />
-              <Text
-                style={[styles.phone, { color: theme.colors.secondaryText }]}
-              >
-                {email}
-              </Text>
-            </View>
-
-            {address && (
-              <View style={[styles.expandedRow]}>
-                <Icon
-                  name="house"
-                  size={18}
-                  color={theme.colors.primaryLight}
-                />
-                <Text
-                  style={[styles.phone, { color: theme.colors.secondaryText }]}
-                >
-                  {address}
+        <Animated.View
+          style={[
+            {
+              transform: [{ scale: scaleAnim }], // Scale animation (native)
+              backgroundColor: theme.colors.inputBackground,
+              borderRadius: 10,
+            },
+          ]}
+        >
+          <Animated.View
+            style={{
+              borderColor: borderColor, // Border color animation (JS-driven)
+              borderWidth: 2,
+              borderRadius: 10,
+            }}
+          >
+            {/* Row with Name, Icon, Amount Paid */}
+            <View style={commonStyles.cardRow}>
+              <View style={styles.nameSection}>
+                <Icon name="person" size={24} color={theme.colors.primary} />
+                <Text style={[styles.name, { color: theme.colors.text }]}>
+                  {name}
                 </Text>
               </View>
-            )}
-          </View>
-        )}
+              <MenuOptionsOnCard />
+            </View>
 
-        {/* Toggle Expand Icon */}
-        <Icon
-          onPress={() => setExpanded(!expanded)}
-          name={expanded ? "expand-less" : "expand-more"}
-          size={24}
-          color={theme.colors.primary}
-          style={styles.expandIcon}
-        />
+            <View style={commonStyles.cardRow}>
+              <View style={styles.nameSection}>
+                <Icon
+                  name="account-balance-wallet"
+                  size={24}
+                  color={theme.colors.primary}
+                />
+
+                <Text
+                  style={[
+                    styles.amountDescription,
+                    { color: theme.colors.text },
+                  ]}
+                >
+                  Balance
+                </Text>
+              </View>
+              <View style={styles.amountSection}>
+                <Icon
+                  name="attach-money"
+                  size={18}
+                  color={theme.colors.primary}
+                />
+                <Text style={[styles.amount, { color: theme.colors.text }]}>
+                  {totalBalance}
+                </Text>
+              </View>
+            </View>
+
+            {/* Expandable Section with Phone, Edit/Delete buttons */}
+            {expanded && (
+              <View style={[styles.expandedContent]}>
+                <View style={[styles.expandedRow]}>
+                  <Icon
+                    name="phone"
+                    size={18}
+                    color={theme.colors.primaryLight}
+                  />
+                  <Text
+                    style={[
+                      styles.phone,
+                      { color: theme.colors.secondaryText },
+                    ]}
+                  >
+                    {phone}
+                  </Text>
+                </View>
+
+                <View style={[styles.expandedRow]}>
+                  <Icon
+                    name="email"
+                    size={18}
+                    color={theme.colors.primaryLight}
+                  />
+                  <Text
+                    style={[
+                      styles.phone,
+                      { color: theme.colors.secondaryText },
+                    ]}
+                  >
+                    {email}
+                  </Text>
+                </View>
+
+                {address && (
+                  <View style={[styles.expandedRow]}>
+                    <Icon
+                      name="house"
+                      size={18}
+                      color={theme.colors.primaryLight}
+                    />
+                    <Text
+                      style={[
+                        styles.phone,
+                        { color: theme.colors.secondaryText },
+                      ]}
+                    >
+                      {address}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+
+            {/* Toggle Expand Icon */}
+            <Icon
+              onPress={() => setExpanded(!expanded)}
+              name={expanded ? "expand-less" : "expand-more"}
+              size={24}
+              color={theme.colors.primary}
+              style={styles.expandIcon}
+            />
+          </Animated.View>
+        </Animated.View>
       </Pressable>
     </Link>
   );

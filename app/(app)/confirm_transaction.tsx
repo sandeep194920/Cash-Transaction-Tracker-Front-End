@@ -97,7 +97,7 @@ const ConfirmTransactionModal = () => {
           {name}'s Current Balance:
         </Text>
         <Text style={[styles.value, { color: theme.colors.text }]}>
-          ${currentBalance.toFixed(2)}
+          ${currentBalance?.toFixed(2)}
         </Text>
 
         <Text style={[styles.label, { color: theme.colors.text }]}>

@@ -4,7 +4,6 @@ import React, {
   Dispatch,
   SetStateAction,
   useContext,
-  useEffect,
   useState,
 } from "react";
 
@@ -24,6 +23,8 @@ type CreateContextT = {
   updateCurrentTransaction: (values: PartialTransactionT) => void;
   newlyAddedTransaction: TransactionT | null;
   setNewlyAddedTransaction: Dispatch<SetStateAction<TransactionT | null>>;
+  newlyAddedCustomer: CustomerT | null;
+  setNewlyAddedCustomer: Dispatch<SetStateAction<CustomerT | null>>;
 };
 
 const AppContext = createContext<CreateContextT>({
@@ -42,6 +43,10 @@ const AppContext = createContext<CreateContextT>({
   setNewlyAddedTransaction: (() => {}) as Dispatch<
     SetStateAction<TransactionT | null>
   >,
+  newlyAddedCustomer: null,
+  setNewlyAddedCustomer: (() => {}) as Dispatch<
+    SetStateAction<CustomerT | null>
+  >,
 });
 
 const AppProvider = ({ children }: AppProviderT) => {
@@ -51,13 +56,16 @@ const AppProvider = ({ children }: AppProviderT) => {
   const [currentCustomer, setCurrentCustomer] = useState<null | CustomerT>(
     null
   );
-  const [test, setTest] = useState(false);
 
   const [unsettledTransaction, setUnsettledTransaction] =
     useState<PartialTransactionT>({
       transactionDate: new Date(),
       taxPercentage: 13,
     });
+
+  // A newly added customer - For showing  on UI - animation purpose
+  const [newlyAddedCustomer, setNewlyAddedCustomer] =
+    useState<CustomerT | null>(null);
 
   // A newly added transaction - For showing  on UI - animation purpose
   const [newlyAddedTransaction, setNewlyAddedTransaction] =
@@ -95,6 +103,8 @@ const AppProvider = ({ children }: AppProviderT) => {
     updateCurrentTransaction,
     newlyAddedTransaction,
     setNewlyAddedTransaction,
+    newlyAddedCustomer,
+    setNewlyAddedCustomer,
   };
 
   return (

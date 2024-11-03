@@ -167,7 +167,7 @@ const TransactionDetail = () => {
             Balance (after this order)
           </Text>
           <Text style={[styles.smallValue, { color: theme.colors.text }]}>
-            ${balance.toFixed(2)}
+            ${balance?.toFixed(2)}
           </Text>
         </View>
       </View>

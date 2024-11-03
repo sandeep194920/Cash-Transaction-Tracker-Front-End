@@ -1,5 +1,5 @@
 import { useThemeContext } from "@/context/ThemeContext";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   FlatList,
@@ -13,24 +13,42 @@ import CustomerCard from "./CustomerCard";
 import { router } from "expo-router";
 import useCustomers from "@/hooks/useCustomers";
 import { CustomerT } from "@/types";
+import { useAppContext } from "@/context/AppContext";
 
 const CustomersList = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const { theme } = useThemeContext();
   const { customers } = useCustomers();
+  const { newlyAddedCustomer, setNewlyAddedCustomer } = useAppContext();
+  const flatListRef = useRef<FlatList<CustomerT>>(null);
 
-  const renderItem = ({ ...props }: ListRenderItemInfo<CustomerT>) => {
-    const { item: customer } = props;
-    return (
-      <CustomerCard
-        customer={customer}
-        expanded={expandedItem === customer._id}
-        setExpanded={() =>
-          setExpandedItem(expandedItem === customer._id ? null : customer._id)
-        }
-      />
-    );
-  };
+  const renderItem = useCallback(
+    ({ ...props }: ListRenderItemInfo<CustomerT>) => {
+      const { item: customer } = props;
+      const isNewlyAddedItem = newlyAddedCustomer?._id === customer._id;
+
+      return (
+        <CustomerCard
+          customer={customer}
+          expanded={expandedItem === customer._id}
+          setExpanded={() =>
+            setExpandedItem(expandedItem === customer._id ? null : customer._id)
+          }
+          isNewlyAddedItem={isNewlyAddedItem}
+        />
+      );
+    },
+    [newlyAddedCustomer, expandedItem]
+  );
+  useEffect(() => {
+    // Scroll to end when a new transaction is added
+    if (newlyAddedCustomer?._id) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+        setNewlyAddedCustomer(null);
+      }, 1000);
+    }
+  }, [newlyAddedCustomer]);
 
   return (
     <>
@@ -43,6 +61,7 @@ const CustomersList = () => {
           </Text>
         ) : (
           <FlatList
+            ref={flatListRef}
             data={customers}
             renderItem={renderItem}
             keyExtractor={(customer) => customer._id}
