@@ -8,12 +8,12 @@ import {
   Text,
   ListRenderItemInfo,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import CustomerCard from "./CustomerCard";
 import { router } from "expo-router";
 import useCustomers from "@/hooks/useCustomers";
 import { CustomerT } from "@/types";
 import { useAppContext } from "@/context/AppContext";
+import CustomIcon from "../CustomIcon";
 
 const CustomersList = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
@@ -76,7 +76,11 @@ const CustomersList = () => {
           onPress={() => router.push("/(app)/add_customer")}
           style={{ alignSelf: "center" }}
         >
-          <Icon name="add-circle" size={50} color={theme.colors.primary} />
+          <CustomIcon
+            iconName="add-circle"
+            size={50}
+            color={theme.colors.primary}
+          />
         </TouchableOpacity>
       </View>
     </>

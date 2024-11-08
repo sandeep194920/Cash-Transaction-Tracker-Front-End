@@ -45,13 +45,13 @@ const AppLayout = () => {
       />
 
       <Stack.Screen
-        name="customer_details"
+        name="customer_transactions_list"
         options={{
           headerTintColor: theme.colors.buttonText,
           headerStyle: {
             backgroundColor: theme.colors.primary,
           },
-          headerTitle: "Details",
+          headerTitle: "Transactions",
         }}
       />
 

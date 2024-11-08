@@ -10,7 +10,7 @@ function useCustomers() {
   const queryClient = useQueryClient();
   const { currentCustomer, setNewlyAddedCustomer } = useAppContext();
 
-  // Fetch customers
+  // Fetch all customers
   const fetchCustomers = async (): Promise<CustomerT[]> => {
     const token = await AsyncStorage.getItem("token");
     const response = await axios.get(`${APP_URL}/customers`, {
@@ -103,6 +103,7 @@ function useCustomers() {
     },
   });
 
+  // Get single customer query
   const {
     isLoading: isLoadingCustomer,
     data: customer,

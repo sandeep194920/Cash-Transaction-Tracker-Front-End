@@ -35,10 +35,12 @@ const ConfirmTransactionModal = () => {
   });
 
   const addTransactionHandler = async () => {
-    createNewTransaction();
-    /*route. navigate is the best option here (instead of replace/push)- When it navigates back to customer_details, it removes other
+    if (createNewTransaction) {
+      createNewTransaction();
+    }
+    /*route. navigate is the best option here (instead of replace/push)- When it navigates back to customer_transactions_list, it removes other
        underlying routes and gives proper way to go back (back button) from transactions screen to customers screen*/
-    // router.navigate("/(app)/customer_details");
+    // router.navigate("/(app)/customer_transactions_list");
   };
 
   // Formik for form handling
@@ -68,7 +70,7 @@ const ConfirmTransactionModal = () => {
 
     */
     if (!isTransactionAdding && !isTransactionAddingNotCompleted) {
-      router.navigate("/(app)/customer_details");
+      router.navigate("/(app)/customer_transactions_list");
     }
   }, [isTransactionAdding, isTransactionAddingNotCompleted]);
 

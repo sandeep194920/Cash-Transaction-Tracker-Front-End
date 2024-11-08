@@ -33,3 +33,19 @@ export type ItemT = {
   price: number;
   quantity: number;
 };
+
+export type IconNameT =
+  | "dollar"
+  | "attach-money"
+  | "percent"
+  | "more-vert"
+  | "person"
+  | "add-circle"
+  | "home"
+  | "logout"
+  | "settings"
+  | "account-balance-wallet"
+  | "phone"
+  | "email"
+  | "expand-less"
+  | "expand-more";

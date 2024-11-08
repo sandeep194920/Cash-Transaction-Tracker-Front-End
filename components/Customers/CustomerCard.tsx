@@ -7,6 +7,8 @@ import { commonStyles } from "@/commonStyles";
 import { CustomerT } from "@/types";
 import { useAppContext } from "@/context/AppContext";
 import useCardAnimation from "@/hooks/useCardAnimation";
+import CustomIcon from "../CustomIcon";
+import { currency } from "@/constants/Generic";
 
 type CustomerCardT = {
   customer: CustomerT;
@@ -37,8 +39,7 @@ const CustomerCard = ({
         setCurrentCustomer(customer);
       }}
       href={{
-        pathname: "/(app)/customer_details",
-        params: { customerName: name.split(" ")[0] },
+        pathname: "/(app)/customer_transactions_list",
       }}
     >
       <Pressable>
@@ -61,7 +62,11 @@ const CustomerCard = ({
             {/* Row with Name, Icon, Amount Paid */}
             <View style={commonStyles.cardRow}>
               <View style={styles.nameSection}>
-                <Icon name="person" size={24} color={theme.colors.primary} />
+                <CustomIcon
+                  iconName="person"
+                  size={24}
+                  color={theme.colors.primary}
+                />
                 <Text style={[styles.name, { color: theme.colors.text }]}>
                   {name}
                 </Text>
@@ -71,8 +76,8 @@ const CustomerCard = ({
 
             <View style={commonStyles.cardRow}>
               <View style={styles.nameSection}>
-                <Icon
-                  name="account-balance-wallet"
+                <CustomIcon
+                  iconName="account-balance-wallet"
                   size={24}
                   color={theme.colors.primary}
                 />
@@ -86,11 +91,11 @@ const CustomerCard = ({
                   Balance
                 </Text>
               </View>
-              <View style={styles.amountSection}>
-                <Icon
-                  name="attach-money"
-                  size={18}
+              <View style={commonStyles.rowSection}>
+                <CustomIcon
+                  iconName={currency}
                   color={theme.colors.primary}
+                  size={16}
                 />
                 <Text style={[styles.amount, { color: theme.colors.text }]}>
                   {totalBalance}
@@ -102,8 +107,8 @@ const CustomerCard = ({
             {expanded && (
               <View style={[styles.expandedContent]}>
                 <View style={[styles.expandedRow]}>
-                  <Icon
-                    name="phone"
+                  <CustomIcon
+                    iconName="phone"
                     size={18}
                     color={theme.colors.primaryLight}
                   />
@@ -118,8 +123,8 @@ const CustomerCard = ({
                 </View>
 
                 <View style={[styles.expandedRow]}>
-                  <Icon
-                    name="email"
+                  <CustomIcon
+                    iconName="email"
                     size={18}
                     color={theme.colors.primaryLight}
                   />
@@ -154,12 +159,12 @@ const CustomerCard = ({
             )}
 
             {/* Toggle Expand Icon */}
-            <Icon
+            <CustomIcon
               onPress={() => setExpanded(!expanded)}
-              name={expanded ? "expand-less" : "expand-more"}
+              iconName={expanded ? "expand-less" : "expand-more"}
               size={24}
               color={theme.colors.primary}
-              style={styles.expandIcon}
+              additionalStyles={styles.expandIcon}
             />
           </Animated.View>
         </Animated.View>
@@ -199,6 +204,7 @@ const styles = StyleSheet.create({
   amountSection: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 2,
   },
   amountDescription: {
     marginLeft: 8,

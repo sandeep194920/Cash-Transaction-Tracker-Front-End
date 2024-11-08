@@ -18,7 +18,6 @@ type EventT = {
 };
 
 const DatePicker = () => {
-  //   const [date, setDate] = useState(new Date());
   const { unsettledTransaction, updateCurrentTransaction } = useAppContext();
   const currentDate = unsettledTransaction?.transactionDate || new Date();
   const [show, setShow] = useState(false);

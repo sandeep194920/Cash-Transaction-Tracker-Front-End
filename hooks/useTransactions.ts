@@ -8,12 +8,19 @@ import Toast from "react-native-toast-message";
 import useCustomers from "./useCustomers";
 
 function useTransactions() {
-  const { currentCustomer, setCurrentCustomer } = useAppContext();
-  const { unsettledTransaction, setNewlyAddedTransaction } = useAppContext();
+  const { currentCustomer, setCurrentCustomer, currentTransaction } =
+    useAppContext();
+  const {
+    unsettledTransaction,
+    setNewlyAddedTransaction,
+    setCurrentTransaction,
+    // resetCurrentTransaction,
+  } = useAppContext();
   const { refetchCustomer } = useCustomers();
+
+  // Fetch all transactions
   const fetchCustomerTransactions = async (): Promise<TransactionT[]> => {
     if (!currentCustomer?._id) {
-      console.log("No customer ID provided");
       return [];
     }
     const token = await AsyncStorage.getItem("token");
@@ -26,6 +33,23 @@ function useTransactions() {
       },
     });
     return response.data.transactions || [];
+  };
+
+  // Fetch single transaction
+  const fetchTransaction = async (): Promise<TransactionT | null> => {
+    if (!currentTransaction) {
+      return null;
+    }
+    const token = await AsyncStorage.getItem("token");
+    const response = await axios.get(`${APP_URL}/transaction`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        transactionID: currentTransaction._id,
+      },
+    });
+    return response.data.transaction;
   };
 
   const {
@@ -95,8 +119,30 @@ function useTransactions() {
     },
   });
 
+  // Get single transaction query
+  const {
+    isLoading: isLoadingTransaction,
+    data: transaction,
+    error: transactionError,
+    refetch: refetchTransaction,
+  } = useQuery(["transaction"], fetchTransaction);
+
+  if (transactionError) {
+    Toast.show({
+      type: "error",
+      text1: "An error occurred",
+    });
+    return {
+      success: false,
+      message: "Error occurred",
+    };
+  }
+
   return {
     isLoadingTransactions,
+    isLoadingTransaction,
+    transaction,
+    refetchTransaction,
     customerTransactions,
     createNewTransaction,
     isTransactionAdding,

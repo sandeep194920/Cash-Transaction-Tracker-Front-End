@@ -8,16 +8,18 @@ import {
 } from "react-native";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Stack, router } from "expo-router";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import Icon from "react-native-vector-icons/Fontisto";
 import { useThemeContext } from "@/context/ThemeContext";
-import CustomerDetailCard from "@/components/Customers/CustomerDetailCard";
+import TransactionDetailCard from "@/components/Customers/TransactionDetailCard";
 import { TransactionT } from "@/types";
 import useTransactions from "@/hooks/useTransactions";
 import Loading from "@/components/Loading";
 import { commonStyles } from "@/commonStyles";
 import { useAppContext } from "@/context/AppContext";
+import CustomIcon from "@/components/CustomIcon";
+import { currency } from "@/constants/Generic";
 
-const CustomerDetails = () => {
+const CustomerTransactionsList = () => {
   const { theme } = useThemeContext();
 
   const {
@@ -33,17 +35,18 @@ const CustomerDetails = () => {
 
   const renderItem = useCallback(
     ({ ...props }: ListRenderItemInfo<TransactionT>) => {
-      const { item } = props;
-      // Check if the current item is the newly added transaction
-      const isNewlyAddedItem = newlyAddedTransaction?._id === item._id;
+      const { item: transaction } = props;
+      const isNewlyAddedItem = newlyAddedTransaction?._id === transaction._id;
 
       return (
-        <CustomerDetailCard
+        <TransactionDetailCard
           isNewlyAddedItem={isNewlyAddedItem}
-          item={item}
-          expanded={expandedItem === item._id}
+          transaction={transaction}
+          expanded={expandedItem === transaction._id}
           setExpanded={() =>
-            setExpandedItem(expandedItem === item._id ? null : item._id)
+            setExpandedItem(
+              expandedItem === transaction._id ? null : transaction._id
+            )
           }
         />
       );
@@ -97,13 +100,14 @@ const CustomerDetails = () => {
         ) : (
           <View style={[commonStyles.rowSection, { marginVertical: 16 }]}>
             <Text style={[styles.balanceText, { color: theme.colors.error }]}>
-              Balance Amount -
+              Balance Amount {` - `}
             </Text>
-            <Icon
-              style={{ fontWeight: "bold" }}
-              name="attach-money"
-              size={20}
+            <CustomIcon
+              iconName="dollar"
+              size={18}
               color={theme.colors.primary}
+              marginRight={2}
+              marginLeft={2}
             />
             <Text style={[styles.balanceText, { color: theme.colors.error }]}>
               {currentCustomer.totalBalance}
@@ -134,14 +138,18 @@ const CustomerDetails = () => {
           onPress={() => router.push("/(app)/add_transaction")}
           style={{ alignSelf: "center" }}
         >
-          <Icon name="add-circle" size={50} color={theme.colors.primary} />
+          <CustomIcon
+            iconName="add-circle"
+            size={50}
+            color={theme.colors.primary}
+          />
         </TouchableOpacity>
       </View>
     </>
   );
 };
 
-export default CustomerDetails;
+export default CustomerTransactionsList;
 
 const styles = StyleSheet.create({
   container: {

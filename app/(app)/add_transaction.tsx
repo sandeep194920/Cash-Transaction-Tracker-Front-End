@@ -37,11 +37,6 @@ const AddTransactionScreen = () => {
           { backgroundColor: theme.colors.inputBackground },
         ]}
       >
-        <Stack.Screen
-          options={{
-            headerTitle: "New Transaction",
-          }}
-        />
         {/* Row with Name, Icon, Amount Paid */}
         <View style={[commonStyles.cardRow]}>
           <View style={commonStyles.rowSection}>

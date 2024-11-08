@@ -1,44 +1,47 @@
 import { commonStyles } from "@/commonStyles";
 import { Link } from "expo-router";
 import { Animated, View, Text, StyleSheet, Pressable } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import MenuOptionsOnCard from "../Menu";
 import { useThemeContext } from "@/context/ThemeContext";
 import { TransactionT } from "@/types";
 import { formattedDateStr } from "@/utils/dateTime";
-import { useEffect, useRef } from "react";
 import useCardAnimation from "@/hooks/useCardAnimation";
+import { useAppContext } from "@/context/AppContext";
+import { currency } from "@/constants/Generic";
+import CustomIcon from "../CustomIcon";
 
-type CustomerDetailCardT = {
-  item: TransactionT;
+type TransactionDetailCardT = {
+  transaction: TransactionT;
   expanded: boolean;
   setExpanded: (value: boolean) => void;
   isNewlyAddedItem: boolean;
 };
 
-const CustomerDetailCard = ({
-  item,
+const TransactionDetailCard = ({
+  transaction,
   expanded,
   setExpanded,
   isNewlyAddedItem = false,
-}: CustomerDetailCardT) => {
+}: TransactionDetailCardT) => {
+  const { grossPrice, amountPaid, balanceAmount, transactionDate, items } =
+    transaction;
   const { theme } = useThemeContext();
   const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
-  const { dateLong, dateShort } = formattedDateStr(item.transactionDate);
+  const { dateLong } = formattedDateStr(transactionDate);
+  const { setCurrentTransaction } = useAppContext();
 
   return (
     <Link
-      onPress={() => {
-        console.log("Clicked on customer of id", item._id);
-      }}
       style={[
         commonStyles.card,
         { backgroundColor: theme.colors.inputBackground },
       ]}
       asChild
+      onPress={() => {
+        setCurrentTransaction(transaction);
+      }}
       href={{
         pathname: "/(app)/transaction_detail",
-        params: { transactionDate: dateShort },
       }}
     >
       <Pressable>
@@ -53,12 +56,11 @@ const CustomerDetailCard = ({
         >
           <Animated.View
             style={{
-              borderColor: borderColor, // Border color animation (JS-driven)
+              borderColor: borderColor,
               borderWidth: 2,
               borderRadius: 10,
             }}
           >
-            {/* Row with Name, Icon, Amount Paid */}
             <View style={[commonStyles.cardRow, { marginBottom: 10 }]}>
               <View style={commonStyles.rowSection}>
                 <Text style={[styles.header, { color: theme.colors.text }]}>
@@ -80,13 +82,13 @@ const CustomerDetailCard = ({
                 </Text>
               </View>
               <View style={commonStyles.rowSection}>
-                <Icon
-                  name="attach-money"
-                  size={18}
-                  color={theme.colors.error}
+                <CustomIcon
+                  iconName={currency}
+                  color={theme.colors.primary}
+                  size={16}
                 />
                 <Text style={[styles.amount, { color: theme.colors.text }]}>
-                  {item.grossPrice}
+                  {grossPrice}
                 </Text>
               </View>
             </View>
@@ -103,13 +105,13 @@ const CustomerDetailCard = ({
                 </Text>
               </View>
               <View style={commonStyles.rowSection}>
-                <Icon
-                  name="attach-money"
-                  size={18}
-                  color={theme.colors.error}
+                <CustomIcon
+                  iconName={currency}
+                  color={theme.colors.primary}
+                  size={16}
                 />
                 <Text style={[styles.amount, { color: theme.colors.text }]}>
-                  {item.amountPaid}
+                  {amountPaid}
                 </Text>
               </View>
             </View>
@@ -126,13 +128,13 @@ const CustomerDetailCard = ({
                 </Text>
               </View>
               <View style={commonStyles.rowSection}>
-                <Icon
-                  name="attach-money"
-                  size={18}
-                  color={theme.colors.error}
+                <CustomIcon
+                  iconName={currency}
+                  color={theme.colors.primary}
+                  size={16}
                 />
                 <Text style={[styles.amount, { color: theme.colors.text }]}>
-                  {item.balanceAmount}
+                  {balanceAmount}
                 </Text>
               </View>
             </View>
@@ -152,19 +154,19 @@ const CustomerDetailCard = ({
                 </View>
                 <View style={commonStyles.rowSection}>
                   <Text style={[styles.amount, { color: theme.colors.text }]}>
-                    2
+                    {items.length}
                   </Text>
                 </View>
               </View>
             )}
 
             {/* Toggle Expand Icon */}
-            <Icon
+            <CustomIcon
               onPress={() => setExpanded(!expanded)}
-              name={expanded ? "expand-less" : "expand-more"}
+              iconName={expanded ? "expand-less" : "expand-more"}
               size={24}
               color={theme.colors.primary}
-              style={styles.expandIcon}
+              additionalStyles={styles.expandIcon}
             />
           </Animated.View>
         </Animated.View>
@@ -205,4 +207,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomerDetailCard;
+export default TransactionDetailCard;

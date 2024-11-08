@@ -25,6 +25,8 @@ type CreateContextT = {
   setNewlyAddedTransaction: Dispatch<SetStateAction<TransactionT | null>>;
   newlyAddedCustomer: CustomerT | null;
   setNewlyAddedCustomer: Dispatch<SetStateAction<CustomerT | null>>;
+  currentTransaction: TransactionT | null;
+  setCurrentTransaction: Dispatch<SetStateAction<TransactionT | null>>;
 };
 
 const AppContext = createContext<CreateContextT>({
@@ -47,15 +49,21 @@ const AppContext = createContext<CreateContextT>({
   setNewlyAddedCustomer: (() => {}) as Dispatch<
     SetStateAction<CustomerT | null>
   >,
+  currentTransaction: null,
+  setCurrentTransaction: (() => {}) as Dispatch<
+    SetStateAction<TransactionT | null>
+  >,
 });
 
 const AppProvider = ({ children }: AppProviderT) => {
   const [isLoading, setIsLoading] = useState(false);
   const [orderedItems, setOrderedItems] = useState<ItemT[]>([]);
   const [taxPercentage, setTaxPercentage] = useState(13);
-  const [currentCustomer, setCurrentCustomer] = useState<null | CustomerT>(
+  const [currentCustomer, setCurrentCustomer] = useState<CustomerT | null>(
     null
   );
+  const [currentTransaction, setCurrentTransaction] =
+    useState<TransactionT | null>(null);
 
   const [unsettledTransaction, setUnsettledTransaction] =
     useState<PartialTransactionT>({
@@ -105,6 +113,8 @@ const AppProvider = ({ children }: AppProviderT) => {
     setNewlyAddedTransaction,
     newlyAddedCustomer,
     setNewlyAddedCustomer,
+    currentTransaction,
+    setCurrentTransaction,
   };
 
   return (

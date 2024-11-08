@@ -11,7 +11,7 @@ import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useThemeContext } from "@/context/ThemeContext"; // Make sure you have this context
 import { authStyles } from "./authStyles";
-import { VERIFY_EMAIL_TIMER } from "@/constants/Timers";
+import { VERIFY_EMAIL_TIMER } from "@/constants/Generic";
 import { formatTime } from "@/utils/dateTime";
 import { useAuthContext } from "@/context/AuthContext";
 import { APP_URL } from "@/constants/URLs";

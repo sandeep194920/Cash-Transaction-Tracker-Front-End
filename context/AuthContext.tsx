@@ -60,7 +60,6 @@ const AuthProvider = ({ children }: AuthProviderT) => {
       });
       setUserData(response.data as UserDataT); // Set user data
     } catch (error) {
-      console.log("Failed to fetch user data", error);
       Toast.show({
         type: "error",
         text1: "Sorry, something went wrong. Please try again later",

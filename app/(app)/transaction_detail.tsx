@@ -8,26 +8,12 @@ import {
 import { useThemeContext } from "@/context/ThemeContext";
 import MenuOptionsOnCard from "@/components/Menu";
 import { commonStyles } from "@/commonStyles";
-import { Stack, useLocalSearchParams } from "expo-router";
-
-const transaction = {
-  date: "Wed, 24th Sep",
-  items: [
-    { name: "Roti", quantity: 20, price: 200 },
-    { name: "Curry", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-    { name: "Idli", quantity: 20, price: 200 },
-  ],
-};
+import { Stack } from "expo-router";
+import { useAppContext } from "@/context/AppContext";
+import { formattedDateStr } from "@/utils/dateTime";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import CustomIcon from "@/components/CustomIcon";
+import { currency } from "@/constants/Generic";
 
 type ItemT = {
   name: string;
@@ -35,18 +21,27 @@ type ItemT = {
   quantity: number;
 };
 
-const gross = 100;
-const tax = gross * 0.015; // Assuming 1.5% tax
-const total = gross + tax;
-const amountPaid = 110;
-const balance = amountPaid - total;
-
 const TransactionDetail = () => {
   const { theme } = useThemeContext();
-  const { transactionDate } = useLocalSearchParams();
+
+  const { currentTransaction } = useAppContext();
   const gross = 100;
   const tax = gross * 0.015; // Assuming 1.5% tax
   const total = gross + tax;
+
+  if (!currentTransaction) return null;
+
+  const {
+    transactionDate,
+    amountPaid,
+    balanceAmount,
+    taxPercentage,
+    grossPrice,
+    totalPrice,
+    items,
+  } = currentTransaction;
+
+  const { dateShort } = formattedDateStr(transactionDate);
 
   const renderItem = ({ ...props }: ListRenderItemInfo<ItemT>) => {
     const {
@@ -63,7 +58,7 @@ const TransactionDetail = () => {
       >
         <Stack.Screen
           options={{
-            headerTitle: transactionDate as string,
+            headerTitle: dateShort,
           }}
         />
         {/* Row with Name, Icon, Amount Paid */}
@@ -76,11 +71,17 @@ const TransactionDetail = () => {
             </Text>
           </View>
           <View style={commonStyles.rowSection}>
+            <CustomIcon
+              iconName={currency}
+              color={theme.colors.primary}
+              size={16}
+            />
             <Text style={[{ color: theme.colors.text }]}>
-              ${price}
+              {price}
               {"   "}
             </Text>
-            <MenuOptionsOnCard />
+            {/* Enable MenuOptions card in v2 so user can edit/delete the items */}
+            {/* <MenuOptionsOnCard /> */}
           </View>
         </View>
       </View>
@@ -92,23 +93,14 @@ const TransactionDetail = () => {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={[commonStyles.flex1]}>
-        {/* Centered Transaction Date */}
-        {/* <View style={styles.dateSection}>
-          <Text style={[styles.date, { color: theme.colors.text }]}>
-            {transaction.date}
-          </Text>
-        </View> */}
-
-        {/* List of items using FlatList */}
         <FlatList
-          data={transaction.items}
+          data={items}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           //   contentContainerStyle={styles.listContainer}
         />
       </View>
 
-      {/* Gross, Tax, and Total section at the bottom */}
       <View
         style={[
           commonStyles.card,
@@ -123,9 +115,16 @@ const TransactionDetail = () => {
           >
             Gross
           </Text>
-          <Text style={[styles.amountValue, { color: theme.colors.text }]}>
-            ${gross.toFixed(2)}
-          </Text>
+          <View style={commonStyles.rowSection}>
+            <CustomIcon
+              iconName={currency}
+              color={theme.colors.primary}
+              size={16}
+            />
+            <Text style={[styles.amountValue, { color: theme.colors.text }]}>
+              {grossPrice}
+            </Text>
+          </View>
         </View>
         <View style={commonStyles.cardRow}>
           <Text
@@ -133,17 +132,33 @@ const TransactionDetail = () => {
           >
             Tax
           </Text>
-          <Text style={[styles.amountValue, { color: theme.colors.text }]}>
-            ${tax.toFixed(2)}
-          </Text>
+          <View style={commonStyles.rowSection}>
+            <Text style={[styles.amountValue, { color: theme.colors.text }]}>
+              {taxPercentage}
+            </Text>
+            <CustomIcon
+              iconName="percent"
+              color={theme.colors.primary}
+              size={16}
+              marginLeft={2}
+            />
+          </View>
         </View>
         <View style={commonStyles.cardRow}>
           <Text style={[styles.totalLabel, { color: theme.colors.text }]}>
             Total
           </Text>
-          <Text style={[styles.totalValue, { color: theme.colors.text }]}>
-            ${total.toFixed(2)}
-          </Text>
+
+          <View style={commonStyles.rowSection}>
+            <CustomIcon
+              iconName={currency}
+              color={theme.colors.primary}
+              size={16}
+            />
+            <Text style={[styles.totalValue, { color: theme.colors.text }]}>
+              {totalPrice}
+            </Text>
+          </View>
         </View>
 
         {/* New thinner separator below total */}
@@ -154,11 +169,18 @@ const TransactionDetail = () => {
           <Text
             style={[styles.smallLabel, { color: theme.colors.secondaryText }]}
           >
-            Amount Paid
+            Amount Paid for this order
           </Text>
-          <Text style={[styles.smallValue, { color: theme.colors.text }]}>
-            ${amountPaid.toFixed(2)}
-          </Text>
+          <View style={commonStyles.rowSection}>
+            <CustomIcon
+              iconName={currency}
+              color={theme.colors.primary}
+              size={16}
+            />
+            <Text style={[styles.smallValue, { color: theme.colors.text }]}>
+              {amountPaid}
+            </Text>
+          </View>
         </View>
         <View style={commonStyles.cardRow}>
           <Text
@@ -166,9 +188,16 @@ const TransactionDetail = () => {
           >
             Balance (after this order)
           </Text>
-          <Text style={[styles.smallValue, { color: theme.colors.text }]}>
-            ${balance?.toFixed(2)}
-          </Text>
+          <View style={commonStyles.rowSection}>
+            <CustomIcon
+              iconName={currency}
+              color={theme.colors.primary}
+              size={16}
+            />
+            <Text style={[styles.smallValue, { color: theme.colors.text }]}>
+              {balanceAmount}
+            </Text>
+          </View>
         </View>
       </View>
     </View>
