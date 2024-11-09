@@ -24,12 +24,12 @@ type ItemT = {
 const TransactionDetail = () => {
   const { theme } = useThemeContext();
 
-  const { currentTransaction } = useAppContext();
+  const { currentSelectedTransaction } = useAppContext();
   const gross = 100;
   const tax = gross * 0.015; // Assuming 1.5% tax
   const total = gross + tax;
 
-  if (!currentTransaction) return null;
+  if (!currentSelectedTransaction) return null;
 
   const {
     transactionDate,
@@ -39,7 +39,7 @@ const TransactionDetail = () => {
     grossPrice,
     totalPrice,
     items,
-  } = currentTransaction;
+  } = currentSelectedTransaction;
 
   const { dateShort } = formattedDateStr(transactionDate);
 

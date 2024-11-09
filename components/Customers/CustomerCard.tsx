@@ -26,7 +26,7 @@ const CustomerCard = ({
   const { name, totalBalance, phone, address, email } = customer;
   const { theme } = useThemeContext();
   const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
-  const { setCurrentCustomer } = useAppContext();
+  const { setCurrentSelectedCustomer } = useAppContext();
 
   return (
     <Link
@@ -36,7 +36,7 @@ const CustomerCard = ({
       ]}
       asChild
       onPress={() => {
-        setCurrentCustomer(customer);
+        setCurrentSelectedCustomer(customer);
       }}
       href={{
         pathname: "/(app)/customer_transactions_list",

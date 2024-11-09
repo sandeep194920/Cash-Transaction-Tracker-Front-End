@@ -2,31 +2,27 @@ import { useMemo } from "react";
 import { useAppContext } from "@/context/AppContext";
 
 const useTransaction = () => {
-  const { orderedItems, taxPercentage } = useAppContext();
-  let currentBalance = 0;
-  const { currentCustomer } = useAppContext();
-  if (currentCustomer) {
-    currentBalance = currentCustomer.totalBalance;
-  }
+  const { unsettledTransaction, taxPercentage } = useAppContext();
+  const { items: orderedItems } = unsettledTransaction;
 
-  const transactionAmount = useMemo(() => {
-    const grossPrice = orderedItems.reduce((acc, currentItem) => {
-      return acc + currentItem.price * currentItem.quantity;
+  const currentTransactionAmount = useMemo(() => {
+    if (!orderedItems || !orderedItems.length)
+      return {
+        gross: 0,
+        total: 0,
+      };
+
+    const gross = orderedItems.reduce((acc, item) => {
+      return acc + item.price * item.quantity;
     }, 0);
 
-    const taxAmount = (grossPrice * taxPercentage) / 100;
-
-    const orderPrice = grossPrice + taxAmount;
-
-    const totalAmount = orderPrice + currentBalance;
-
-    return { grossPrice, orderPrice, totalAmount };
-  }, [orderedItems, taxPercentage]);
+    const total = gross + (taxPercentage * gross) / 100;
+    return { gross, total };
+  }, [unsettledTransaction, taxPercentage]);
 
   return {
-    transactionAmountWithTax: transactionAmount.orderPrice,
-    transactionAmountWithoutTax: transactionAmount.grossPrice,
-    transactionTotalAmount: transactionAmount.totalAmount,
+    orderGrossAmount: currentTransactionAmount.gross,
+    orderTotalAmount: currentTransactionAmount.total,
   };
 };
 

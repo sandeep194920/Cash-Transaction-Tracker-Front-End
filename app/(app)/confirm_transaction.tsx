@@ -5,17 +5,23 @@ import Button from "@/components/Button";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAppContext } from "@/context/AppContext";
 import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
-import useTransaction from "@/hooks/useTransaction";
 import useTransactions from "@/hooks/useTransactions";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import Loading from "@/components/Loading";
 import { commonStyles } from "@/commonStyles";
+import useTransaction from "@/hooks/useTransaction";
+import CustomIcon from "@/components/CustomIcon";
+import { currency } from "@/constants/Generic";
 
 const ConfirmTransactionModal = () => {
   const { theme } = useThemeContext();
-  const { currentCustomer, updateCurrentTransaction } = useAppContext();
-  const { transactionTotalAmount, transactionAmountWithTax } = useTransaction();
+  const {
+    currentSelectedCustomer,
+    updateUnsettledTransaction,
+    resetAndClearTransaction,
+  } = useAppContext();
+  const { orderGrossAmount, orderTotalAmount } = useTransaction();
   const {
     createNewTransaction,
     isTransactionAdding,
@@ -28,15 +34,13 @@ const ConfirmTransactionModal = () => {
       .number()
       .required("Amount paid is required")
       .positive("Amount must be positive")
-      .max(
-        transactionAmountWithTax,
-        `Amount cannot exceed ${transactionTotalAmount.toFixed(2)}`
-      ),
+      .max(orderGrossAmount, `Amount cannot exceed ${orderTotalAmount}`),
   });
 
   const addTransactionHandler = async () => {
     if (createNewTransaction) {
       createNewTransaction();
+      // don't reset transaction here. Better do it in useEff below after transaction gets updated successfully
     }
     /*route. navigate is the best option here (instead of replace/push)- When it navigates back to customer_transactions_list, it removes other
        underlying routes and gives proper way to go back (back button) from transactions screen to customers screen*/
@@ -51,26 +55,28 @@ const ConfirmTransactionModal = () => {
     validationSchema,
     onSubmit: (values) => {
       const { amountPaid } = values;
-      updateCurrentTransaction({ amountPaid: +amountPaid });
+      updateUnsettledTransaction({ amountPaid: +amountPaid });
       addTransactionHandler();
     },
   });
 
-  if (!currentCustomer) return null;
-  const { name, totalBalance: currentBalance } = currentCustomer;
+  if (!currentSelectedCustomer) return null;
+  const { name, totalBalance: currentBalance } = currentSelectedCustomer;
 
   useEffect(() => {
     /*
   
     Initally, isTransactionAdding -> false and isTransactionAddingNotCompleted -> true (so !false and !true) will yield false so the router.dismiss will not run.
 
-    When customer is adding, isTransactionAdding -> true, and isTransactionAddingNotCompleted -> false (so !true and !false ) is false, so it will not run.
+    When transaction is adding, isTransactionAdding -> true, and isTransactionAddingNotCompleted -> false (so !true and !false ) is false, so it will not run.
 
-    When customer is added, isTransactionAdding -> false and isTransactionAddingNotCompleted -> false (so it will give true)
+    When transaction is added, isTransactionAdding -> false and isTransactionAddingNotCompleted -> false (so it will give true)
 
     */
     if (!isTransactionAdding && !isTransactionAddingNotCompleted) {
       router.navigate("/(app)/customer_transactions_list");
+      // the below line resets the transaction to initial state
+      resetAndClearTransaction();
     }
   }, [isTransactionAdding, isTransactionAddingNotCompleted]);
 
@@ -91,23 +97,50 @@ const ConfirmTransactionModal = () => {
         <Text style={[styles.label, { color: theme.colors.text }]}>
           Order Amount:
         </Text>
-        <Text style={[styles.value, { color: theme.colors.text }]}>
-          ${transactionAmountWithTax.toFixed(2)}
-        </Text>
+        <View
+          style={[commonStyles.rowSection, { justifyContent: "flex-start" }]}
+        >
+          <CustomIcon
+            iconName={currency}
+            size={16}
+            color={theme.colors.primary}
+          />
+          <Text style={[styles.value, { color: theme.colors.text }]}>
+            {orderGrossAmount}
+          </Text>
+        </View>
 
         <Text style={[styles.label, { color: theme.colors.text }]}>
           {name}'s Current Balance:
         </Text>
-        <Text style={[styles.value, { color: theme.colors.text }]}>
-          ${currentBalance?.toFixed(2)}
-        </Text>
+        <View
+          style={[commonStyles.rowSection, { justifyContent: "flex-start" }]}
+        >
+          <CustomIcon
+            iconName={currency}
+            size={16}
+            color={theme.colors.primary}
+          />
+          <Text style={[styles.value, { color: theme.colors.text }]}>
+            {currentBalance?.toFixed(2)}
+          </Text>
+        </View>
 
         <Text style={[styles.label, { color: theme.colors.text }]}>
           New Balance:
         </Text>
-        <Text style={[styles.value, { color: theme.colors.text }]}>
-          ${transactionTotalAmount.toFixed(2)}
-        </Text>
+        <View
+          style={[commonStyles.rowSection, { justifyContent: "flex-start" }]}
+        >
+          <CustomIcon
+            iconName={currency}
+            size={16}
+            color={theme.colors.primary}
+          />
+          <Text style={[styles.value, { color: theme.colors.text }]}>
+            {orderTotalAmount}
+          </Text>
+        </View>
 
         {/* Input field for amount paid */}
         <TextInput
@@ -156,12 +189,11 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 16,
-    marginBottom: 16,
   },
   input: {
     borderWidth: 1,
     padding: 10,
-    marginBottom: 5,
+    marginVertical: 10,
     borderRadius: 5,
     fontSize: 16,
   },

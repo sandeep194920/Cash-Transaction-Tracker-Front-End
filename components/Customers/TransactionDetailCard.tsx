@@ -28,7 +28,7 @@ const TransactionDetailCard = ({
   const { theme } = useThemeContext();
   const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
   const { dateLong } = formattedDateStr(transactionDate);
-  const { setCurrentTransaction } = useAppContext();
+  const { setCurrentSelectedTransaction } = useAppContext();
 
   return (
     <Link
@@ -38,7 +38,7 @@ const TransactionDetailCard = ({
       ]}
       asChild
       onPress={() => {
-        setCurrentTransaction(transaction);
+        setCurrentSelectedTransaction(transaction);
       }}
       href={{
         pathname: "/(app)/transaction_detail",

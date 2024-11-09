@@ -8,7 +8,7 @@ import Toast from "react-native-toast-message";
 
 function useCustomers() {
   const queryClient = useQueryClient();
-  const { currentCustomer, setNewlyAddedCustomer } = useAppContext();
+  const { currentSelectedCustomer, setNewlyAddedCustomer } = useAppContext();
 
   // Fetch all customers
   const fetchCustomers = async (): Promise<CustomerT[]> => {
@@ -23,7 +23,7 @@ function useCustomers() {
 
   // Fetch single customer
   const fetchCustomer = async (): Promise<CustomerT | null> => {
-    if (!currentCustomer) {
+    if (!currentSelectedCustomer) {
       return null;
     }
     const token = await AsyncStorage.getItem("token");
@@ -32,7 +32,7 @@ function useCustomers() {
         Authorization: `Bearer ${token}`,
       },
       params: {
-        customerID: currentCustomer._id,
+        customerID: currentSelectedCustomer._id,
       },
     });
     return response.data.customer;
@@ -42,7 +42,7 @@ function useCustomers() {
     isLoading: isLoadingCustomers,
     data: customers,
     error: customersError,
-  } = useQuery(["customers", currentCustomer?._id], fetchCustomers);
+  } = useQuery(["customers", currentSelectedCustomer?._id], fetchCustomers);
 
   // Handle errors after all hooks are called
   if (customersError) {

@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Stack, router } from "expo-router";
-import Icon from "react-native-vector-icons/Fontisto";
 import { useThemeContext } from "@/context/ThemeContext";
 import TransactionDetailCard from "@/components/Customers/TransactionDetailCard";
 import { TransactionT } from "@/types";
@@ -17,13 +16,12 @@ import Loading from "@/components/Loading";
 import { commonStyles } from "@/commonStyles";
 import { useAppContext } from "@/context/AppContext";
 import CustomIcon from "@/components/CustomIcon";
-import { currency } from "@/constants/Generic";
 
 const CustomerTransactionsList = () => {
   const { theme } = useThemeContext();
 
   const {
-    currentCustomer,
+    currentSelectedCustomer,
     isLoading,
     newlyAddedTransaction,
     setNewlyAddedTransaction,
@@ -66,13 +64,15 @@ const CustomerTransactionsList = () => {
 
   if (isLoadingTransactions || isLoading) return <Loading />;
 
-  if (!currentCustomer) return null;
+  if (!currentSelectedCustomer) return null;
 
   return (
     <>
       <Stack.Screen
         options={{
-          headerTitle: currentCustomer.name ? currentCustomer.name : "Details",
+          headerTitle: currentSelectedCustomer.name
+            ? currentSelectedCustomer.name
+            : "Details",
         }}
       />
 
@@ -110,7 +110,7 @@ const CustomerTransactionsList = () => {
               marginLeft={2}
             />
             <Text style={[styles.balanceText, { color: theme.colors.error }]}>
-              {currentCustomer.totalBalance}
+              {currentSelectedCustomer.totalBalance}
             </Text>
           </View>
         )}

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 import { Formik } from "formik";
 import * as Yup from "yup";

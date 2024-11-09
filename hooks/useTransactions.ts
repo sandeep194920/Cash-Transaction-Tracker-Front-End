@@ -8,19 +8,22 @@ import Toast from "react-native-toast-message";
 import useCustomers from "./useCustomers";
 
 function useTransactions() {
-  const { currentCustomer, setCurrentCustomer, currentTransaction } =
-    useAppContext();
+  const {
+    currentSelectedCustomer,
+    setCurrentSelectedCustomer,
+    currentSelectedTransaction,
+  } = useAppContext();
   const {
     unsettledTransaction,
     setNewlyAddedTransaction,
-    setCurrentTransaction,
+    setCurrentSelectedTransaction,
     // resetCurrentTransaction,
   } = useAppContext();
   const { refetchCustomer } = useCustomers();
 
   // Fetch all transactions
   const fetchCustomerTransactions = async (): Promise<TransactionT[]> => {
-    if (!currentCustomer?._id) {
+    if (!currentSelectedCustomer?._id) {
       return [];
     }
     const token = await AsyncStorage.getItem("token");
@@ -29,7 +32,7 @@ function useTransactions() {
         Authorization: `Bearer ${token}`,
       },
       params: {
-        customerID: currentCustomer._id,
+        customerID: currentSelectedCustomer._id,
       },
     });
     return response.data.transactions || [];
@@ -37,7 +40,7 @@ function useTransactions() {
 
   // Fetch single transaction
   const fetchTransaction = async (): Promise<TransactionT | null> => {
-    if (!currentTransaction) {
+    if (!currentSelectedTransaction) {
       return null;
     }
     const token = await AsyncStorage.getItem("token");
@@ -46,7 +49,7 @@ function useTransactions() {
         Authorization: `Bearer ${token}`,
       },
       params: {
-        transactionID: currentTransaction._id,
+        transactionID: currentSelectedTransaction._id,
       },
     });
     return response.data.transaction;
@@ -57,13 +60,13 @@ function useTransactions() {
     data: customerTransactions,
     refetch: refetchAllTransactions,
   } = useQuery(
-    ["customer_transactions", currentCustomer?._id],
+    ["customer_transactions", currentSelectedCustomer?._id],
     fetchCustomerTransactions
   );
 
   // Create new transaction
   const addNewTransaction = async () => {
-    if (!unsettledTransaction || !currentCustomer?._id) {
+    if (!unsettledTransaction || !currentSelectedCustomer?._id) {
       return null;
     }
     const token = await AsyncStorage.getItem("token");
@@ -76,7 +79,7 @@ function useTransactions() {
         taxPercentage,
         amountPaid,
         items,
-        customerID: currentCustomer._id,
+        customerID: currentSelectedCustomer._id,
       },
       {
         headers: {
@@ -101,7 +104,7 @@ function useTransactions() {
       if (refetchCustomer) {
         const customer = await refetchCustomer();
         if (customer?.data) {
-          setCurrentCustomer(customer.data);
+          setCurrentSelectedCustomer(customer.data);
         }
       }
       Toast.show({

@@ -9,20 +9,26 @@ import {
 import { useThemeContext } from "@/context/ThemeContext";
 import MenuOptionsOnCard from "@/components/Menu";
 import { commonStyles } from "@/commonStyles";
-import { router, Stack } from "expo-router";
+import { router } from "expo-router";
 import Button from "@/components/Button";
 import { ItemT } from "@/types";
 import { useAppContext } from "@/context/AppContext";
-import useTransaction from "@/hooks/useTransaction";
 import DatePicker from "@/components/DateSelection";
 import Toast from "react-native-toast-message";
+import CustomIcon from "@/components/CustomIcon";
+import { currency } from "@/constants/Generic";
+import { useMemo } from "react";
+import useTransaction from "@/hooks/useTransaction";
+import useTransactions from "@/hooks/useTransactions";
 
 const AddTransactionScreen = () => {
   const { theme } = useThemeContext();
-  const { orderedItems, taxPercentage, updateCurrentTransaction } =
-    useAppContext();
-  const { transactionTotalAmount, transactionAmountWithoutTax } =
-    useTransaction();
+  const {
+    taxPercentage,
+    unsettledTransaction: { items: orderedItems },
+  } = useAppContext();
+
+  const { orderGrossAmount, orderTotalAmount } = useTransaction();
 
   const renderItem = ({ ...props }: ListRenderItemInfo<ItemT>) => {
     const {
@@ -48,8 +54,13 @@ const AddTransactionScreen = () => {
           </View>
           <View style={commonStyles.rowSection}>
             <Text style={[{ color: theme.colors.text }]}>
-              {price * quantity}${"   "}
+              {price * quantity}
             </Text>
+            <CustomIcon
+              iconName={currency}
+              size={16}
+              color={theme.colors.primary}
+            />
             <MenuOptionsOnCard />
           </View>
         </View>
@@ -63,9 +74,6 @@ const AddTransactionScreen = () => {
 
   const saveTransactionHandler = () => {
     try {
-      updateCurrentTransaction({
-        items: orderedItems,
-      });
       router.push("/(app)/confirm_transaction");
     } catch (error) {
       console.log("error", error);
@@ -89,7 +97,6 @@ const AddTransactionScreen = () => {
             <DatePicker />
           ) : (
             <View style={[styles.dateSection]}>
-              {/* <View /> */}
               <DatePicker />
             </View>
           )}
@@ -134,9 +141,16 @@ const AddTransactionScreen = () => {
             >
               Gross
             </Text>
-            <Text style={[styles.amountValue, { color: theme.colors.text }]}>
-              ${transactionAmountWithoutTax.toFixed(2)}
-            </Text>
+            <View style={commonStyles.rowSection}>
+              <CustomIcon
+                iconName={currency}
+                size={16}
+                color={theme.colors.primary}
+              />
+              <Text style={[styles.amountValue, { color: theme.colors.text }]}>
+                {orderGrossAmount}
+              </Text>
+            </View>
           </View>
           <View style={commonStyles.cardRow}>
             <Text
@@ -147,20 +161,34 @@ const AddTransactionScreen = () => {
             >
               Tax
             </Text>
-            <Text style={[styles.amountValue, { color: theme.colors.text }]}>
-              {Number.isInteger(taxPercentage)
-                ? taxPercentage
-                : taxPercentage.toFixed(2)}
-              %
-            </Text>
+            <View style={commonStyles.rowSection}>
+              <Text style={[styles.amountValue, { color: theme.colors.text }]}>
+                {Number.isInteger(taxPercentage)
+                  ? taxPercentage
+                  : taxPercentage.toFixed(2)}
+              </Text>
+              <CustomIcon
+                iconName="percent"
+                size={16}
+                color={theme.colors.primary}
+                marginLeft={2}
+              />
+            </View>
           </View>
           <View style={commonStyles.cardRow}>
             <Text style={[styles.totalLabel, { color: theme.colors.text }]}>
               Total
             </Text>
-            <Text style={[styles.totalValue, { color: theme.colors.text }]}>
-              ${transactionTotalAmount.toFixed(2)}
-            </Text>
+            <View style={commonStyles.rowSection}>
+              <CustomIcon
+                iconName={currency}
+                size={16}
+                color={theme.colors.primary}
+              />
+              <Text style={[styles.totalValue, { color: theme.colors.text }]}>
+                {orderTotalAmount}
+              </Text>
+            </View>
           </View>
         </View>
         {orderedItems?.length ? (
