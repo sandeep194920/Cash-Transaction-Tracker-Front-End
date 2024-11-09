@@ -3,15 +3,20 @@ import React, { useState } from "react";
 import { Menu, MenuDivider, MenuItem } from "react-native-material-menu";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useThemeContext } from "@/context/ThemeContext";
+import { MenuT } from "@/types";
 
-const MenuOptionsOnCard = () => {
-  const [visible, setVisible] = useState(false);
+const MenuOptionsOnCard = ({
+  isMenuVisible,
+  showMenu,
+  hideMenu,
+  editHandler,
+  deleteHandler,
+}: MenuT) => {
   const { theme } = useThemeContext();
-  const showMenu = () => setVisible(true);
-  const hideMenu = () => setVisible(false);
+
   return (
     <Menu
-      visible={visible}
+      visible={isMenuVisible}
       anchor={
         <TouchableOpacity onPress={showMenu}>
           <Icon name="more-vert" size={24} color={theme.colors.primary} />
@@ -19,8 +24,8 @@ const MenuOptionsOnCard = () => {
       }
       onRequestClose={hideMenu}
     >
-      <MenuItem onPress={() => alert("Edit transaction")}>Edit</MenuItem>
-      <MenuItem onPress={() => alert("Delete transaction")}>Delete</MenuItem>
+      <MenuItem onPress={editHandler}>Edit</MenuItem>
+      <MenuItem onPress={deleteHandler}>Delete</MenuItem>
       <MenuDivider />
     </Menu>
   );

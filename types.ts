@@ -26,6 +26,14 @@ export type TransactionT = {
   amountPaid: number;
 };
 
+export type MenuT = {
+  isMenuVisible: boolean;
+  showMenu: () => void;
+  hideMenu: () => void;
+  editHandler: () => void;
+  deleteHandler: () => void;
+};
+
 export type PartialTransactionT = Partial<TransactionT>;
 
 export type ItemT = {

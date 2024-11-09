@@ -7,7 +7,6 @@ import {
   SafeAreaView,
 } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
-import MenuOptionsOnCard from "@/components/Menu";
 import { commonStyles } from "@/commonStyles";
 import { router } from "expo-router";
 import Button from "@/components/Button";
@@ -17,12 +16,12 @@ import DatePicker from "@/components/DateSelection";
 import Toast from "react-native-toast-message";
 import CustomIcon from "@/components/CustomIcon";
 import { currency } from "@/constants/Generic";
-import { useMemo } from "react";
 import useTransaction from "@/hooks/useTransaction";
-import useTransactions from "@/hooks/useTransactions";
+import ItemCard from "@/components/Item/ItemCard";
 
 const AddTransactionScreen = () => {
   const { theme } = useThemeContext();
+
   const {
     taxPercentage,
     unsettledTransaction: { items: orderedItems },
@@ -31,41 +30,9 @@ const AddTransactionScreen = () => {
   const { orderGrossAmount, orderTotalAmount } = useTransaction();
 
   const renderItem = ({ ...props }: ListRenderItemInfo<ItemT>) => {
-    const {
-      item: { name, price, quantity },
-      index,
-    } = props;
+    const { item, index } = props;
 
-    return (
-      <View
-        style={[
-          commonStyles.card,
-          { backgroundColor: theme.colors.inputBackground },
-        ]}
-      >
-        {/* Row with Name, Icon, Amount Paid */}
-        <View style={[commonStyles.cardRow]}>
-          <View style={commonStyles.rowSection}>
-            <Text style={[{ color: theme.colors.text }]}>{index + 1}. </Text>
-            <Text style={[{ color: theme.colors.text }]}>{name}</Text>
-            <Text style={[{ color: theme.colors.secondaryText }]}>
-              {"  "}({price}$ x {quantity})
-            </Text>
-          </View>
-          <View style={commonStyles.rowSection}>
-            <CustomIcon
-              iconName={currency}
-              size={16}
-              color={theme.colors.primary}
-            />
-            <Text style={[{ color: theme.colors.text }]}>
-              {price * quantity}{" "}
-            </Text>
-            <MenuOptionsOnCard />
-          </View>
-        </View>
-      </View>
-    );
+    return <ItemCard itemNumber={index + 1} {...item} />;
   };
 
   const addItemHandler = () => {

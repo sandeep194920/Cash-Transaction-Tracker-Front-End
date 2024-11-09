@@ -9,6 +9,7 @@ import { useAppContext } from "@/context/AppContext";
 import useCardAnimation from "@/hooks/useCardAnimation";
 import CustomIcon from "../CustomIcon";
 import { currency } from "@/constants/Generic";
+import useMenu from "@/hooks/useMenu";
 
 type CustomerCardT = {
   customer: CustomerT;
@@ -27,6 +28,7 @@ const CustomerCard = ({
   const { theme } = useThemeContext();
   const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
   const { setCurrentSelectedCustomer } = useAppContext();
+  const { isMenuVisible, showMenu, hideMenu } = useMenu();
 
   return (
     <Link
@@ -71,7 +73,17 @@ const CustomerCard = ({
                   {name}
                 </Text>
               </View>
-              <MenuOptionsOnCard />
+              <MenuOptionsOnCard
+                isMenuVisible={isMenuVisible}
+                showMenu={showMenu}
+                hideMenu={hideMenu}
+                editHandler={() => {
+                  console.log("Edit from Customer card");
+                }}
+                deleteHandler={() => {
+                  console.log("Delete from Customer card");
+                }}
+              />
             </View>
 
             <View style={commonStyles.cardRow}>

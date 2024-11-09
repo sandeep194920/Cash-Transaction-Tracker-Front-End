@@ -9,6 +9,7 @@ import useCardAnimation from "@/hooks/useCardAnimation";
 import { useAppContext } from "@/context/AppContext";
 import { currency } from "@/constants/Generic";
 import CustomIcon from "../CustomIcon";
+import useMenu from "@/hooks/useMenu";
 
 type TransactionDetailCardT = {
   transaction: TransactionT;
@@ -25,6 +26,7 @@ const TransactionDetailCard = ({
 }: TransactionDetailCardT) => {
   const { totalPrice, amountPaid, balanceAmount, transactionDate, items } =
     transaction;
+  const { isMenuVisible, showMenu, hideMenu } = useMenu();
   const { theme } = useThemeContext();
   const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
   const { dateLong } = formattedDateStr(transactionDate);
@@ -67,7 +69,17 @@ const TransactionDetailCard = ({
                   {dateLong}
                 </Text>
               </View>
-              <MenuOptionsOnCard />
+              <MenuOptionsOnCard
+                isMenuVisible={isMenuVisible}
+                showMenu={showMenu}
+                hideMenu={hideMenu}
+                editHandler={() => {
+                  console.log("Edit from Transaction detail card");
+                }}
+                deleteHandler={() => {
+                  console.log("Delete from Transaction detail card");
+                }}
+              />
             </View>
 
             <View style={commonStyles.cardRow}>

@@ -102,7 +102,7 @@ const AppLayout = () => {
       <Stack.Screen
         name="add_transaction"
         options={{
-          headerTitle: "Add New Transaction",
+          headerTitle: "New Transaction",
           headerTintColor: theme.colors.buttonText,
           headerStyle: {
             backgroundColor: theme.colors.primary,
