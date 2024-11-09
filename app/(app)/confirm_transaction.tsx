@@ -34,7 +34,7 @@ const ConfirmTransactionModal = () => {
       .number()
       .required("Amount paid is required")
       .positive("Amount must be positive")
-      .max(orderGrossAmount, `Amount cannot exceed ${orderTotalAmount}`),
+      .max(orderTotalAmount, `Amount cannot exceed ${orderTotalAmount}`),
   });
 
   const addTransactionHandler = async () => {
@@ -109,10 +109,14 @@ const ConfirmTransactionModal = () => {
             {orderGrossAmount}
           </Text>
         </View>
-
-        <Text style={[styles.label, { color: theme.colors.text }]}>
-          {name}'s Current Balance:
-        </Text>
+        <View style={[commonStyles.rowSection, styles.textContainer]}>
+          <Text style={[styles.label, { color: theme.colors.text }]}>
+            {name}'s Current Balance:
+          </Text>
+          <Text style={[styles.subText, { color: theme.colors.text }]}>
+            (Excluding this order)
+          </Text>
+        </View>
         <View
           style={[commonStyles.rowSection, { justifyContent: "flex-start" }]}
         >
@@ -122,13 +126,18 @@ const ConfirmTransactionModal = () => {
             color={theme.colors.primary}
           />
           <Text style={[styles.value, { color: theme.colors.text }]}>
-            {currentBalance?.toFixed(2)}
+            {currentBalance}
+          </Text>
+        </View>
+        <View style={[commonStyles.rowSection, styles.textContainer]}>
+          <Text style={[styles.label, { color: theme.colors.text }]}>
+            New Balance:
+          </Text>
+          <Text style={[styles.subText, { color: theme.colors.text }]}>
+            (Including this order)
           </Text>
         </View>
 
-        <Text style={[styles.label, { color: theme.colors.text }]}>
-          New Balance:
-        </Text>
         <View
           style={[commonStyles.rowSection, { justifyContent: "flex-start" }]}
         >
@@ -201,6 +210,14 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 14,
     marginBottom: 10,
+  },
+  subText: {
+    fontSize: 12,
+  },
+  textContainer: {
+    justifyContent: "flex-start",
+    gap: 4,
+    alignItems: "center",
   },
 });
 

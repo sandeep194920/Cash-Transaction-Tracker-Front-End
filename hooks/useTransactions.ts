@@ -104,6 +104,7 @@ function useTransactions() {
       if (refetchCustomer) {
         const customer = await refetchCustomer();
         if (customer?.data) {
+          console.log("Customer data after refetch is", customer.data);
           setCurrentSelectedCustomer(customer.data);
         }
       }

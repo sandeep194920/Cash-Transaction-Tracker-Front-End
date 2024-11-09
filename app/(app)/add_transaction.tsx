@@ -53,14 +53,14 @@ const AddTransactionScreen = () => {
             </Text>
           </View>
           <View style={commonStyles.rowSection}>
-            <Text style={[{ color: theme.colors.text }]}>
-              {price * quantity}
-            </Text>
             <CustomIcon
               iconName={currency}
               size={16}
               color={theme.colors.primary}
             />
+            <Text style={[{ color: theme.colors.text }]}>
+              {price * quantity}{" "}
+            </Text>
             <MenuOptionsOnCard />
           </View>
         </View>

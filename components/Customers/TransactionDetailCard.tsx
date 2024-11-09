@@ -23,7 +23,7 @@ const TransactionDetailCard = ({
   setExpanded,
   isNewlyAddedItem = false,
 }: TransactionDetailCardT) => {
-  const { grossPrice, amountPaid, balanceAmount, transactionDate, items } =
+  const { totalPrice, amountPaid, balanceAmount, transactionDate, items } =
     transaction;
   const { theme } = useThemeContext();
   const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
@@ -88,7 +88,7 @@ const TransactionDetailCard = ({
                   size={16}
                 />
                 <Text style={[styles.amount, { color: theme.colors.text }]}>
-                  {grossPrice}
+                  {totalPrice}
                 </Text>
               </View>
             </View>
