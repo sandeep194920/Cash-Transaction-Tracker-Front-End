@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { View, Text, TextInput } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import Button from "@/components/Button";
 import { ItemT } from "@/types";
 import { commonStyles } from "@/commonStyles";
 import { useAppContext } from "@/context/AppContext";
 import Toast from "react-native-toast-message";
 import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
+import { v4 as uuidv4 } from "uuid";
 
 // Validation schema for adding an item
 const addItemValidationSchema = Yup.object().shape({
@@ -28,22 +29,51 @@ const addItemValidationSchema = Yup.object().shape({
 // Define form values type for TypeScript
 interface FormValues {
   name: string;
-  price: string;
-  quantity: string;
+  price: string | number;
+  quantity: string | number;
 }
 
 const AddItemScreen = () => {
   const { theme } = useThemeContext();
-  const { addItem } = useAppContext();
+  const { addItem, unsettledTransaction, updateItem } = useAppContext();
+  const { itemID } = useLocalSearchParams();
 
-  // Submit handler
-  const addItemHandler = (values: FormValues) => {
+  const formInitialValue = useMemo(() => {
+    let foundItem;
+    if (itemID && unsettledTransaction.items) {
+      foundItem = unsettledTransaction.items.find((item) => item.id === itemID);
+      if (foundItem) {
+        const { name, price, quantity, id } = foundItem;
+        return {
+          name,
+          price: price,
+          quantity: quantity,
+          id,
+        };
+      }
+    }
+    return { name: "", price: "", quantity: "", id: "" };
+  }, [itemID]);
+
+  const addOrUpdateItemHandler = (values: FormValues) => {
+    if (itemID) {
+      updateItem({
+        name: values.name,
+        price: +values.price,
+        quantity: +values.quantity,
+        id: itemID as string,
+      });
+      router.dismiss();
+      return;
+    }
+
     const item: ItemT = {
+      id: uuidv4(), // We need id for editting this item on Front-end
       name: values.name,
-      price: parseFloat(values.price), // Convert to number
-      quantity: parseInt(values.quantity, 10), // Convert to integer
+      price: +values.price,
+      quantity: +values.quantity,
     };
-
+    // Probably I need to update the item if it exists
     // Use the item object as needed
     addItem(item);
     router.dismiss();
@@ -59,9 +89,10 @@ const AddItemScreen = () => {
       <HeaderLeftBackArrow />
 
       <Formik
-        initialValues={{ name: "", price: "", quantity: "" }}
+        initialValues={formInitialValue}
+        // initialValues={{ name: "", price: "", quantity: "" }}
         validationSchema={addItemValidationSchema}
-        onSubmit={addItemHandler}
+        onSubmit={addOrUpdateItemHandler}
       >
         {({
           handleChange,
@@ -124,7 +155,7 @@ const AddItemScreen = () => {
               }}
               onChangeText={handleChange("price")}
               onBlur={handleBlur("price")}
-              value={values.price}
+              value={values.price.toString()} // TextInput expects value to be string, so converting it here
               keyboardType="numeric"
             />
             {touched.price && errors.price && (
@@ -147,7 +178,7 @@ const AddItemScreen = () => {
               }}
               onChangeText={handleChange("quantity")}
               onBlur={handleBlur("quantity")}
-              value={values.quantity}
+              value={values.quantity.toString()} // TextInput expects value to be string, so converting it here
               keyboardType="numeric"
             />
             {touched.quantity && errors.quantity && (

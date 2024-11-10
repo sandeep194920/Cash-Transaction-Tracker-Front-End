@@ -37,6 +37,7 @@ export type MenuT = {
 export type PartialTransactionT = Partial<TransactionT>;
 
 export type ItemT = {
+  id: string;
   name: string;
   price: number;
   quantity: number;

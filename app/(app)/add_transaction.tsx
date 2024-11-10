@@ -5,10 +5,11 @@ import {
   FlatList,
   ListRenderItemInfo,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 import { commonStyles } from "@/commonStyles";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import Button from "@/components/Button";
 import { ItemT } from "@/types";
 import { useAppContext } from "@/context/AppContext";
@@ -18,6 +19,7 @@ import CustomIcon from "@/components/CustomIcon";
 import { currency } from "@/constants/Generic";
 import useTransaction from "@/hooks/useTransaction";
 import ItemCard from "@/components/Item/ItemCard";
+import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
 
 const AddTransactionScreen = () => {
   const { theme } = useThemeContext();
@@ -25,6 +27,8 @@ const AddTransactionScreen = () => {
   const {
     taxPercentage,
     unsettledTransaction: { items: orderedItems },
+    currentSelectedCustomer,
+    updateUnsettledTransaction,
   } = useAppContext();
 
   const { orderGrossAmount, orderTotalAmount } = useTransaction();
@@ -52,10 +56,48 @@ const AddTransactionScreen = () => {
     }
   };
 
+  const warnExitTransactionHandler = () => {
+    Alert.alert(
+      "Are you sure you want to exit current transaction?",
+      "This would clear items in this transaction",
+      [
+        {
+          text: "Cancel",
+          onPress: () => {},
+        },
+        {
+          text: "Quit current transaction",
+          onPress: () => {
+            updateUnsettledTransaction({ items: [] });
+            return router.navigate("/(app)/customer_transactions_list");
+          },
+          style: "destructive",
+        },
+      ]
+    );
+  };
+
+  const cancelTransaction = () => {
+    router.navigate("/(app)/customer_transactions_list");
+  };
+
   return (
     <SafeAreaView
       style={[commonStyles.flex1, { backgroundColor: theme.colors.background }]}
     >
+      <HeaderLeftBackArrow
+        onPress={
+          orderedItems?.length ? warnExitTransactionHandler : cancelTransaction
+        }
+      />
+      {currentSelectedCustomer && (
+        <Stack.Screen
+          options={{
+            headerTitle: `${currentSelectedCustomer.name}'s New Transaction`,
+          }}
+        />
+      )}
+
       <View
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >

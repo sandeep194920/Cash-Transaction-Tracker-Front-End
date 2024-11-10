@@ -6,25 +6,43 @@ import CustomIcon from "../CustomIcon";
 import MenuOptionsOnCard from "../Menu";
 import { useThemeContext } from "@/context/ThemeContext";
 import useMenu from "@/hooks/useMenu";
+import { router } from "expo-router";
+import { useAppContext } from "@/context/AppContext";
 
 type ItemCardT = {
   name: string;
   price: number;
   quantity: number;
   itemNumber: number;
+  id: string;
 };
 
-const ItemCard = ({ itemNumber, name, price, quantity }: ItemCardT) => {
+const ItemCard = ({
+  itemNumber,
+  name,
+  price,
+  quantity,
+  id: itemID,
+}: ItemCardT) => {
   const { theme } = useThemeContext();
   const { isMenuVisible, showMenu, hideMenu } = useMenu();
+  const { deleteItem } = useAppContext();
 
   const onEditItem = () => {
-    alert("Editting item");
+    //TODO: For some reason, if I don't put it in setTimeout, the /app/add_item page
+    // will open and then due to hideMenu() it closes immediately. I need to look into it.
+
+    // Acceptance criteria: Once the hideMenu is executed, without setTimeout I should be able to push the route to add_item
     hideMenu();
+    setTimeout(() => {
+      router.push({ pathname: "/(app)/add_item", params: { itemID } });
+    }, 500);
   };
   const onDeleteItem = () => {
-    alert("Deleting item");
     hideMenu();
+    setTimeout(() => {
+      deleteItem({ itemID });
+    }, 500);
   };
 
   return (

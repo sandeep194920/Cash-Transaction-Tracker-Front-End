@@ -18,6 +18,8 @@ type CreateContextT = {
   currentSelectedCustomer: CustomerT | null;
   setCurrentSelectedCustomer: Dispatch<SetStateAction<CustomerT | null>>;
   addItem: (item: ItemT) => void;
+  updateItem: (item: ItemT) => void;
+  deleteItem: ({ itemID }: { itemID: string }) => void;
   taxPercentage: number;
   unsettledTransaction: PartialTransactionT;
   updateUnsettledTransaction: (values: PartialTransactionT) => void;
@@ -38,6 +40,8 @@ const AppContext = createContext<CreateContextT>({
     React.SetStateAction<CustomerT | null>
   >,
   addItem: () => {},
+  updateItem: () => {},
+  deleteItem: () => {},
   taxPercentage: 0,
   unsettledTransaction: { items: [] },
   updateUnsettledTransaction: () => {},
@@ -63,6 +67,7 @@ const AppProvider = ({ children }: AppProviderT) => {
     useState<CustomerT | null>(null);
   const [currentSelectedTransaction, setCurrentSelectedTransaction] =
     useState<TransactionT | null>(null);
+  // If an item is under edit, we need that item to be present in add_item as Formik initialValues
 
   const [unsettledTransaction, setUnsettledTransaction] =
     useState<PartialTransactionT>({
@@ -80,7 +85,7 @@ const AppProvider = ({ children }: AppProviderT) => {
     useState<TransactionT | null>(null);
 
   // TRANSACTION FUNCTIONS
-  const addItem = ({ name, price, quantity }: ItemT) => {
+  const addItem = ({ name, price, quantity, id }: ItemT) => {
     // Let's do the below deep-copy using lodash
 
     // setUnsettledTransaction((prevState) => {
@@ -100,10 +105,43 @@ const AppProvider = ({ children }: AppProviderT) => {
       // Push the new item to the cloned items array
       updatedState.items = [
         ...(updatedState.items ? updatedState.items : []),
-        { name, quantity, price },
+        { name, quantity, price, id },
       ];
 
       // Return the updated state with the new item added
+      return updatedState;
+    });
+  };
+
+  const updateItem = ({ name, price, quantity, id }: ItemT) => {
+    setUnsettledTransaction((prevState) => {
+      // Create a deep copy of the previous state
+      const updatedState = cloneDeep(prevState);
+
+      updatedState.items?.map((item) => {
+        if (item.id === id) {
+          item.name = name;
+          item.price = price;
+          item.quantity = quantity;
+        }
+        return item;
+      });
+
+      // Return the updated state with the modified item
+      return updatedState;
+    });
+  };
+
+  const deleteItem = ({ itemID }: { itemID: string }) => {
+    setUnsettledTransaction((prevState) => {
+      // Create a deep copy of the previous state
+      const updatedState = cloneDeep(prevState);
+
+      updatedState.items = updatedState.items?.filter(
+        (item) => item.id !== itemID
+      );
+
+      // Return the updated state with the modified item
       return updatedState;
     });
   };
@@ -124,6 +162,8 @@ const AppProvider = ({ children }: AppProviderT) => {
     currentSelectedCustomer,
     setCurrentSelectedCustomer,
     addItem,
+    updateItem,
+    deleteItem,
     taxPercentage,
     unsettledTransaction,
     updateUnsettledTransaction,
