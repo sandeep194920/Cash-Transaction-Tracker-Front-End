@@ -1,9 +1,20 @@
+import { commonStyles } from "@/commonStyles";
+import CustomIcon from "@/components/CustomIcon";
+import { useAppContext } from "@/context/AppContext";
 import { useThemeContext } from "@/context/ThemeContext";
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+} from "react-native";
 
 const SettingsScreen = () => {
   const { currentTheme, theme, switchTheme } = useThemeContext();
+  const [isPercentageEdit, setIsPercentageEdit] = useState(false);
+  const { taxPercentage, setTaxPercentage } = useAppContext();
 
   const themeStyles = {
     backgroundColor: theme.colors.background,
@@ -15,6 +26,58 @@ const SettingsScreen = () => {
   const handleThemeChange = (newTheme: "light" | "dark") => {
     switchTheme(newTheme);
   };
+
+  const taxContainer = (
+    <View style={commonStyles.rowSection}>
+      <View style={commonStyles.rowSection}>
+        {isPercentageEdit ? (
+          <TextInput
+            style={[
+              styles.input,
+
+              {
+                color: themeStyles.textColor,
+                borderColor: themeStyles.textColor,
+              },
+            ]}
+            value={taxPercentage.toString()}
+            keyboardType="numeric"
+            onChangeText={(text) => setTaxPercentage(Number(text))}
+            autoFocus
+          />
+        ) : (
+          <Text style={{ color: themeStyles.textColor }}>{taxPercentage}</Text>
+        )}
+        <CustomIcon
+          iconName="percent"
+          size={16}
+          color={theme.colors.primary}
+          marginLeft={0.01}
+          marginRight={15}
+        />
+      </View>
+
+      {isPercentageEdit ? (
+        <CustomIcon
+          iconName="check"
+          size={24}
+          color={theme.colors.success}
+          onPress={() => {
+            setIsPercentageEdit((prev) => !prev);
+          }}
+        />
+      ) : (
+        <CustomIcon
+          iconName="edit"
+          size={24}
+          color={theme.colors.primary}
+          onPress={() => {
+            setIsPercentageEdit((prev) => !prev);
+          }}
+        />
+      )}
+    </View>
+  );
 
   return (
     <View
@@ -30,7 +93,7 @@ const SettingsScreen = () => {
       {/* Light Theme Option */}
       <View style={styles.option}>
         <TouchableOpacity
-          style={styles.radioContainer}
+          style={commonStyles.cardRow}
           onPress={() => handleThemeChange("light")}
         >
           <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
@@ -51,7 +114,7 @@ const SettingsScreen = () => {
       {/* Dark Theme Option */}
       <View style={styles.option}>
         <TouchableOpacity
-          style={styles.radioContainer}
+          style={commonStyles.cardRow}
           onPress={() => handleThemeChange("dark")}
         >
           <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
@@ -67,6 +130,23 @@ const SettingsScreen = () => {
             ]}
           />
         </TouchableOpacity>
+      </View>
+
+      {/* Divider Line */}
+      <View style={styles.divider} />
+
+      <Text style={[styles.title, { color: themeStyles.textColor }]}>
+        Select Tax Percentage
+      </Text>
+
+      {/* Light Theme Option */}
+
+      <View style={[commonStyles.cardRow, styles.option]}>
+        <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
+          Current Tax
+        </Text>
+
+        {taxContainer}
       </View>
     </View>
   );
@@ -86,11 +166,6 @@ const styles = StyleSheet.create({
   option: {
     marginVertical: 10,
   },
-  radioContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   radioCircle: {
     height: 20,
     width: 20,
@@ -101,6 +176,17 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#ccc",
+    marginVertical: 20,
+  },
+  input: {
+    borderBottomWidth: 1,
+    fontSize: 16,
+    width: 40,
+    textAlign: "center",
   },
 });
 

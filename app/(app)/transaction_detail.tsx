@@ -140,7 +140,7 @@ const TransactionDetail = () => {
               iconName="percent"
               color={theme.colors.primary}
               size={16}
-              marginLeft={2}
+              marginLeft={0.01}
             />
           </View>
         </View>

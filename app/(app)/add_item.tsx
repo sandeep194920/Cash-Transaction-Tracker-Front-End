@@ -11,6 +11,8 @@ import { useAppContext } from "@/context/AppContext";
 import Toast from "react-native-toast-message";
 import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
 import { v4 as uuidv4 } from "uuid";
+import CustomIcon from "@/components/CustomIcon";
+import { currency } from "@/constants/Generic";
 
 // Validation schema for adding an item
 const addItemValidationSchema = Yup.object().shape({
@@ -242,9 +244,16 @@ const ItemAdded = ({ name, quantity, price }: FormValues) => {
         </Text>
       </View>
       <View style={commonStyles.rowSection}>
-        <Text style={[{ color: theme.colors.text }]}>
-          ${+price * +quantity}
-        </Text>
+        <View style={commonStyles.rowSection}>
+          <CustomIcon
+            iconName={currency}
+            size={16}
+            color={theme.colors.primary}
+          />
+          <Text style={[{ color: theme.colors.text }]}>
+            {+price * +quantity}
+          </Text>
+        </View>
       </View>
     </View>
   );

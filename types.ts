@@ -57,4 +57,6 @@ export type IconNameT =
   | "phone"
   | "email"
   | "expand-less"
-  | "expand-more";
+  | "expand-more"
+  | "edit"
+  | "check";

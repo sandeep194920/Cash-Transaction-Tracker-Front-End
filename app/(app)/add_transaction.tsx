@@ -180,7 +180,7 @@ const AddTransactionScreen = () => {
                 iconName="percent"
                 size={16}
                 color={theme.colors.primary}
-                marginLeft={2}
+                marginLeft={0.01}
               />
             </View>
           </View>

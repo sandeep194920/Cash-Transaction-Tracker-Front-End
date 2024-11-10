@@ -21,6 +21,7 @@ type CreateContextT = {
   updateItem: (item: ItemT) => void;
   deleteItem: ({ itemID }: { itemID: string }) => void;
   taxPercentage: number;
+  setTaxPercentage: React.Dispatch<React.SetStateAction<number>>;
   unsettledTransaction: PartialTransactionT;
   updateUnsettledTransaction: (values: PartialTransactionT) => void;
   resetAndClearTransaction: () => void;
@@ -43,6 +44,7 @@ const AppContext = createContext<CreateContextT>({
   updateItem: () => {},
   deleteItem: () => {},
   taxPercentage: 0,
+  setTaxPercentage: (() => {}) as Dispatch<React.SetStateAction<number>>,
   unsettledTransaction: { items: [] },
   updateUnsettledTransaction: () => {},
   resetAndClearTransaction: () => {},
@@ -165,6 +167,7 @@ const AppProvider = ({ children }: AppProviderT) => {
     updateItem,
     deleteItem,
     taxPercentage,
+    setTaxPercentage,
     unsettledTransaction,
     updateUnsettledTransaction,
     resetAndClearTransaction,

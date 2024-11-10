@@ -23,7 +23,8 @@ export const colors = {
   grey_shade_7: "#fffcfc",
   red_shade_1: "#f14c4c",
   red_shade_2: "#f04d3e",
-  green_shade_1: "#25b82f",
+  green_shade_1: "#067a0e",
+  green_shade_2: "#25b82f",
   blue_shade_1: "#4267B2",
 } as const;
 
@@ -62,7 +63,7 @@ export const themes: Record<"dark" | "light", ThemeT> = {
       primaryLight: colors.yellow_shade_2,
       background: colors.black,
       text: colors.white,
-      success: colors.green_shade_1,
+      success: colors.green_shade_2,
       error: colors.red_shade_1,
       secondaryText: colors.grey_shade_3,
       lightText: colors.grey_shade_6,
