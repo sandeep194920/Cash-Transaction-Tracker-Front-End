@@ -21,20 +21,22 @@ const ConfirmTransactionModal = () => {
     updateUnsettledTransaction,
     resetAndClearTransaction,
   } = useAppContext();
-  const { orderGrossAmount, orderTotalAmount } = useTransaction();
+  const { orderTotalAmount } = useTransaction();
   const {
     createNewTransaction,
     isTransactionAdding,
     isTransactionAddingNotCompleted,
   } = useTransactions();
 
+  if (!currentSelectedCustomer) return null;
+  const { name, totalBalance: currentBalance } = currentSelectedCustomer;
   // Form validation schema using Yup
   const validationSchema = yup.object().shape({
     amountPaid: yup
       .number()
       .required("Amount paid is required")
-      .positive("Amount must be positive")
-      .max(orderTotalAmount, `Amount cannot exceed ${orderTotalAmount}`),
+      .min(0, "Amount must be at least 0"),
+    // .positive("Amount must be positive"), // INFO: This would expect min to be 1, so commenting this out and adding .min here
   });
 
   const addTransactionHandler = async () => {
@@ -59,9 +61,6 @@ const ConfirmTransactionModal = () => {
       addTransactionHandler();
     },
   });
-
-  if (!currentSelectedCustomer) return null;
-  const { name, totalBalance: currentBalance } = currentSelectedCustomer;
 
   useEffect(() => {
     /*
@@ -95,7 +94,7 @@ const ConfirmTransactionModal = () => {
         ]}
       >
         <Text style={[styles.label, { color: theme.colors.text }]}>
-          Order Amount:
+          Today's Total Amount:
         </Text>
         <View
           style={[commonStyles.rowSection, { justifyContent: "flex-start" }]}
@@ -106,10 +105,16 @@ const ConfirmTransactionModal = () => {
             color={theme.colors.primary}
           />
           <Text style={[styles.value, { color: theme.colors.text }]}>
-            {orderGrossAmount}
+            {orderTotalAmount}
           </Text>
         </View>
-        <View style={[commonStyles.rowSection, styles.textContainer]}>
+        <View
+          style={[
+            commonStyles.rowSection,
+            styles.textContainer,
+            { flexWrap: "wrap" },
+          ]}
+        >
           <Text style={[styles.label, { color: theme.colors.text }]}>
             {name}'s Current Balance:
           </Text>
@@ -129,7 +134,13 @@ const ConfirmTransactionModal = () => {
             {currentBalance}
           </Text>
         </View>
-        <View style={[commonStyles.rowSection, styles.textContainer]}>
+        <View
+          style={[
+            commonStyles.rowSection,
+            styles.textContainer,
+            { flexWrap: "wrap" },
+          ]}
+        >
           <Text style={[styles.label, { color: theme.colors.text }]}>
             New Balance:
           </Text>
@@ -147,7 +158,7 @@ const ConfirmTransactionModal = () => {
             color={theme.colors.primary}
           />
           <Text style={[styles.value, { color: theme.colors.text }]}>
-            {orderTotalAmount}
+            {(orderTotalAmount + currentBalance).toFixed(2)}
           </Text>
         </View>
 

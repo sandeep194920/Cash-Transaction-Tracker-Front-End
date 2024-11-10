@@ -18,7 +18,7 @@ type EventT = {
 };
 
 const DatePicker = () => {
-  const { unsettledTransaction, updateCurrentTransaction } = useAppContext();
+  const { unsettledTransaction, updateUnsettledTransaction } = useAppContext();
   const currentDate = unsettledTransaction?.transactionDate || new Date();
   const [show, setShow] = useState(false);
   const { theme } = useThemeContext();
@@ -26,11 +26,11 @@ const DatePicker = () => {
   // Handle date change
   const onChange = (event: EventT, selectedDate: Date | undefined) => {
     setShow(Platform.OS === "ios"); // Keep the picker open for iOS
-    updateCurrentTransaction({ transactionDate: selectedDate }); // Set the selected date
+    updateUnsettledTransaction({ transactionDate: selectedDate }); // Set the selected date
     setShow(false);
   };
 
-  const { dateLong } = formattedDateStr(currentDate);
+  const { dateShort } = formattedDateStr(currentDate);
 
   return (
     <View style={[commonStyles.rowSection]}>
@@ -43,6 +43,9 @@ const DatePicker = () => {
         />
       ) : (
         <View style={[commonStyles.rowSection, { gap: 10 }]}>
+          <Text style={[styles.date, { color: theme.colors.text }]}>
+            {dateShort}
+          </Text>
           <Icon
             name="edit-calendar"
             onPress={() => {
@@ -51,9 +54,6 @@ const DatePicker = () => {
             size={24}
             color={theme.colors.primary}
           />
-          <Text style={[styles.date, { color: theme.colors.text }]}>
-            {dateLong}
-          </Text>
         </View>
       )}
     </View>

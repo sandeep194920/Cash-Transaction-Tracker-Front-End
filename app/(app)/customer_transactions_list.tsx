@@ -98,20 +98,49 @@ const CustomerTransactionsList = () => {
             </Text>
           </View>
         ) : (
-          <View style={[commonStyles.rowSection, { marginVertical: 16 }]}>
-            <Text style={[styles.balanceText, { color: theme.colors.error }]}>
-              Balance Amount {` - `}
-            </Text>
-            <CustomIcon
-              iconName="dollar"
-              size={18}
-              color={theme.colors.primary}
-              marginRight={2}
-              marginLeft={2}
-            />
-            <Text style={[styles.balanceText, { color: theme.colors.error }]}>
-              {currentSelectedCustomer.totalBalance}
-            </Text>
+          <View style={{ marginVertical: 16, gap: 6 }}>
+            <View style={[commonStyles.rowSection]}>
+              <Text
+                style={[
+                  styles.balanceText,
+                  {
+                    color:
+                      currentSelectedCustomer.totalBalance > 0
+                        ? theme.colors.error
+                        : theme.colors.success,
+                  },
+                ]}
+              >
+                {currentSelectedCustomer.totalBalance < 0
+                  ? "Overpaid Amount - "
+                  : "Balance Amount - "}
+              </Text>
+
+              <CustomIcon
+                iconName="dollar"
+                size={18}
+                color={
+                  currentSelectedCustomer.totalBalance > 0
+                    ? theme.colors.primary
+                    : theme.colors.success
+                }
+                marginRight={2}
+                marginLeft={2}
+              />
+              <Text
+                style={[
+                  styles.balanceText,
+                  {
+                    color:
+                      currentSelectedCustomer.totalBalance > 0
+                        ? theme.colors.error
+                        : theme.colors.success,
+                  },
+                ]}
+              >
+                {Math.abs(currentSelectedCustomer.totalBalance)}
+              </Text>
+            </View>
           </View>
         )}
 
