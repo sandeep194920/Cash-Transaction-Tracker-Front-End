@@ -34,7 +34,9 @@ export type MenuT = {
   deleteHandler: () => void;
 };
 
-export type PartialTransactionT = Partial<TransactionT>;
+export type UnsettledTransactionT = Partial<
+  Omit<TransactionT, "taxPercentage">
+> & { taxPercentage: number };
 
 export type ItemT = {
   id: string;
@@ -50,6 +52,7 @@ export type IconNameT =
   | "more-vert"
   | "person"
   | "add-circle"
+  | "house"
   | "home"
   | "logout"
   | "settings"

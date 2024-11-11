@@ -18,6 +18,7 @@ const ConfirmTransactionModal = () => {
   const { theme } = useThemeContext();
   const {
     currentSelectedCustomer,
+    unsettledTransaction,
     updateUnsettledTransaction,
     resetAndClearTransaction,
   } = useAppContext();
@@ -57,7 +58,10 @@ const ConfirmTransactionModal = () => {
     validationSchema,
     onSubmit: (values) => {
       const { amountPaid } = values;
-      updateUnsettledTransaction({ amountPaid: +amountPaid });
+      updateUnsettledTransaction({
+        ...unsettledTransaction,
+        amountPaid: +amountPaid,
+      });
       addTransactionHandler();
     },
   });
@@ -105,7 +109,7 @@ const ConfirmTransactionModal = () => {
             color={theme.colors.primary}
           />
           <Text style={[styles.value, { color: theme.colors.text }]}>
-            {orderTotalAmount}
+            {orderTotalAmount.toFixed(2)}
           </Text>
         </View>
         <View
@@ -118,7 +122,7 @@ const ConfirmTransactionModal = () => {
           <Text style={[styles.label, { color: theme.colors.text }]}>
             {name}'s Current Balance:
           </Text>
-          <Text style={[styles.subText, { color: theme.colors.text }]}>
+          <Text style={[styles.subText, { color: theme.colors.primary }]}>
             (Excluding this order)
           </Text>
         </View>
@@ -131,9 +135,19 @@ const ConfirmTransactionModal = () => {
             color={theme.colors.primary}
           />
           <Text style={[styles.value, { color: theme.colors.text }]}>
-            {currentBalance}
+            {currentBalance.toFixed(2)}
           </Text>
         </View>
+
+        <View
+          style={[
+            {
+              height: 0.4,
+              backgroundColor: theme.colors.primary,
+              marginTop: 10,
+            },
+          ]}
+        />
         <View
           style={[
             commonStyles.rowSection,
@@ -144,7 +158,7 @@ const ConfirmTransactionModal = () => {
           <Text style={[styles.label, { color: theme.colors.text }]}>
             New Balance:
           </Text>
-          <Text style={[styles.subText, { color: theme.colors.text }]}>
+          <Text style={[styles.subText, { color: theme.colors.primary }]}>
             (Including this order)
           </Text>
         </View>
@@ -154,10 +168,22 @@ const ConfirmTransactionModal = () => {
         >
           <CustomIcon
             iconName={currency}
-            size={16}
+            size={18}
             color={theme.colors.primary}
           />
-          <Text style={[styles.value, { color: theme.colors.text }]}>
+          <Text
+            style={[
+              styles.value,
+              {
+                color:
+                  orderTotalAmount + currentBalance > 0
+                    ? theme.colors.error
+                    : theme.colors.success,
+                fontWeight: "700",
+                fontSize: 18,
+              },
+            ]}
+          >
             {(orderTotalAmount + currentBalance).toFixed(2)}
           </Text>
         </View>

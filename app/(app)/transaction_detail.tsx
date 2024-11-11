@@ -11,7 +11,6 @@ import { commonStyles } from "@/commonStyles";
 import { Stack } from "expo-router";
 import { useAppContext } from "@/context/AppContext";
 import { formattedDateStr } from "@/utils/dateTime";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import CustomIcon from "@/components/CustomIcon";
 import { currency } from "@/constants/Generic";
 
@@ -25,9 +24,6 @@ const TransactionDetail = () => {
   const { theme } = useThemeContext();
 
   const { currentSelectedTransaction } = useAppContext();
-  const gross = 100;
-  const tax = gross * 0.015; // Assuming 1.5% tax
-  const total = gross + tax;
 
   if (!currentSelectedTransaction) return null;
 
@@ -122,7 +118,7 @@ const TransactionDetail = () => {
               size={16}
             />
             <Text style={[styles.amountValue, { color: theme.colors.text }]}>
-              {grossPrice}
+              {grossPrice.toFixed(2)}
             </Text>
           </View>
         </View>
@@ -156,7 +152,7 @@ const TransactionDetail = () => {
               size={16}
             />
             <Text style={[styles.totalValue, { color: theme.colors.text }]}>
-              {totalPrice}
+              {totalPrice.toFixed(2)}
             </Text>
           </View>
         </View>
@@ -178,7 +174,7 @@ const TransactionDetail = () => {
               size={16}
             />
             <Text style={[styles.smallValue, { color: theme.colors.text }]}>
-              {amountPaid}
+              {amountPaid.toFixed(2)}
             </Text>
           </View>
         </View>
@@ -186,16 +182,29 @@ const TransactionDetail = () => {
           <Text
             style={[styles.smallLabel, { color: theme.colors.secondaryText }]}
           >
-            Balance (after this order)
+            {balanceAmount >= 0 ? "Balance Amount" : "Overpaid Amount"} (after
+            this order)
           </Text>
           <View style={commonStyles.rowSection}>
             <CustomIcon
               iconName={currency}
-              color={theme.colors.primary}
+              color={
+                balanceAmount > 0 ? theme.colors.error : theme.colors.success
+              }
               size={16}
             />
-            <Text style={[styles.smallValue, { color: theme.colors.text }]}>
-              {balanceAmount}
+            <Text
+              style={[
+                styles.smallValue,
+                {
+                  color:
+                    balanceAmount > 0
+                      ? theme.colors.error
+                      : theme.colors.success,
+                },
+              ]}
+            >
+              {Math.abs(balanceAmount).toFixed(2)}
             </Text>
           </View>
         </View>
@@ -263,6 +272,7 @@ const styles = StyleSheet.create({
   },
   smallValue: {
     fontSize: 12,
+    fontWeight: "600",
   },
 });
 

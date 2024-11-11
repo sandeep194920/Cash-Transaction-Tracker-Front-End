@@ -42,7 +42,12 @@ function useCustomers() {
     isLoading: isLoadingCustomers,
     data: customers,
     error: customersError,
-  } = useQuery(["customers", currentSelectedCustomer?._id], fetchCustomers);
+    refetch: refetchAllCustomers,
+  } = useQuery(["customers", currentSelectedCustomer?._id], fetchCustomers, {
+    //TODO: This is not working (I wanted to refetch customers when a new transaction is added. The customer list page (home page) doesnt get updated with the new balance so i was trying this but doesnt seem to work)
+    // So for now, I will try to invalidate this customers call when the transaction is fetched
+    refetchOnWindowFocus: true,
+  });
 
   // Handle errors after all hooks are called
   if (customersError) {
@@ -129,6 +134,7 @@ function useCustomers() {
     isLoadingCustomer,
     addCustomer,
     refetchCustomer,
+    refetchAllCustomers,
     isCustomerAdding,
     isCustomerAddingNotCompleted,
   };

@@ -40,4 +40,10 @@ export const commonStyles = StyleSheet.create({
     borderBottomColor: "#E0E0E0",
     marginBottom: 10,
   },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#ccc",
+    marginVertical: 20,
+  },
 });

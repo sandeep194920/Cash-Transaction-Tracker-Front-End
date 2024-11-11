@@ -56,7 +56,7 @@ const CustomersList = () => {
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
         {!customers?.length ? (
-          <Text style={styles.noCustomersText}>
+          <Text style={[styles.noCustomersText, { color: theme.colors.text }]}>
             Let's add your first lucky customer! Press the + button below
           </Text>
         ) : (

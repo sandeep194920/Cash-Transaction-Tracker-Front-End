@@ -21,12 +21,15 @@ const DatePicker = () => {
   const { unsettledTransaction, updateUnsettledTransaction } = useAppContext();
   const currentDate = unsettledTransaction?.transactionDate || new Date();
   const [show, setShow] = useState(false);
-  const { theme } = useThemeContext();
+  const { theme, currentTheme } = useThemeContext();
 
   // Handle date change
   const onChange = (event: EventT, selectedDate: Date | undefined) => {
     setShow(Platform.OS === "ios"); // Keep the picker open for iOS
-    updateUnsettledTransaction({ transactionDate: selectedDate }); // Set the selected date
+    updateUnsettledTransaction({
+      ...unsettledTransaction,
+      transactionDate: selectedDate,
+    }); // Set the selected date
     setShow(false);
   };
 
@@ -36,10 +39,13 @@ const DatePicker = () => {
     <View style={[commonStyles.rowSection]}>
       {show ? (
         <DateTimePicker
+          accentColor={theme.colors.primary}
+          textColor={theme.colors.primary}
           value={currentDate}
           mode="date"
           display="default"
           onChange={onChange}
+          themeVariant={currentTheme}
         />
       ) : (
         <View style={[commonStyles.rowSection, { gap: 10 }]}>

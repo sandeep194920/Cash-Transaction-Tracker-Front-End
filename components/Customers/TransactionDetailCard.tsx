@@ -123,7 +123,7 @@ const TransactionDetailCard = ({
                   size={16}
                 />
                 <Text style={[styles.amount, { color: theme.colors.text }]}>
-                  {amountPaid}
+                  {amountPaid.toFixed(2)}
                 </Text>
               </View>
             </View>
@@ -133,10 +133,15 @@ const TransactionDetailCard = ({
                 <Text
                   style={[
                     styles.amountDescription,
-                    { color: theme.colors.text },
+                    {
+                      color:
+                        balanceAmount >= 0
+                          ? theme.colors.error
+                          : theme.colors.success,
+                    },
                   ]}
                 >
-                  Remaining balance
+                  {balanceAmount >= 0 ? "Remaining balance" : "Overpaid amount"}
                 </Text>
               </View>
               <View style={commonStyles.rowSection}>
@@ -145,8 +150,18 @@ const TransactionDetailCard = ({
                   color={theme.colors.primary}
                   size={16}
                 />
-                <Text style={[styles.amount, { color: theme.colors.text }]}>
-                  {balanceAmount}
+                <Text
+                  style={[
+                    styles.amount,
+                    {
+                      color:
+                        balanceAmount >= 0
+                          ? theme.colors.error
+                          : theme.colors.success,
+                    },
+                  ]}
+                >
+                  {Math.abs(balanceAmount).toFixed(2)}
                 </Text>
               </View>
             </View>

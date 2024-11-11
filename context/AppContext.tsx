@@ -1,4 +1,4 @@
-import { CustomerT, ItemT, PartialTransactionT, TransactionT } from "@/types";
+import { CustomerT, ItemT, UnsettledTransactionT, TransactionT } from "@/types";
 import React, {
   createContext,
   Dispatch,
@@ -20,10 +20,8 @@ type CreateContextT = {
   addItem: (item: ItemT) => void;
   updateItem: (item: ItemT) => void;
   deleteItem: ({ itemID }: { itemID: string }) => void;
-  taxPercentage: number;
-  setTaxPercentage: React.Dispatch<React.SetStateAction<number>>;
-  unsettledTransaction: PartialTransactionT;
-  updateUnsettledTransaction: (values: PartialTransactionT) => void;
+  unsettledTransaction: UnsettledTransactionT;
+  updateUnsettledTransaction: (values: UnsettledTransactionT) => void;
   resetAndClearTransaction: () => void;
   newlyAddedTransaction: TransactionT | null;
   setNewlyAddedTransaction: Dispatch<SetStateAction<TransactionT | null>>;
@@ -43,9 +41,7 @@ const AppContext = createContext<CreateContextT>({
   addItem: () => {},
   updateItem: () => {},
   deleteItem: () => {},
-  taxPercentage: 0,
-  setTaxPercentage: (() => {}) as Dispatch<React.SetStateAction<number>>,
-  unsettledTransaction: { items: [] },
+  unsettledTransaction: { items: [], taxPercentage: 0 },
   updateUnsettledTransaction: () => {},
   resetAndClearTransaction: () => {},
   newlyAddedTransaction: null,
@@ -64,18 +60,15 @@ const AppContext = createContext<CreateContextT>({
 
 const AppProvider = ({ children }: AppProviderT) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [taxPercentage, setTaxPercentage] = useState(13);
   const [currentSelectedCustomer, setCurrentSelectedCustomer] =
     useState<CustomerT | null>(null);
   const [currentSelectedTransaction, setCurrentSelectedTransaction] =
     useState<TransactionT | null>(null);
-  // If an item is under edit, we need that item to be present in add_item as Formik initialValues
-
   const [unsettledTransaction, setUnsettledTransaction] =
-    useState<PartialTransactionT>({
+    useState<UnsettledTransactionT>({
       items: [],
       transactionDate: new Date(),
-      taxPercentage: 13,
+      taxPercentage: 0, // Default is 0. We can change this in settings page
     });
 
   // A newly added customer - For showing  on UI - animation purpose
@@ -148,14 +141,18 @@ const AppProvider = ({ children }: AppProviderT) => {
     });
   };
 
-  const updateUnsettledTransaction = (values: PartialTransactionT) => {
+  const updateUnsettledTransaction = (values: UnsettledTransactionT) => {
     setUnsettledTransaction(() => {
       return { ...unsettledTransaction, ...values };
     });
   };
 
   const resetAndClearTransaction = () => {
-    updateUnsettledTransaction({ items: [], transactionDate: new Date() });
+    updateUnsettledTransaction({
+      taxPercentage: unsettledTransaction.taxPercentage,
+      items: [],
+      transactionDate: new Date(),
+    });
   };
 
   const appValues = {
@@ -166,8 +163,6 @@ const AppProvider = ({ children }: AppProviderT) => {
     addItem,
     updateItem,
     deleteItem,
-    taxPercentage,
-    setTaxPercentage,
     unsettledTransaction,
     updateUnsettledTransaction,
     resetAndClearTransaction,

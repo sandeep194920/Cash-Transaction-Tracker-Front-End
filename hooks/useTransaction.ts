@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { useAppContext } from "@/context/AppContext";
 
 const useTransaction = () => {
-  const { unsettledTransaction, taxPercentage } = useAppContext();
-  const { items: orderedItems } = unsettledTransaction;
+  const { unsettledTransaction } = useAppContext();
+  const { items: orderedItems, taxPercentage } = unsettledTransaction;
 
   const currentTransactionAmount = useMemo(() => {
     if (!orderedItems || !orderedItems.length)

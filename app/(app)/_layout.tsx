@@ -87,6 +87,7 @@ const AppLayout = () => {
           },
         }}
       />
+
       <Stack.Screen
         name="add_item"
         options={{
@@ -115,6 +116,18 @@ const AppLayout = () => {
         options={{
           presentation: "modal",
           headerTitle: "Confirm Transaction",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="balance_adjust"
+        options={{
+          presentation: "modal",
+          headerTitle: "Adjust Balance",
           headerTintColor: theme.colors.buttonText,
           headerStyle: {
             backgroundColor: theme.colors.primary,

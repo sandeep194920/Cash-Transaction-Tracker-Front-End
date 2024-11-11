@@ -1,7 +1,6 @@
 import { useThemeContext } from "@/context/ThemeContext";
 import { Link } from "expo-router";
 import { View, Text, StyleSheet, Pressable, Animated } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import MenuOptionsOnCard from "../Menu";
 import { commonStyles } from "@/commonStyles";
 import { CustomerT } from "@/types";
@@ -29,7 +28,6 @@ const CustomerCard = ({
   const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
   const { setCurrentSelectedCustomer } = useAppContext();
   const { isMenuVisible, showMenu, hideMenu } = useMenu();
-
   return (
     <Link
       style={[
@@ -100,7 +98,7 @@ const CustomerCard = ({
                     { color: theme.colors.text },
                   ]}
                 >
-                  Balance
+                  {totalBalance >= 0 ? "Balance Amount" : "Overpaid Amount"}
                 </Text>
               </View>
               <View style={commonStyles.rowSection}>
@@ -109,24 +107,33 @@ const CustomerCard = ({
                   color={theme.colors.primary}
                   size={16}
                 />
-                <Text style={[styles.amount, { color: theme.colors.text }]}>
-                  {totalBalance}
+                <Text
+                  style={[
+                    styles.amount,
+                    {
+                      color:
+                        totalBalance > 0
+                          ? theme.colors.error
+                          : theme.colors.success,
+                    },
+                  ]}
+                >
+                  {Math.abs(totalBalance).toFixed(2)}
                 </Text>
               </View>
             </View>
-
             {/* Expandable Section with Phone, Edit/Delete buttons */}
             {expanded && (
-              <View style={[styles.expandedContent]}>
+              <View style={{ marginTop: 5 }}>
                 <View style={[styles.expandedRow]}>
                   <CustomIcon
                     iconName="phone"
-                    size={18}
+                    size={20}
                     color={theme.colors.primaryLight}
                   />
                   <Text
                     style={[
-                      styles.phone,
+                      styles.extraText,
                       { color: theme.colors.secondaryText },
                     ]}
                   >
@@ -137,12 +144,12 @@ const CustomerCard = ({
                 <View style={[styles.expandedRow]}>
                   <CustomIcon
                     iconName="email"
-                    size={18}
+                    size={20}
                     color={theme.colors.primaryLight}
                   />
                   <Text
                     style={[
-                      styles.phone,
+                      styles.extraText,
                       { color: theme.colors.secondaryText },
                     ]}
                   >
@@ -152,14 +159,14 @@ const CustomerCard = ({
 
                 {address && (
                   <View style={[styles.expandedRow]}>
-                    <Icon
-                      name="house"
-                      size={18}
+                    <CustomIcon
+                      iconName="house"
+                      size={20}
                       color={theme.colors.primaryLight}
                     />
                     <Text
                       style={[
-                        styles.phone,
+                        styles.extraText,
                         { color: theme.colors.secondaryText },
                       ]}
                     >
@@ -224,20 +231,22 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontSize: 14,
+    fontWeight: "bold",
   },
   expandIcon: {
     alignSelf: "flex-start",
   },
-  expandedContent: {
-    marginVertical: 16,
-    gap: 10,
-  },
+  // expandedContent: {
+  //   // marginVertical: 16,
+  //   // gap: 10,
+  // },
   expandedRow: {
     gap: 8,
+    marginBottom: 10,
     flexDirection: "row",
     alignItems: "center",
   },
-  phone: {
+  extraText: {
     fontSize: 14,
   },
   actions: {

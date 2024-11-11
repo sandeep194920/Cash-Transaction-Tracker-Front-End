@@ -121,7 +121,7 @@ const CustomerTransactionsList = () => {
                 size={18}
                 color={
                   currentSelectedCustomer.totalBalance > 0
-                    ? theme.colors.primary
+                    ? theme.colors.error
                     : theme.colors.success
                 }
                 marginRight={2}
@@ -138,8 +138,18 @@ const CustomerTransactionsList = () => {
                   },
                 ]}
               >
-                {Math.abs(currentSelectedCustomer.totalBalance)}
+                {Math.abs(currentSelectedCustomer.totalBalance).toFixed(2)}
               </Text>
+
+              <CustomIcon
+                iconName="edit"
+                size={24}
+                color={theme.colors.primary}
+                marginLeft={6}
+                onPress={() =>
+                  router.push({ pathname: "/(app)/balance_adjust" })
+                }
+              />
             </View>
           </View>
         )}

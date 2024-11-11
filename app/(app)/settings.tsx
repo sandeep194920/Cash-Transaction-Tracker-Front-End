@@ -14,7 +14,10 @@ import {
 const SettingsScreen = () => {
   const { currentTheme, theme, switchTheme } = useThemeContext();
   const [isPercentageEdit, setIsPercentageEdit] = useState(false);
-  const { taxPercentage, setTaxPercentage } = useAppContext();
+  const { unsettledTransaction, updateUnsettledTransaction } = useAppContext();
+  const [selectedPercentage, setSelectedPercentage] = useState(
+    unsettledTransaction.taxPercentage
+  );
 
   const themeStyles = {
     backgroundColor: theme.colors.background,
@@ -25,6 +28,11 @@ const SettingsScreen = () => {
 
   const handleThemeChange = (newTheme: "light" | "dark") => {
     switchTheme(newTheme);
+  };
+
+  const updateTaxPercentage = () => {
+    setIsPercentageEdit((prev) => !prev);
+    updateUnsettledTransaction({ taxPercentage: selectedPercentage });
   };
 
   const taxContainer = (
@@ -40,13 +48,15 @@ const SettingsScreen = () => {
                 borderColor: themeStyles.textColor,
               },
             ]}
-            value={taxPercentage.toString()}
+            value={selectedPercentage?.toString()}
             keyboardType="numeric"
-            onChangeText={(text) => setTaxPercentage(Number(text))}
+            onChangeText={(text) => setSelectedPercentage(Number(text))}
             autoFocus
           />
         ) : (
-          <Text style={{ color: themeStyles.textColor }}>{taxPercentage}</Text>
+          <Text style={{ color: themeStyles.textColor }}>
+            {selectedPercentage}
+          </Text>
         )}
         <CustomIcon
           iconName="percent"
@@ -62,9 +72,7 @@ const SettingsScreen = () => {
           iconName="check"
           size={24}
           color={theme.colors.success}
-          onPress={() => {
-            setIsPercentageEdit((prev) => !prev);
-          }}
+          onPress={updateTaxPercentage}
         />
       ) : (
         <CustomIcon
@@ -133,7 +141,7 @@ const SettingsScreen = () => {
       </View>
 
       {/* Divider Line */}
-      <View style={styles.divider} />
+      <View style={commonStyles.divider} />
 
       <Text style={[styles.title, { color: themeStyles.textColor }]}>
         Select Tax Percentage
@@ -176,11 +184,6 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#ccc",
-    marginVertical: 20,
   },
   input: {
     borderBottomWidth: 1,

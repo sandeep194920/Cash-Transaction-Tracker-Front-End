@@ -25,11 +25,12 @@ const AddTransactionScreen = () => {
   const { theme } = useThemeContext();
 
   const {
-    taxPercentage,
-    unsettledTransaction: { items: orderedItems },
+    unsettledTransaction,
     currentSelectedCustomer,
     updateUnsettledTransaction,
   } = useAppContext();
+
+  const { items: orderedItems, taxPercentage } = unsettledTransaction;
 
   const { orderGrossAmount, orderTotalAmount } = useTransaction();
 
@@ -68,7 +69,7 @@ const AddTransactionScreen = () => {
         {
           text: "Quit current transaction",
           onPress: () => {
-            updateUnsettledTransaction({ items: [] });
+            updateUnsettledTransaction({ ...unsettledTransaction, items: [] });
             return router.navigate("/(app)/customer_transactions_list");
           },
           style: "destructive",
@@ -157,7 +158,7 @@ const AddTransactionScreen = () => {
                 color={theme.colors.primary}
               />
               <Text style={[styles.amountValue, { color: theme.colors.text }]}>
-                {orderGrossAmount}
+                {orderGrossAmount.toFixed(2)}
               </Text>
             </View>
           </View>
@@ -172,9 +173,10 @@ const AddTransactionScreen = () => {
             </Text>
             <View style={commonStyles.rowSection}>
               <Text style={[styles.amountValue, { color: theme.colors.text }]}>
-                {Number.isInteger(taxPercentage)
+                {/* {Number.isInteger(taxPercentage)
                   ? taxPercentage
-                  : taxPercentage.toFixed(2)}
+                  : taxPercentage.toFixed(2)} */}
+                {taxPercentage}
               </Text>
               <CustomIcon
                 iconName="percent"
@@ -195,7 +197,7 @@ const AddTransactionScreen = () => {
                 color={theme.colors.primary}
               />
               <Text style={[styles.totalValue, { color: theme.colors.text }]}>
-                {orderTotalAmount}
+                {orderTotalAmount.toFixed(2)}
               </Text>
             </View>
           </View>
