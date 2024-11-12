@@ -1,6 +1,6 @@
 import { APP_URL } from "@/constants/URLs";
 import { useAppContext } from "@/context/AppContext";
-import { TransactionT } from "@/types";
+import { BalanceAdjustT, TransactionT } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -89,6 +89,33 @@ function useTransactions() {
     return response.data;
   };
 
+  // Adjust customer balance
+  const adjustBalanceAmount = async ({
+    balanceType,
+    newBalanceAmount,
+  }: BalanceAdjustT) => {
+    if (!currentSelectedCustomer?._id) {
+      return null;
+    }
+
+    const token = await AsyncStorage.getItem("token");
+
+    const response = await axios.post(
+      `${APP_URL}/update-customer-balance`,
+      {
+        customerID: currentSelectedCustomer._id,
+        newBalanceAmount,
+        balanceType,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  };
+
   const {
     mutate: createNewTransaction,
     isLoading: isTransactionAdding,
@@ -130,6 +157,48 @@ function useTransactions() {
     },
   });
 
+  // Adjusting balance is also considered a transaction, so adding it here in this file
+  const {
+    mutate: adjustCustomerBalance,
+    isLoading: isBalanceAdjustLoading,
+    isIdle: isBalanceAdjustNotCompleted,
+  } = useMutation({
+    mutationFn: adjustBalanceAmount,
+
+    onSuccess: async (result) => {
+      setNewlyAddedTransaction(result["transaction"]);
+      // refetchAllTransactions is important because, after creating a transaction, we redirect users to trasactions_list page
+      // and that new transaction wouldn't be shown if we dont refetchAllTransactions. This is the cleanest way
+      // I think instead of appending the new transaction on Frontend and use some useEff to then fetch on screen.
+      refetchAllTransactions();
+      // refetch customer as well so we get the updated balance after adding a transaction
+      if (refetchCustomer) {
+        const customer = await refetchCustomer();
+        if (customer?.data) {
+          setCurrentSelectedCustomer(customer.data);
+        }
+      }
+
+      // TODO: Try to use refetchOnWindowFocus instead of refetchingAllCustomers here. See the comment inside useQuery of "customers" as to why this is necessary
+      if (refetchAllCustomers) {
+        queryClient.invalidateQueries(["customers"]);
+      }
+
+      Toast.show({
+        type: "success",
+        text1: "Customer Balance adjusted successfully",
+      });
+    },
+
+    onError: (error: any) => {
+      console.log("The error is", error);
+      Toast.show({
+        type: "error",
+        text1: error?.response?.data?.message || "Error adding customer",
+      });
+    },
+  });
+
   // Get single transaction query
   const {
     isLoading: isLoadingTransaction,
@@ -158,6 +227,9 @@ function useTransactions() {
     createNewTransaction,
     isTransactionAdding,
     isTransactionAddingNotCompleted,
+    adjustCustomerBalance,
+    isBalanceAdjustLoading,
+    isBalanceAdjustNotCompleted,
   };
 }
 

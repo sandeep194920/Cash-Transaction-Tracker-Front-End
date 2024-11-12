@@ -26,6 +26,13 @@ export type TransactionT = {
   amountPaid: number;
 };
 
+export type BalanceTypeT = "settle-up" | "balance-remaining" | "overpaying";
+
+export type BalanceAdjustT = {
+  balanceType: BalanceTypeT;
+  newBalanceAmount: number;
+};
+
 export type MenuT = {
   isMenuVisible: boolean;
   showMenu: () => void;

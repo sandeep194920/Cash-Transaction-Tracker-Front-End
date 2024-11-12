@@ -6,7 +6,6 @@ import {
   ListRenderItemInfo,
 } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
-import MenuOptionsOnCard from "@/components/Menu";
 import { commonStyles } from "@/commonStyles";
 import { Stack } from "expo-router";
 import { useAppContext } from "@/context/AppContext";
@@ -189,7 +188,7 @@ const TransactionDetail = () => {
             <CustomIcon
               iconName={currency}
               color={
-                balanceAmount > 0 ? theme.colors.error : theme.colors.success
+                balanceAmount >= 0 ? theme.colors.error : theme.colors.success
               }
               size={16}
             />
@@ -198,7 +197,7 @@ const TransactionDetail = () => {
                 styles.smallValue,
                 {
                   color:
-                    balanceAmount > 0
+                    balanceAmount >= 0
                       ? theme.colors.error
                       : theme.colors.success,
                 },

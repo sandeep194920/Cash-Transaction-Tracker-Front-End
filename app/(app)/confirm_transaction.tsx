@@ -14,6 +14,15 @@ import useTransaction from "@/hooks/useTransaction";
 import CustomIcon from "@/components/CustomIcon";
 import { currency } from "@/constants/Generic";
 
+// Form validation schema using Yup
+const validationSchema = yup.object().shape({
+  amountPaid: yup
+    .number()
+    .required("Amount paid is required")
+    .min(0, "Amount must be at least 0"),
+  // .positive("Amount must be positive"), // INFO: This would expect min to be 1, so commenting this out and adding .min here
+});
+
 const ConfirmTransactionModal = () => {
   const { theme } = useThemeContext();
   const {
@@ -31,14 +40,6 @@ const ConfirmTransactionModal = () => {
 
   if (!currentSelectedCustomer) return null;
   const { name, totalBalance: currentBalance } = currentSelectedCustomer;
-  // Form validation schema using Yup
-  const validationSchema = yup.object().shape({
-    amountPaid: yup
-      .number()
-      .required("Amount paid is required")
-      .min(0, "Amount must be at least 0"),
-    // .positive("Amount must be positive"), // INFO: This would expect min to be 1, so commenting this out and adding .min here
-  });
 
   const addTransactionHandler = async () => {
     if (createNewTransaction) {
@@ -69,7 +70,7 @@ const ConfirmTransactionModal = () => {
   useEffect(() => {
     /*
   
-    Initally, isTransactionAdding -> false and isTransactionAddingNotCompleted -> true (so !false and !true) will yield false so the router.dismiss will not run.
+    Initally, isTransactionAdding -> false and isTransactionAddingNotCompleted -> true (so !false and !true) will yield false so the below code will not run.
 
     When transaction is adding, isTransactionAdding -> true, and isTransactionAddingNotCompleted -> false (so !true and !false ) is false, so it will not run.
 
@@ -80,6 +81,7 @@ const ConfirmTransactionModal = () => {
       router.navigate("/(app)/customer_transactions_list");
       // the below line resets the transaction to initial state
       resetAndClearTransaction();
+      // TODO: See how confirm_transaction is closing without adding router.dismiss()
     }
   }, [isTransactionAdding, isTransactionAddingNotCompleted]);
 

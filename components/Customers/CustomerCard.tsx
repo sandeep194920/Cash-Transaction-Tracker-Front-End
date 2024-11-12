@@ -9,6 +9,8 @@ import useCardAnimation from "@/hooks/useCardAnimation";
 import CustomIcon from "../CustomIcon";
 import { currency } from "@/constants/Generic";
 import useMenu from "@/hooks/useMenu";
+import useTransactions from "@/hooks/useTransactions";
+import useCustomers from "@/hooks/useCustomers";
 
 type CustomerCardT = {
   customer: CustomerT;
@@ -28,6 +30,7 @@ const CustomerCard = ({
   const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
   const { setCurrentSelectedCustomer } = useAppContext();
   const { isMenuVisible, showMenu, hideMenu } = useMenu();
+
   return (
     <Link
       style={[
