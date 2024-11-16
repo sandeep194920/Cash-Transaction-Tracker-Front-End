@@ -10,6 +10,7 @@ type ButtonT = {
   borderColor?: ColorsT;
   width?: number;
   height?: number;
+  disabled?: boolean;
   pressHandler: () => void;
 };
 
@@ -22,6 +23,7 @@ const Button = ({
   height,
   fontSize = 18,
   pressHandler,
+  disabled,
 }: ButtonT) => {
   const buttonStyles = [
     styles.button,
@@ -43,7 +45,11 @@ const Button = ({
   ];
 
   return (
-    <TouchableOpacity onPress={pressHandler} style={buttonStyles}>
+    <TouchableOpacity
+      onPress={pressHandler}
+      disabled={disabled}
+      style={[buttonStyles, { opacity: disabled ? 0.5 : 1 }]}
+    >
       <Text style={textStyles}>{title}</Text>
     </TouchableOpacity>
   );

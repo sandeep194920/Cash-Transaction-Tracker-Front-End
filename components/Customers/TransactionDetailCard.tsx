@@ -7,9 +7,10 @@ import { TransactionT } from "@/types";
 import { formattedDateStr } from "@/utils/dateTime";
 import useCardAnimation from "@/hooks/useCardAnimation";
 import { useAppContext } from "@/context/AppContext";
-import { currency } from "@/constants/Generic";
+import { balanceTypeDescriptions, currency } from "@/constants/Generic";
 import CustomIcon from "../CustomIcon";
 import useMenu from "@/hooks/useMenu";
+import AnimatedView from "../AnimatedView";
 
 type TransactionDetailCardT = {
   transaction: TransactionT;
@@ -24,13 +25,104 @@ const TransactionDetailCard = ({
   setExpanded,
   isNewlyAddedItem = false,
 }: TransactionDetailCardT) => {
-  const { totalPrice, amountPaid, balanceAmount, transactionDate, items } =
-    transaction;
+  const {
+    totalPrice,
+    amountPaid,
+    balanceAmount,
+    transactionDate,
+    items,
+    transactionType,
+  } = transaction;
   const { isMenuVisible, showMenu, hideMenu } = useMenu();
   const { theme } = useThemeContext();
   const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
   const { dateLong } = formattedDateStr(transactionDate);
   const { setCurrentSelectedTransaction } = useAppContext();
+
+  const dateUI = (
+    <View style={commonStyles.rowSection}>
+      <Text style={[styles.header, { color: theme.colors.text }]}>
+        {dateLong}
+      </Text>
+    </View>
+  );
+
+  const balanceAdjustTransaction = (
+    <Pressable
+      style={[
+        commonStyles.card,
+        {
+          backgroundColor: theme.colors.inputBackground,
+        },
+      ]}
+    >
+      <AnimatedView borderColor={borderColor} scaleAnim={scaleAnim}>
+        <View style={[commonStyles.cardRow, { marginBottom: 10 }]}>
+          {dateUI}
+          <Text
+            style={[
+              styles.amountDescription,
+              { color: theme.colors.primary, fontWeight: "800" },
+            ]}
+          >
+            Balance Adjusted
+          </Text>
+        </View>
+        {/* Balance Adjusted */}
+        <View style={commonStyles.cardRow}>
+          <View style={commonStyles.rowSection}></View>
+          <View
+            style={{
+              borderColor: theme.colors.primary,
+            }}
+          ></View>
+        </View>
+
+        {/* Remaining Balance */}
+        <View style={commonStyles.cardRow}>
+          <View style={commonStyles.rowSection}>
+            <Text
+              style={[
+                styles.amountDescription,
+                {
+                  color:
+                    balanceAmount >= 0
+                      ? theme.colors.error
+                      : theme.colors.success,
+                },
+              ]}
+            >
+              {balanceAmount >= 0 ? "Remaining balance" : "Overpaid amount"}
+            </Text>
+          </View>
+          <View style={commonStyles.rowSection}>
+            <CustomIcon
+              iconName={currency}
+              color={theme.colors.primary}
+              size={16}
+            />
+            <Text
+              style={[
+                styles.amount,
+                {
+                  color:
+                    balanceAmount >= 0
+                      ? theme.colors.error
+                      : theme.colors.success,
+                },
+              ]}
+            >
+              {Math.abs(balanceAmount).toFixed(2)}
+            </Text>
+          </View>
+        </View>
+      </AnimatedView>
+    </Pressable>
+  );
+
+  if (transactionType === "balanceUpdate") {
+    return balanceAdjustTransaction;
+  }
 
   return (
     <Link
@@ -47,41 +139,104 @@ const TransactionDetailCard = ({
       }}
     >
       <Pressable>
-        <Animated.View
-          style={[
-            {
-              transform: [{ scale: scaleAnim }], // Scale animation (native)
-              backgroundColor: theme.colors.inputBackground,
-              borderRadius: 10,
-            },
-          ]}
-        >
-          <Animated.View
-            style={{
-              borderColor: borderColor,
-              borderWidth: 2,
-              borderRadius: 10,
-            }}
-          >
-            <View style={[commonStyles.cardRow, { marginBottom: 10 }]}>
-              <View style={commonStyles.rowSection}>
-                <Text style={[styles.header, { color: theme.colors.text }]}>
-                  {dateLong}
-                </Text>
-              </View>
-              <MenuOptionsOnCard
-                isMenuVisible={isMenuVisible}
-                showMenu={showMenu}
-                hideMenu={hideMenu}
-                editHandler={() => {
-                  console.log("Edit from Transaction detail card");
-                }}
-                deleteHandler={() => {
-                  console.log("Delete from Transaction detail card");
-                }}
+        <AnimatedView borderColor={borderColor} scaleAnim={scaleAnim}>
+          <View style={[commonStyles.cardRow, { marginBottom: 10 }]}>
+            {dateUI}
+
+            {/* Let's not edit or delete a transaction for now. We can do that in the future if necessary */}
+
+            {/* <MenuOptionsOnCard
+              isMenuVisible={isMenuVisible}
+              showMenu={showMenu}
+              hideMenu={hideMenu}
+              editHandler={() => {
+                console.log("Edit from Transaction detail card");
+              }}
+              deleteHandler={() => {
+                console.log("Delete from Transaction detail card");
+              }}
+            /> */}
+          </View>
+          <View style={commonStyles.cardRow}>
+            <View style={commonStyles.rowSection}>
+              <Text
+                style={[styles.amountDescription, { color: theme.colors.text }]}
+              >
+                Order price
+              </Text>
+            </View>
+            <View style={commonStyles.rowSection}>
+              <CustomIcon
+                iconName={currency}
+                color={theme.colors.primary}
+                size={16}
               />
+              <Text style={[styles.amount, { color: theme.colors.text }]}>
+                {totalPrice}
+              </Text>
             </View>
+          </View>
 
+          <View style={commonStyles.cardRow}>
+            <View style={commonStyles.rowSection}>
+              <Text
+                style={[styles.amountDescription, { color: theme.colors.text }]}
+              >
+                Amount paid
+              </Text>
+            </View>
+            <View style={commonStyles.rowSection}>
+              <CustomIcon
+                iconName={currency}
+                color={theme.colors.primary}
+                size={16}
+              />
+              <Text style={[styles.amount, { color: theme.colors.text }]}>
+                {amountPaid.toFixed(2)}
+              </Text>
+            </View>
+          </View>
+
+          <View style={commonStyles.cardRow}>
+            <View style={commonStyles.rowSection}>
+              <Text
+                style={[
+                  styles.amountDescription,
+                  {
+                    color:
+                      balanceAmount >= 0
+                        ? theme.colors.error
+                        : theme.colors.success,
+                  },
+                ]}
+              >
+                {balanceAmount >= 0 ? "Remaining balance" : "Overpaid amount"}
+              </Text>
+            </View>
+            <View style={commonStyles.rowSection}>
+              <CustomIcon
+                iconName={currency}
+                color={theme.colors.primary}
+                size={16}
+              />
+              <Text
+                style={[
+                  styles.amount,
+                  {
+                    color:
+                      balanceAmount >= 0
+                        ? theme.colors.error
+                        : theme.colors.success,
+                  },
+                ]}
+              >
+                {Math.abs(balanceAmount).toFixed(2)}
+              </Text>
+            </View>
+          </View>
+
+          {/* Expandable Section with Phone, Edit/Delete buttons */}
+          {expanded && (
             <View style={commonStyles.cardRow}>
               <View style={commonStyles.rowSection}>
                 <Text
@@ -90,113 +245,26 @@ const TransactionDetailCard = ({
                     { color: theme.colors.text },
                   ]}
                 >
-                  Order price
+                  Number of items
                 </Text>
               </View>
               <View style={commonStyles.rowSection}>
-                <CustomIcon
-                  iconName={currency}
-                  color={theme.colors.primary}
-                  size={16}
-                />
                 <Text style={[styles.amount, { color: theme.colors.text }]}>
-                  {totalPrice}
+                  {items.length}
                 </Text>
               </View>
             </View>
+          )}
 
-            <View style={commonStyles.cardRow}>
-              <View style={commonStyles.rowSection}>
-                <Text
-                  style={[
-                    styles.amountDescription,
-                    { color: theme.colors.text },
-                  ]}
-                >
-                  Amount paid
-                </Text>
-              </View>
-              <View style={commonStyles.rowSection}>
-                <CustomIcon
-                  iconName={currency}
-                  color={theme.colors.primary}
-                  size={16}
-                />
-                <Text style={[styles.amount, { color: theme.colors.text }]}>
-                  {amountPaid.toFixed(2)}
-                </Text>
-              </View>
-            </View>
-
-            <View style={commonStyles.cardRow}>
-              <View style={commonStyles.rowSection}>
-                <Text
-                  style={[
-                    styles.amountDescription,
-                    {
-                      color:
-                        balanceAmount >= 0
-                          ? theme.colors.error
-                          : theme.colors.success,
-                    },
-                  ]}
-                >
-                  {balanceAmount >= 0 ? "Remaining balance" : "Overpaid amount"}
-                </Text>
-              </View>
-              <View style={commonStyles.rowSection}>
-                <CustomIcon
-                  iconName={currency}
-                  color={theme.colors.primary}
-                  size={16}
-                />
-                <Text
-                  style={[
-                    styles.amount,
-                    {
-                      color:
-                        balanceAmount >= 0
-                          ? theme.colors.error
-                          : theme.colors.success,
-                    },
-                  ]}
-                >
-                  {Math.abs(balanceAmount).toFixed(2)}
-                </Text>
-              </View>
-            </View>
-
-            {/* Expandable Section with Phone, Edit/Delete buttons */}
-            {expanded && (
-              <View style={commonStyles.cardRow}>
-                <View style={commonStyles.rowSection}>
-                  <Text
-                    style={[
-                      styles.amountDescription,
-                      { color: theme.colors.text },
-                    ]}
-                  >
-                    Number of items
-                  </Text>
-                </View>
-                <View style={commonStyles.rowSection}>
-                  <Text style={[styles.amount, { color: theme.colors.text }]}>
-                    {items.length}
-                  </Text>
-                </View>
-              </View>
-            )}
-
-            {/* Toggle Expand Icon */}
-            <CustomIcon
-              onPress={() => setExpanded(!expanded)}
-              iconName={expanded ? "expand-less" : "expand-more"}
-              size={24}
-              color={theme.colors.primary}
-              additionalStyles={styles.expandIcon}
-            />
-          </Animated.View>
-        </Animated.View>
+          {/* Toggle Expand Icon */}
+          <CustomIcon
+            onPress={() => setExpanded(!expanded)}
+            iconName={expanded ? "expand-less" : "expand-more"}
+            size={24}
+            color={theme.colors.primary}
+            additionalStyles={styles.expandIcon}
+          />
+        </AnimatedView>
       </Pressable>
     </Link>
   );

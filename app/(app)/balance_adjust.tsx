@@ -20,27 +20,12 @@ import useTransactions from "@/hooks/useTransactions";
 import { BalanceTypeT } from "@/types";
 import Loading from "@/components/Loading";
 
-type ButtonTextRecordT = "text" | "description";
-
-type ButtonTextT = Record<BalanceTypeT, Record<ButtonTextRecordT, string>>;
-
-const buttonText: ButtonTextT = {
-  "settle-up": {
-    text: "Make the Balance 0",
-    description:
-      "This will turn the customer's balance to 0. This operation can't be reversed.",
-  },
-  "balance-remaining": {
-    text: "Confirm New Balance",
-    description:
-      "The amount you enter must be atleast 1 or above and must be lesser than the balance amount. This operation can't be reversed.",
-  },
-  overpaying: {
-    text: "Confirm Overpayment",
-    description:
-      "The amount you enter must be greater than the balance amount. This operation can't be reversed.",
-  },
-} as const;
+const balanceTypeText: Record<BalanceTypeT, string> = {
+  "settle-up": "Settle-up will set the customer balance to 0",
+  positive: "Positive balance indicates customer is overpaying",
+  negative:
+    "Negative balance indicates customer has a remaining balance amount",
+};
 
 const BalanceAdjust = () => {
   const { theme } = useThemeContext();
@@ -50,36 +35,24 @@ const BalanceAdjust = () => {
     isBalanceAdjustLoading,
     isBalanceAdjustNotCompleted,
   } = useTransactions();
-  const [balanceType, setBalanceType] = useState<BalanceTypeT>("settle-up");
 
-  let validationSchema = useMemo(() => {
-    if (balanceType === "overpaying" && currentSelectedCustomer?.totalBalance) {
-      return yup.object().shape({
-        amountPaid: yup
-          .number()
-          .required("Amount paid is required")
-          .min(
-            currentSelectedCustomer.totalBalance + 0.0001,
-            "Amount paid must be greater than current balance!"
-          ),
-        // .positive("Amount must be positive"), // INFO: This would expect min to be 1, so commenting this out and adding .min here
-      });
-    } else if (
-      balanceType === "balance-remaining" &&
-      currentSelectedCustomer?.totalBalance
-    ) {
-      return yup.object().shape({
-        amountPaid: yup
-          .number()
-          .required("Amount paid is required")
-          .max(
-            currentSelectedCustomer.totalBalance - 0.0001,
-            "Amount paid must be less than the current balance!"
-          )
-          .positive("Amount must be positive"), // INFO: This would expect min to be 1, so commenting this out and adding .min here
-      });
+  const [balanceType, setBalanceType] = useState<BalanceTypeT>("settle-up");
+  const [balancePrediction, setBalancePrediction] = useState<number | null>(
+    null
+  );
+
+  const validationSchema = useMemo(() => {
+    if (balanceType === "settle-up") {
+      return null;
     }
-  }, [balanceType, currentSelectedCustomer]);
+    return yup.object().shape({
+      amountPaid: yup
+        .number()
+        .typeError("Enter a valid number")
+        .required("Amount paid is required")
+        .positive("Don't include - sign. Just enter the amount!"),
+    });
+  }, [balanceType]);
 
   // Formik for form handling
   const formik = useFormik({
@@ -160,8 +133,17 @@ const BalanceAdjust = () => {
             size={16}
             color={theme.colors.primary}
           />
-          <Text style={[styles.value, { color: theme.colors.text }]}>
-            {totalBalance.toFixed(2)}
+          <Text
+            style={[
+              styles.value,
+              {
+                color:
+                  totalBalance < 0 ? theme.colors.success : theme.colors.error,
+                fontWeight: "600",
+              },
+            ]}
+          >
+            {Math.abs(totalBalance).toFixed(2)}
           </Text>
         </View>
         <View
@@ -174,9 +156,6 @@ const BalanceAdjust = () => {
           <Text style={[styles.label, { color: theme.colors.text }]}>
             Enter New Balance:
           </Text>
-          {/* <Text style={[styles.subText, { color: theme.colors.secondaryText }]}>
-            This will override current balance amount, and can't be reversed!
-          </Text> */}
         </View>
 
         <View style={styles.option}>
@@ -191,51 +170,13 @@ const BalanceAdjust = () => {
             >
               <Text
                 style={[
-                  styles.optionText,
                   {
-                    color:
-                      balanceType === "settle-up"
-                        ? theme.colors.text
-                        : theme.colors.secondaryText,
+                    color: theme.colors.text,
                   },
                 ]}
               >
-                Settle Up!
+                Settle Up (Make balance 0)
               </Text>
-              <View style={commonStyles.rowSection}>
-                <Text
-                  style={[
-                    styles.subText,
-                    {
-                      color:
-                        balanceType === "settle-up"
-                          ? theme.colors.text
-                          : theme.colors.secondaryText,
-                    },
-                  ]}
-                >
-                  (Make the balace as{" "}
-                </Text>
-                <CustomIcon
-                  iconName={currency}
-                  size={12}
-                  color={theme.colors.primary}
-                />
-
-                <Text
-                  style={[
-                    styles.subText,
-                    {
-                      color:
-                        balanceType === "settle-up"
-                          ? theme.colors.text
-                          : theme.colors.secondaryText,
-                    },
-                  ]}
-                >
-                  0)
-                </Text>
-              </View>
             </View>
 
             <View
@@ -254,30 +195,27 @@ const BalanceAdjust = () => {
           <TouchableOpacity
             style={commonStyles.cardRow}
             onPress={() => {
-              setBalanceType("balance-remaining");
+              setBalanceType("negative");
             }}
           >
-            <View style={[commonStyles.rowSection, { gap: 2 }]}>
+            <View
+              style={[commonStyles.rowSection, { gap: 2, flexWrap: "wrap" }]}
+            >
               <Text
                 style={[
-                  styles.optionText,
                   {
-                    color:
-                      balanceType === "balance-remaining"
-                        ? theme.colors.text
-                        : theme.colors.secondaryText,
+                    color: theme.colors.text,
                   },
                 ]}
               >
-                Paying partial balance amount
+                Set negative balance (No need of - sign)
               </Text>
             </View>
-
             <View
               style={[
                 styles.radioCircle,
                 { borderColor: themeStyles.radioFillColor },
-                balanceType === "balance-remaining" && {
+                balanceType === "negative" && {
                   backgroundColor: themeStyles.radioFillColor,
                 },
               ]}
@@ -289,44 +227,26 @@ const BalanceAdjust = () => {
           <TouchableOpacity
             style={commonStyles.cardRow}
             onPress={() => {
-              setBalanceType("overpaying");
+              setBalanceType("positive");
             }}
           >
-            <View
-              style={[commonStyles.rowSection, { gap: 2, flexWrap: "wrap" }]}
-            >
+            <View style={[commonStyles.rowSection, { gap: 2 }]}>
               <Text
                 style={[
-                  styles.optionText,
                   {
-                    color:
-                      balanceType === "overpaying"
-                        ? theme.colors.text
-                        : theme.colors.secondaryText,
+                    color: theme.colors.text,
                   },
                 ]}
               >
-                Overpaying
-              </Text>
-              <Text
-                style={[
-                  styles.subText,
-                  {
-                    color:
-                      balanceType === "overpaying"
-                        ? theme.colors.text
-                        : theme.colors.secondaryText,
-                  },
-                ]}
-              >
-                (Paying more than the balance)
+                Set positive balance
               </Text>
             </View>
+
             <View
               style={[
                 styles.radioCircle,
                 { borderColor: themeStyles.radioFillColor },
-                balanceType === "overpaying" && {
+                balanceType === "positive" && {
                   backgroundColor: themeStyles.radioFillColor,
                 },
               ]}
@@ -334,9 +254,12 @@ const BalanceAdjust = () => {
           </TouchableOpacity>
         </View>
 
-        {balanceType !== "settle-up" && (
-          <View>
-            {/* Input field for amount paid */}
+        <Text style={[{ color: theme.colors.primary, fontWeight: "bold" }]}>
+          {balanceTypeText[balanceType]}
+        </Text>
+
+        <View>
+          {balanceType !== "settle-up" && (
             <TextInput
               style={[
                 styles.input,
@@ -348,33 +271,96 @@ const BalanceAdjust = () => {
               placeholder="Enter Amount Paid"
               placeholderTextColor={theme.colors.secondaryText}
               value={formik.values.amountPaid}
-              onChangeText={formik.handleChange("amountPaid")}
+              // onChangeText={formik.handleChange("amountPaid")}
+              onChangeText={(text) => {
+                setBalancePrediction(Number(text)); // Set balancePrediction state
+                return formik.handleChange("amountPaid")(text); // Update Formik's value
+              }}
               onBlur={formik.handleBlur("amountPaid")}
               keyboardType="numeric"
             />
-            {formik.touched.amountPaid && formik.errors.amountPaid ? (
-              <Text style={styles.errorText}>{formik.errors.amountPaid}</Text>
-            ) : null}
-          </View>
-        )}
+          )}
+          {formik.touched.amountPaid && formik.errors.amountPaid ? (
+            <Text
+              style={[
+                {
+                  marginBottom: 10,
+                  textAlign: "center",
+                  color: theme.colors.error,
+                },
+              ]}
+            >
+              {formik.errors.amountPaid}
+            </Text>
+          ) : null}
 
-        {/* Note text */}
-        <Text
-          style={[
-            styles.subText,
-            { color: theme.colors.error, lineHeight: 16 },
-          ]}
-        >
-          {buttonText[balanceType].description}
-        </Text>
+          {!formik.errors.amountPaid &&
+          !!balancePrediction &&
+          balanceType !== "settle-up" ? (
+            <View style={[commonStyles.rowSection, { marginBottom: 10 }]}>
+              <Text
+                style={{
+                  color: theme.colors.primary,
+                  textAlign: "center",
+                }}
+              >
+                The new balance is going to be{"  "}
+              </Text>
+              <View style={commonStyles.rowSection}>
+                <CustomIcon
+                  iconName={currency}
+                  size={16}
+                  color={
+                    balanceType === "positive"
+                      ? theme.colors.success
+                      : theme.colors.error
+                  }
+                />
+                <Text
+                  style={{
+                    color:
+                      balanceType === "positive"
+                        ? theme.colors.success
+                        : theme.colors.error,
+                    fontSize: 16,
+                  }}
+                >
+                  {balanceType === "positive"
+                    ? balancePrediction
+                    : balancePrediction * -1}
+                </Text>
+              </View>
+            </View>
+          ) : null}
 
-        {/* Submit Button */}
-        <Button
-          title={buttonText[balanceType].text}
-          pressHandler={formik.handleSubmit}
-          color={theme.colors.primary}
-          textColor={theme.colors.buttonText}
-        />
+          {/* Submit Button */}
+          <Button
+            title={
+              balanceType === "settle-up"
+                ? "Confirm Settle Up!"
+                : "Confirm New Balance"
+            }
+            pressHandler={formik.handleSubmit}
+            color={theme.colors.primary}
+            textColor={theme.colors.buttonText}
+            disabled={balanceType === "settle-up" && totalBalance === 0}
+          />
+
+          {/* Note text */}
+          <Text
+            style={[
+              {
+                color: theme.colors.error,
+                textAlign: "center",
+                marginVertical: 10,
+              },
+            ]}
+          >
+            {balanceType === "settle-up" && totalBalance === 0
+              ? "Balance is 0, so settled-up already!"
+              : ""}
+          </Text>
+        </View>
       </View>
     </>
   );
@@ -401,14 +387,10 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     padding: 10,
-    marginVertical: 10,
     borderRadius: 5,
     fontSize: 16,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginBottom: 10,
+    marginTop: 10,
+    marginBottom: 15,
   },
   subText: {
     fontSize: 10,
@@ -429,8 +411,5 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
-  },
-  optionText: {
-    fontSize: 12,
   },
 });

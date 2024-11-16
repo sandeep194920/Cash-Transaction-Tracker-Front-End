@@ -97,7 +97,12 @@ function useTransactions() {
     if (!currentSelectedCustomer?._id) {
       return null;
     }
-
+    console.log(
+      "The new balance",
+      newBalanceAmount,
+      "balance type is",
+      balanceType
+    );
     const token = await AsyncStorage.getItem("token");
 
     const response = await axios.post(
@@ -194,7 +199,7 @@ function useTransactions() {
       console.log("The error is", error);
       Toast.show({
         type: "error",
-        text1: error?.response?.data?.message || "Error adding customer",
+        text1: error?.response?.data?.message || "Error adjusting balance",
       });
     },
   });

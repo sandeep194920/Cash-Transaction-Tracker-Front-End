@@ -22,7 +22,7 @@ export const formatDate = (
   const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
 
   const options: Intl.DateTimeFormatOptions = {
-    month: "long",
+    month: "short",
     day: "numeric",
     year: "numeric",
   };

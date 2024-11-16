@@ -14,6 +14,7 @@ export type CustomerT = {
   totalBalance: number;
   user: string;
 };
+export type BalanceTypeT = "settle-up" | "positive" | "negative";
 
 export type TransactionT = {
   _id: string;
@@ -24,9 +25,10 @@ export type TransactionT = {
   items: ItemT[];
   taxPercentage: number;
   amountPaid: number;
+  // below fields for balanceAdjust
+  transactionType: "transaction" | "balanceUpdate";
+  balanceType?: "positive" | "negative" | "settle-up";
 };
-
-export type BalanceTypeT = "settle-up" | "balance-remaining" | "overpaying";
 
 export type BalanceAdjustT = {
   balanceType: BalanceTypeT;
