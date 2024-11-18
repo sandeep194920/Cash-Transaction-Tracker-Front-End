@@ -7,20 +7,24 @@ import { useThemeContext } from "@/context/ThemeContext";
 import { useAuthContext } from "@/context/AuthContext";
 import Toast from "react-native-toast-message";
 import Loading from "../Loading";
+import useUser from "@/hooks/useUser";
 
 const CustomDrawerContent = (props: any) => {
   const { theme } = useThemeContext();
-  const { authenticateUser, userData } = useAuthContext();
+  const { loggedInUser, isLoading } = useAuthContext();
+  const { logout } = useUser();
 
-  if (!userData) return <Loading />;
-  const { name, email } = userData;
+  console.log("The loggedin user is", loggedInUser);
+
+  if (!loggedInUser || isLoading) return <Loading />;
+  const { name, email } = loggedInUser;
 
   const logoutHandler = () => {
     Toast.show({
       type: "success",
       text1: "Logging out.. Hope to see you soon!",
     });
-    authenticateUser(false);
+    logout();
   };
 
   return (

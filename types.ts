@@ -1,3 +1,35 @@
+// Auth and User related
+export type UserDataT = {
+  _id: string;
+  name: string;
+  email: string;
+  userTotal: number;
+};
+
+export type RegisterUserT = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+export type VerifyEmailT = {
+  email: string;
+  code: string;
+};
+
+export type LoginUserT = {
+  email: string;
+  password: string;
+};
+
+export type AuthScreensT = "Login" | "Register" | "VerifyEmail";
+
+export type AuthScreensPropsT = {
+  showAuthScreen: (screenName: AuthScreensT) => void;
+};
+
+// Customer related
+
 export type AddCustomerT = {
   name: string;
   email: string;
@@ -72,3 +104,14 @@ export type IconNameT =
   | "expand-more"
   | "edit"
   | "check";
+
+// Status codes
+export type StatusCodesT =
+  | "INVALID_CREDENTIALS"
+  | "USER_EXISTS"
+  | "USER_VERIFIED_ALREADY"
+  | "CREATED"
+  | "SUCCESS"
+  | "SERVER_ERROR"
+  | "EMAIL_NOT_VERIFIED"
+  | "NOT_FOUND";

@@ -28,6 +28,7 @@ const TransactionDetailCard = ({
   const {
     totalPrice,
     amountPaid,
+    taxPercentage,
     balanceAmount,
     transactionDate,
     items,
@@ -237,23 +238,55 @@ const TransactionDetailCard = ({
 
           {/* Expandable Section with Phone, Edit/Delete buttons */}
           {expanded && (
-            <View style={commonStyles.cardRow}>
-              <View style={commonStyles.rowSection}>
-                <Text
-                  style={[
-                    styles.amountDescription,
-                    { color: theme.colors.text },
-                  ]}
-                >
-                  Number of items
-                </Text>
+            <>
+              <View style={commonStyles.cardRow}>
+                <View style={commonStyles.rowSection}>
+                  <Text
+                    style={[
+                      styles.amountDescription,
+                      { color: theme.colors.text },
+                    ]}
+                  >
+                    Number of items
+                  </Text>
+                </View>
+                <View style={commonStyles.rowSection}>
+                  <Text style={[styles.amount, { color: theme.colors.text }]}>
+                    {items.length}
+                  </Text>
+                </View>
               </View>
-              <View style={commonStyles.rowSection}>
-                <Text style={[styles.amount, { color: theme.colors.text }]}>
-                  {items.length}
-                </Text>
+
+              <View style={commonStyles.cardRow}>
+                <View style={commonStyles.rowSection}>
+                  <Text
+                    style={[
+                      styles.amountDescription,
+                      { color: theme.colors.text },
+                    ]}
+                  >
+                    Tax percentage
+                  </Text>
+                </View>
+                <View style={commonStyles.rowSection}>
+                  <Text
+                    style={[
+                      {
+                        color: theme.colors.text,
+                      },
+                    ]}
+                  >
+                    {taxPercentage}
+                  </Text>
+                  <CustomIcon
+                    iconName="percent"
+                    color={theme.colors.primary}
+                    size={16}
+                    marginLeft={2}
+                  />
+                </View>
               </View>
-            </View>
+            </>
           )}
 
           {/* Toggle Expand Icon */}

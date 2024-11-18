@@ -163,14 +163,24 @@ const AddTransactionScreen = () => {
             </View>
           </View>
           <View style={commonStyles.cardRow}>
-            <Text
-              style={[
-                styles.amountLabel,
-                { color: theme.colors.secondaryText },
-              ]}
-            >
-              Tax
-            </Text>
+            <View style={[commonStyles.rowSection, { gap: 2 }]}>
+              <Text
+                style={[
+                  styles.amountLabel,
+                  { color: theme.colors.secondaryText },
+                ]}
+              >
+                Tax
+              </Text>
+              <Text
+                style={[
+                  styles.smallLabel,
+                  { color: theme.colors.secondaryText },
+                ]}
+              >
+                (can be changed in settings)
+              </Text>
+            </View>
             <View style={commonStyles.rowSection}>
               <Text style={[styles.amountValue, { color: theme.colors.text }]}>
                 {/* {Number.isInteger(taxPercentage)

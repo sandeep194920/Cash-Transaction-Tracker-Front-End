@@ -9,6 +9,7 @@ import Authentication from "@/components/authentication/Authentication";
 import AppProvider from "@/context/AppContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "react-native-get-random-values"; // for uuid for react-native
+import Loading from "@/components/Loading";
 
 const AuthenticatedLayout = () => {
   return (
@@ -30,7 +31,12 @@ const UnAuthenticatedLayout = () => {
 };
 
 const Layout = () => {
-  const { isLoggedIn } = useAuthContext();
+  const { isLoggedIn, isLoading } = useAuthContext();
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return isLoggedIn ? <AuthenticatedLayout /> : <UnAuthenticatedLayout />;
 };
 

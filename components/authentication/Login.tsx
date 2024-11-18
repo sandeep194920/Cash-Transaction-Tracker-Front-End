@@ -1,90 +1,78 @@
 import React from "react";
 import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
-import { useAuthContext } from "@/context/AuthContext";
 import SocialButtons from "./SocialButtons";
 import { authStyles } from "./authStyles";
 import { Formik } from "formik";
 import { loginValidationSchema } from "@/utils/validationSchema";
-import axios from "axios";
 import Toast from "react-native-toast-message";
 import { router } from "expo-router";
-import { CurrentAuthScreenT } from "./Authentication";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { APP_URL } from "@/constants/URLs";
+import { AuthScreensPropsT, LoginUserT } from "@/types";
+import useUser from "@/hooks/useUser";
+import Loading from "../Loading";
+import axios from "axios";
+import { STATUS_CODES } from "@/constants/StatusCodes";
 
-type LoginScreenPropsT = {
-  showAuthScreen: (screenName: CurrentAuthScreenT) => void;
-};
-
-const LoginScreen = ({ showAuthScreen }: LoginScreenPropsT) => {
+const LoginScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
   const { theme } = useThemeContext();
-  const { authenticateUser, setUnverifiedUser, setIsLoading } =
-    useAuthContext();
+  const { loginUser, isUserLogging } = useUser();
 
-  const login = async (email: string, password: string) => {
-    setIsLoading(true);
+  const login = async ({ email, password }: LoginUserT) => {
     try {
-      const response = await axios.post(`${APP_URL}/login-user`, {
-        email,
-        password,
-      });
-
-      if (response.status === 200) {
+      const { data, status } = await loginUser({ email, password });
+      console.log("The status is", status);
+      if (status === STATUS_CODES.SUCCESS) {
+        // Take user to the app
+        console.log("WOW reached here");
+        router.replace("/(app)/");
         Toast.show({
           type: "success",
-          text1: response.data.message,
+          text1: "Welcome back!",
+          text2: data.message,
         });
-
-        authenticateUser(true, response.data.token);
-        router.push("/(app)/");
-
-        return {
-          success: true,
-          message: response.data.message,
-        };
       }
-
-      return {
-        success: false,
-        message: response.data.message || "Unexpected response from server",
-      };
-    } catch (error: any) {
-      if (error.response) {
-        if (error.response.data.resendVerification) {
-          setUnverifiedUser(email);
-          showAuthScreen("VerifyEmail");
-          return Toast.show({
+      return;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // user doesn't exist
+        if (error.status === STATUS_CODES.NOT_FOUND) {
+          Toast.show({
             type: "error",
-            text1: error.response.data.message,
+            text1: error.response?.data.message,
           });
+          showAuthScreen("Register");
+        } else if (error.status === STATUS_CODES.INVALID_CREDENTIALS) {
+          Toast.show({
+            type: "error",
+            text1: error.response?.data.message,
+            text2: "Please try again!",
+          });
+          // OPTIONAL : this clears the form by setting it to Login screen again
+          // showAuthScreen("Login");
+        } else if (error.status === STATUS_CODES.EMAIL_NOT_VERIFIED) {
+          Toast.show({
+            type: "error",
+            text1: error.response?.data.message,
+            text2: "Enter the code sent to your email!",
+          });
+          showAuthScreen("VerifyEmail");
         }
-
-        const message =
-          error.response.data.message || "An error occurred during login";
+        return;
+      } else {
+        console.log("Coming here for some reason");
+        // TODO: Add alerts so you (developer) get notified (May be amplitude or any other tool)
         Toast.show({
           type: "error",
-          text1: message,
+          text1: "Something went wrong",
+          text2: "Please try again!",
         });
-        return {
-          success: false,
-          message,
-        };
-      } else if (error.request) {
-        return {
-          success: false,
-          message: "Network error. Please try again.",
-        };
-      } else {
-        return {
-          success: false,
-          message: "An unknown error occurred. Please try again.",
-        };
       }
-    } finally {
-      setIsLoading(false);
     }
   };
+
+  if (isUserLogging) {
+    return <Loading />;
+  }
 
   return (
     <Formik
@@ -92,8 +80,7 @@ const LoginScreen = ({ showAuthScreen }: LoginScreenPropsT) => {
       validationSchema={loginValidationSchema}
       onSubmit={(values) => {
         // Handle the form submission
-        // authenticateUser();
-        login(values.email, values.password);
+        login({ email: values.email, password: values.password });
       }}
     >
       {({

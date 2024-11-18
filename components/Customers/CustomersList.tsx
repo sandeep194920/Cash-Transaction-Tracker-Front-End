@@ -9,16 +9,20 @@ import {
   ListRenderItemInfo,
 } from "react-native";
 import CustomerCard from "./CustomerCard";
-import { router } from "expo-router";
+import { router, Stack } from "expo-router";
 import useCustomers from "@/hooks/useCustomers";
 import { CustomerT } from "@/types";
 import { useAppContext } from "@/context/AppContext";
 import CustomIcon from "../CustomIcon";
+import { commonStyles } from "@/commonStyles";
+import { useAuthContext } from "@/context/AuthContext";
+import useUser from "@/hooks/useUser";
 
 const CustomersList = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const { theme } = useThemeContext();
   const { customers } = useCustomers();
+  const { loggedInUser: userData } = useAuthContext();
   const { newlyAddedCustomer, setNewlyAddedCustomer } = useAppContext();
   const flatListRef = useRef<FlatList<CustomerT>>(null);
 
@@ -56,10 +60,82 @@ const CustomersList = () => {
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
         {!customers?.length ? (
-          <Text style={[styles.noCustomersText, { color: theme.colors.text }]}>
-            Let's add your first lucky customer! Press the + button below
-          </Text>
+          <View>
+            <Stack.Screen
+              options={{ headerTitle: `Welcome to CTT, ${userData?.name}` }}
+            />
+            <View style={[commonStyles.rowSection, { marginVertical: 16 }]}>
+              <Text
+                style={[styles.userTotalText, { color: theme.colors.primary }]}
+              >
+                Let's add your first customer!
+              </Text>
+            </View>
+            <View
+              style={[
+                commonStyles.rowSection,
+                { flexWrap: "wrap", padding: 10 },
+              ]}
+            >
+              <Text style={[{ color: theme.colors.text }]}>
+                Let's add your first lucky customer! Press the
+              </Text>
+              <CustomIcon
+                iconName="add-circle"
+                size={24}
+                color={theme.colors.primary}
+                marginLeft={2}
+                marginRight={2}
+              />
+              <Text style={[{ color: theme.colors.text }]}>button below.</Text>
+            </View>
+          </View>
         ) : (
+          <View style={{ marginVertical: 16, gap: 6 }}>
+            <View style={[commonStyles.rowSection]}>
+              <Text
+                style={[
+                  styles.userTotalText,
+                  {
+                    color:
+                      userData && userData?.userTotal > 0
+                        ? theme.colors.error
+                        : theme.colors.success,
+                  },
+                ]}
+              >
+                Total Amount -
+              </Text>
+
+              <CustomIcon
+                iconName="dollar"
+                size={18}
+                color={
+                  userData && userData?.userTotal > 0
+                    ? theme.colors.error
+                    : theme.colors.success
+                }
+                marginRight={2}
+                marginLeft={2}
+              />
+              <Text
+                style={[
+                  styles.userTotalText,
+                  {
+                    color:
+                      userData && userData?.userTotal > 0
+                        ? theme.colors.error
+                        : theme.colors.success,
+                  },
+                ]}
+              >
+                {userData?.userTotal ? userData.userTotal.toFixed(2) : 0}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {customers?.length ? (
           <FlatList
             ref={flatListRef}
             data={customers}
@@ -67,8 +143,9 @@ const CustomersList = () => {
             keyExtractor={(customer) => customer._id}
             contentContainerStyle={styles.list}
           />
-        )}
+        ) : null}
       </View>
+
       <View
         style={{ backgroundColor: theme.colors.background, paddingBottom: 20 }}
       >
@@ -91,7 +168,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    justifyContent: "center",
   },
   list: {
     paddingBottom: 10,
@@ -102,6 +178,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     padding: "5%",
     lineHeight: 35,
+  },
+  userTotalText: {
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });
 

@@ -7,89 +7,51 @@ import { Formik } from "formik";
 import { registerValidationSchema } from "@/utils/validationSchema";
 import axios from "axios";
 import Toast from "react-native-toast-message";
-import { useAuthContext } from "@/context/AuthContext";
-import { CurrentAuthScreenT } from "./Authentication";
-import { APP_URL } from "@/constants/URLs";
+import useUser from "@/hooks/useUser";
+import Loading from "../Loading";
+import { AuthScreensPropsT, RegisterUserT } from "@/types";
+import { STATUS_CODES } from "@/constants/StatusCodes";
 
-type RegisterScreenPropsT = {
-  showAuthScreen: (screenName: CurrentAuthScreenT) => void;
-};
-
-type RegisterT = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-const RegisterScreen = ({ showAuthScreen }: RegisterScreenPropsT) => {
+const RegisterScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
   const { theme } = useThemeContext();
-  const { setUnverifiedUser } = useAuthContext();
-  const { setIsLoading } = useAuthContext();
+  const { registerUser, isUserRegistering } = useUser();
 
-  const register = async ({ name, email, password }: RegisterT) => {
-    setIsLoading(true);
+  const register = async ({ name, email, password }: RegisterUserT) => {
     try {
-      const response = await axios.post(`${APP_URL}/register-user`, {
-        name,
-        email,
-        password,
-      });
-
-      // Handle success based on the status code or response data
-      if (response.status === 201) {
+      const { data, status } = await registerUser({ name, email, password });
+      if (status === STATUS_CODES.CREATED) {
+        showAuthScreen("VerifyEmail");
         Toast.show({
           type: "success",
-          text1: response.data.message,
+          text1: data.message,
           text2: "Please verify the email",
         });
-
-        // Set registration successful but not verified in BE
-        setUnverifiedUser(email);
-        showAuthScreen("VerifyEmail");
-
-        return {
-          success: true,
-          message: response.data.message,
-        };
       }
-
-      // Handle any other possible success status (if applicable)
-      return {
-        success: false,
-        message: response.data.message || "Unexpected response from server",
-      };
-    } catch (error: any) {
-      // Handle errors from the server
-      if (error.response) {
-        // Errors returned by the server
-        const message =
-          error.response.data.message ||
-          "An error occurred during registration";
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.status === STATUS_CODES.USER_EXISTS) {
+          Toast.show({
+            type: "error",
+            text1: "You have already registered!",
+            text2: "Please login",
+          });
+        }
+        showAuthScreen("Login");
+      } else {
+        console.error("An unexpected error occurred:", error);
+        // TODO: Add alerts so you (developer) get notified (May be amplitude or any other tool)
         Toast.show({
           type: "error",
-          text1: message,
+          text1: "Something went wrong!",
+          text2: "Please try again after some time",
         });
-        return {
-          success: false,
-          message,
-        };
-      } else if (error.request) {
-        // Network errors or no response from the server
-        return {
-          success: false,
-          message: "Network error. Please try again.",
-        };
-      } else {
-        // Something else went wrong
-        return {
-          success: false,
-          message: "An unknown error occurred. Please try again.",
-        };
       }
-    } finally {
-      setIsLoading(false);
     }
   };
+
+  if (isUserRegistering) {
+    return <Loading />;
+  }
 
   return (
     <Formik

@@ -6,23 +6,32 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import axios from "axios";
-import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useThemeContext } from "@/context/ThemeContext"; // Make sure you have this context
 import { authStyles } from "./authStyles";
 import { VERIFY_EMAIL_TIMER } from "@/constants/Generic";
 import { formatTime } from "@/utils/dateTime";
 import { useAuthContext } from "@/context/AuthContext";
-import { APP_URL } from "@/constants/URLs";
+import useUser from "@/hooks/useUser";
+import { AuthScreensPropsT } from "@/types";
+import Loading from "../Loading";
+import axios from "axios";
+import { router } from "expo-router";
+import { STATUS_CODES } from "@/constants/StatusCodes";
 
-const EmailVerificationScreen = () => {
+const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
   const [code, setCode] = useState("");
-  const [timer, setTimer] = useState(VERIFY_EMAIL_TIMER); // 2 mins timer
+  const [timer, setTimer] = useState(VERIFY_EMAIL_TIMER);
   const [isResendEnabled, setIsResendEnabled] = useState(false);
   const { theme } = useThemeContext(); // Access your theme
-  const { authenticateUser, registeredUnverifiedUser } = useAuthContext();
-  const { setIsLoading } = useAuthContext();
+  const { emailTryingToAuthenticate, setEmailTryingToAuthenticate } =
+    useAuthContext();
+  const {
+    verifyUserEmail,
+    isEmailVerifying,
+    resendEmailVerificationCode,
+    isSendingVerificationCode,
+  } = useUser();
 
   const formattedTime = useMemo(() => {
     return formatTime(timer);
@@ -45,63 +54,114 @@ const EmailVerificationScreen = () => {
   }, [isResendEnabled]);
 
   const verifyEmail = async () => {
-    setIsLoading(true);
     try {
-      const response = await axios.post(`${APP_URL}/verify-email`, {
-        email: registeredUnverifiedUser,
-        verificationCode: code,
-      });
-
-      if (response.status === 200) {
-        Toast.show({
-          type: "success",
-          text1: "Email verified successfully!",
-        });
-
-        // Redirect to main app page after success
-        authenticateUser(true, response.data.token);
-        router.push("/(app)/");
-      }
-    } catch (error: any) {
-      // Handle errors from the server
-      if (error.response) {
-        // Errors returned by the server
-        const message =
-          error.response.data.message ||
-          "Verification failed. Please try with new code";
+      // we set emailTryingToAuthenticate as soon as user registers in useRegister's register call
+      if (!emailTryingToAuthenticate) {
         Toast.show({
           type: "error",
-          text1: message,
+          text1: "Something went wrong!",
+          text2: "Try again",
         });
-        return {
-          success: false,
-          message,
-        };
+        showAuthScreen("Register");
+        return;
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const resendCode = async () => {
-    setTimer(VERIFY_EMAIL_TIMER);
-    setIsResendEnabled(false);
-    // Call your API to resend the verification code here
-    try {
-      await axios.post(`${APP_URL}/resend-verification`, {
-        email: registeredUnverifiedUser,
+      //this sets the token and user
+      await verifyUserEmail({
+        code,
+        email: emailTryingToAuthenticate,
       });
+      // Let's set emailTryingToAuthenticate as null as the user now logged in already at this point
+      setEmailTryingToAuthenticate(null);
       Toast.show({
         type: "success",
-        text1: "Verification code resent!",
+        text1: "Thanks for verifying!",
+        text2: "Logging you in!",
       });
-    } catch (error: any) {
-      const message = error.response?.data.message || "Failed to resend code.";
-      Toast.show({
-        type: "error",
-        text1: message,
-      });
+      router.replace("/(app)/");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.status === STATUS_CODES.NOT_FOUND) {
+          Toast.show({
+            type: "error",
+            text1: "Looks like you haven't registered yet!",
+            text2: error.message,
+          });
+          showAuthScreen("Register");
+        } else {
+          Toast.show({
+            type: "error",
+            text1: error.response?.data.message,
+            text2: "Try the code again or resend it",
+          });
+        }
+        setTimer(0);
+      } else {
+        // TODO: Add alerts so you (developer) get notified (May be amplitude or any other tool)
+        Toast.show({
+          type: "error",
+          text1: "Something went wrong!",
+          text2: "Please try again after some time",
+        });
+      }
     }
   };
+
+  const resendCode = async () => {
+    if (!emailTryingToAuthenticate) {
+      Toast.show({
+        type: "error",
+        text1: "Something went wrong!",
+        text2: "Try again",
+      });
+      showAuthScreen("Register");
+      return;
+    }
+    try {
+      setTimer(VERIFY_EMAIL_TIMER);
+      await resendEmailVerificationCode(emailTryingToAuthenticate);
+      Toast.show({
+        type: "success",
+        text1: "Enter the new code sent to your email",
+        text2: "Time is ticking....",
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // TODO: Technically these errors shouldn't happen where user is already verified/ not yet registered. They shouldn't see this screen at all in that case.
+        // TODO: Add alerts so you (developer) get notified (May be amplitude or any other tool)
+        if (error.status === STATUS_CODES.USER_VERIFIED_ALREADY) {
+          Toast.show({
+            type: "error",
+            text1: "Your email is already verified",
+          });
+          showAuthScreen("Login");
+        } else if (error.status === STATUS_CODES.NOT_FOUND) {
+          Toast.show({
+            type: "error",
+            text1: "Your email is not registered yet! Please register.",
+          });
+          showAuthScreen("Register");
+        } else {
+          // TODO: Add alerts so you (developer) get notified (May be amplitude or any other tool)
+          Toast.show({
+            type: "error",
+            text1: "Something went wrong! Please try again later!",
+          });
+        }
+        return;
+      } else {
+        // TODO: Add alerts so you (developer) get notified (May be amplitude or any other tool)
+        Toast.show({
+          type: "error",
+          text1: "Something went wrong!",
+          text2: "Please try again after some time",
+        });
+      }
+    }
+  };
+
+  if (isEmailVerifying || isSendingVerificationCode) {
+    return <Loading />;
+  }
 
   return (
     <View

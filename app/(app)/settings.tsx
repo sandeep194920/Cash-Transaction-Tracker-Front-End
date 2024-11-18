@@ -1,5 +1,6 @@
 import { commonStyles } from "@/commonStyles";
 import CustomIcon from "@/components/CustomIcon";
+import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
 import { useAppContext } from "@/context/AppContext";
 import { useThemeContext } from "@/context/ThemeContext";
 import React, { useState } from "react";
@@ -88,75 +89,78 @@ const SettingsScreen = () => {
   );
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: themeStyles.backgroundColor },
-      ]}
-    >
-      <Text style={[styles.title, { color: themeStyles.textColor }]}>
-        Select Theme
-      </Text>
-
-      {/* Light Theme Option */}
-      <View style={styles.option}>
-        <TouchableOpacity
-          style={commonStyles.cardRow}
-          onPress={() => handleThemeChange("light")}
-        >
-          <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
-            Light Theme
-          </Text>
-          <View
-            style={[
-              styles.radioCircle,
-              { borderColor: themeStyles.radioFillColor },
-              currentTheme === "light" && {
-                backgroundColor: themeStyles.radioFillColor,
-              },
-            ]}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {/* Dark Theme Option */}
-      <View style={styles.option}>
-        <TouchableOpacity
-          style={commonStyles.cardRow}
-          onPress={() => handleThemeChange("dark")}
-        >
-          <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
-            Dark Theme
-          </Text>
-          <View
-            style={[
-              styles.radioCircle,
-              { borderColor: themeStyles.radioFillColor },
-              currentTheme === "dark" && {
-                backgroundColor: themeStyles.radioFillColor,
-              },
-            ]}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {/* Divider Line */}
-      <View style={commonStyles.divider} />
-
-      <Text style={[styles.title, { color: themeStyles.textColor }]}>
-        Select Tax Percentage
-      </Text>
-
-      {/* Light Theme Option */}
-
-      <View style={[commonStyles.cardRow, styles.option]}>
-        <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
-          Current Tax
+    <>
+      <HeaderLeftBackArrow />
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: themeStyles.backgroundColor },
+        ]}
+      >
+        <Text style={[styles.title, { color: themeStyles.textColor }]}>
+          Select Theme
         </Text>
 
-        {taxContainer}
+        {/* Light Theme Option */}
+        <View style={styles.option}>
+          <TouchableOpacity
+            style={commonStyles.cardRow}
+            onPress={() => handleThemeChange("light")}
+          >
+            <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
+              Light Theme
+            </Text>
+            <View
+              style={[
+                styles.radioCircle,
+                { borderColor: themeStyles.radioFillColor },
+                currentTheme === "light" && {
+                  backgroundColor: themeStyles.radioFillColor,
+                },
+              ]}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Dark Theme Option */}
+        <View style={styles.option}>
+          <TouchableOpacity
+            style={commonStyles.cardRow}
+            onPress={() => handleThemeChange("dark")}
+          >
+            <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
+              Dark Theme
+            </Text>
+            <View
+              style={[
+                styles.radioCircle,
+                { borderColor: themeStyles.radioFillColor },
+                currentTheme === "dark" && {
+                  backgroundColor: themeStyles.radioFillColor,
+                },
+              ]}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Divider Line */}
+        <View style={commonStyles.divider} />
+
+        <Text style={[styles.title, { color: themeStyles.textColor }]}>
+          Select Tax Percentage
+        </Text>
+
+        {/* Light Theme Option */}
+
+        <View style={[commonStyles.cardRow, styles.option]}>
+          <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
+            Current Tax
+          </Text>
+
+          {taxContainer}
+        </View>
       </View>
-    </View>
+    </>
   );
 };
 
