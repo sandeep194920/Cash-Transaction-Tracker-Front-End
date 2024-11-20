@@ -16,7 +16,8 @@ import { useAppContext } from "@/context/AppContext";
 import CustomIcon from "../CustomIcon";
 import { commonStyles } from "@/commonStyles";
 import { useAuthContext } from "@/context/AuthContext";
-import useUser from "@/hooks/useUser";
+import { capitalizeStr } from "@/utils/utility";
+import Loading from "../Loading";
 
 const CustomersList = () => {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
@@ -54,16 +55,23 @@ const CustomersList = () => {
     }
   }, [newlyAddedCustomer]);
 
+  if (!userData) {
+    return <Loading />;
+  }
   return (
     <>
       <View
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
+        <Stack.Screen
+          options={{
+            headerTitle: customers?.length
+              ? "Customers"
+              : `Welcome to CTT, ${capitalizeStr(userData?.name) || ""}`,
+          }}
+        />
         {!customers?.length ? (
           <View>
-            <Stack.Screen
-              options={{ headerTitle: `Welcome to CTT, ${userData?.name}` }}
-            />
             <View style={[commonStyles.rowSection, { marginVertical: 16 }]}>
               <Text
                 style={[styles.userTotalText, { color: theme.colors.primary }]}
@@ -99,12 +107,26 @@ const CustomersList = () => {
                   {
                     color:
                       userData && userData?.userTotal > 0
-                        ? theme.colors.error
-                        : theme.colors.success,
+                        ? theme.colors.success
+                        : theme.colors.error,
                   },
                 ]}
               >
-                Total Amount -
+                Total Amount - {userData.userTotal < 0 ? "(" : ""}
+              </Text>
+
+              <Text
+                style={[
+                  styles.userTotalText,
+                  {
+                    color:
+                      userData && userData?.userTotal > 0
+                        ? theme.colors.success
+                        : theme.colors.error,
+                  },
+                ]}
+              >
+                {userData.userTotal ? userData.userTotal.toFixed(2) : 0}
               </Text>
 
               <CustomIcon
@@ -112,8 +134,8 @@ const CustomersList = () => {
                 size={18}
                 color={
                   userData && userData?.userTotal > 0
-                    ? theme.colors.error
-                    : theme.colors.success
+                    ? theme.colors.success
+                    : theme.colors.error
                 }
                 marginRight={2}
                 marginLeft={2}
@@ -124,12 +146,13 @@ const CustomersList = () => {
                   {
                     color:
                       userData && userData?.userTotal > 0
-                        ? theme.colors.error
-                        : theme.colors.success,
+                        ? theme.colors.success
+                        : theme.colors.error,
                   },
                 ]}
               >
-                {userData?.userTotal ? userData.userTotal.toFixed(2) : 0}
+                {" "}
+                {userData.userTotal < 0 ? ")" : ""}
               </Text>
             </View>
           </View>

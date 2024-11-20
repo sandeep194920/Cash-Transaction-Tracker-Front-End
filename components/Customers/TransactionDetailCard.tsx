@@ -1,13 +1,12 @@
 import { commonStyles } from "@/commonStyles";
 import { Link } from "expo-router";
-import { Animated, View, Text, StyleSheet, Pressable } from "react-native";
-import MenuOptionsOnCard from "../Menu";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 import { TransactionT } from "@/types";
 import { formattedDateStr } from "@/utils/dateTime";
 import useCardAnimation from "@/hooks/useCardAnimation";
 import { useAppContext } from "@/context/AppContext";
-import { balanceTypeDescriptions, currency } from "@/constants/Generic";
+import { currency } from "@/constants/Generic";
 import CustomIcon from "../CustomIcon";
 import useMenu from "@/hooks/useMenu";
 import AnimatedView from "../AnimatedView";
@@ -79,7 +78,7 @@ const TransactionDetailCard = ({
           ></View>
         </View>
 
-        {/* Remaining Balance */}
+        {/* New Balance */}
         <View style={commonStyles.cardRow}>
           <View style={commonStyles.rowSection}>
             <Text
@@ -93,7 +92,7 @@ const TransactionDetailCard = ({
                 },
               ]}
             >
-              {balanceAmount >= 0 ? "Remaining balance" : "Overpaid amount"}
+              {balanceAmount >= 0 ? "New balance" : "Overpaid amount"}
             </Text>
           </View>
           <View style={commonStyles.rowSection}>

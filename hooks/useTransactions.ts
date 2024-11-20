@@ -6,6 +6,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import useCustomers from "./useCustomers";
+import useUser from "./useUser";
+import { useAuthContext } from "@/context/AuthContext";
 
 function useTransactions() {
   const {
@@ -15,6 +17,9 @@ function useTransactions() {
   } = useAppContext();
   const { unsettledTransaction, setNewlyAddedTransaction } = useAppContext();
   const { refetchCustomer, refetchAllCustomers } = useCustomers();
+  const { refetchUser } = useUser();
+  const { setLoggedInUser } = useAuthContext();
+
   const queryClient = useQueryClient();
   // Fetch all transactions
   const fetchCustomerTransactions = async (): Promise<TransactionT[]> => {
@@ -97,12 +102,6 @@ function useTransactions() {
     if (!currentSelectedCustomer?._id) {
       return null;
     }
-    console.log(
-      "The new balance",
-      newBalanceAmount,
-      "balance type is",
-      balanceType
-    );
     const token = await AsyncStorage.getItem("token");
 
     const response = await axios.post(
@@ -135,11 +134,17 @@ function useTransactions() {
       // I think instead of appending the new transaction on Frontend and use some useEff to then fetch on screen.
       refetchAllTransactions();
       // refetch customer as well so we get the updated balance after adding a transaction
+      // TODO: Investigate why I had to do this refetchCustomer check and not for refetchUser. Match them both so you can remove this if condition
       if (refetchCustomer) {
         const customer = await refetchCustomer();
         if (customer?.data) {
           setCurrentSelectedCustomer(customer.data);
         }
+      }
+
+      const user = await refetchUser();
+      if (user.data) {
+        setLoggedInUser(user.data);
       }
 
       // TODO: Try to use refetchOnWindowFocus instead of refetchingAllCustomers here. See the comment inside useQuery of "customers" as to why this is necessary
@@ -187,6 +192,11 @@ function useTransactions() {
       // TODO: Try to use refetchOnWindowFocus instead of refetchingAllCustomers here. See the comment inside useQuery of "customers" as to why this is necessary
       if (refetchAllCustomers) {
         queryClient.invalidateQueries(["customers"]);
+      }
+
+      const user = await refetchUser();
+      if (user.data) {
+        setLoggedInUser(user.data);
       }
 
       Toast.show({

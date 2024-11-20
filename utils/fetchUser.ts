@@ -6,7 +6,6 @@ import axios from "axios";
 // Fetch user data from BE based on token
 export const fetchUserData = async (): Promise<UserDataT | null> => {
   const token = await AsyncStorage.getItem("token");
-  console.log("The token is", token);
   if (!token) {
     return null;
   }

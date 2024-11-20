@@ -1,5 +1,5 @@
 import { useThemeContext } from "@/context/ThemeContext";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { View, Text, StyleSheet, Pressable, Animated } from "react-native";
 import MenuOptionsOnCard from "../Menu";
 import { commonStyles } from "@/commonStyles";
@@ -9,8 +9,6 @@ import useCardAnimation from "@/hooks/useCardAnimation";
 import CustomIcon from "../CustomIcon";
 import { currency } from "@/constants/Generic";
 import useMenu from "@/hooks/useMenu";
-import useTransactions from "@/hooks/useTransactions";
-import useCustomers from "@/hooks/useCustomers";
 
 type CustomerCardT = {
   customer: CustomerT;
@@ -30,6 +28,11 @@ const CustomerCard = ({
   const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
   const { setCurrentSelectedCustomer } = useAppContext();
   const { isMenuVisible, showMenu, hideMenu } = useMenu();
+
+  const handleShowMenu = () => {
+    setCurrentSelectedCustomer(customer);
+    showMenu();
+  };
 
   return (
     <Link
@@ -76,10 +79,14 @@ const CustomerCard = ({
               </View>
               <MenuOptionsOnCard
                 isMenuVisible={isMenuVisible}
-                showMenu={showMenu}
+                showMenu={handleShowMenu}
                 hideMenu={hideMenu}
                 editHandler={() => {
-                  console.log("Edit from Customer card");
+                  hideMenu();
+                  setTimeout(() => {
+                    // setCurrentSelectedCustomer(customer);
+                    router.push({ pathname: "/(app)/edit_customer" });
+                  }, 500);
                 }}
                 deleteHandler={() => {
                   console.log("Delete from Customer card");

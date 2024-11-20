@@ -43,11 +43,7 @@ function useCustomers() {
     data: customers,
     error: customersError,
     refetch: refetchAllCustomers,
-  } = useQuery(["customers", currentSelectedCustomer?._id], fetchCustomers, {
-    //TODO: This is not working (I wanted to refetch customers when a new transaction is added. The customer list page (home page) doesnt get updated with the new balance so i was trying this but doesnt seem to work)
-    // So for now, I will try to invalidate this customers call when the transaction is fetched
-    refetchOnWindowFocus: true,
-  });
+  } = useQuery(["customers"], fetchCustomers);
 
   // Handle errors after all hooks are called
   if (customersError) {
@@ -127,6 +123,53 @@ function useCustomers() {
     };
   }
 
+  // Edit existing customer
+
+  // Add new customer
+  const editExistingCustomer = async ({
+    name,
+    email,
+    phone,
+    address,
+  }: AddCustomerT): Promise<{ customer: CustomerT } | null> => {
+    if (!currentSelectedCustomer) {
+      return null;
+    }
+    const token = await AsyncStorage.getItem("token");
+    const response = await axios.post(
+      `${APP_URL}/edit-customer`,
+      {
+        customerID: currentSelectedCustomer._id,
+        name,
+        email,
+        phone,
+        address,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  };
+
+  const { mutateAsync: editCustomer, isLoading: isCustomerEditing } =
+    useMutation({
+      mutationFn: editExistingCustomer,
+      onSuccess: async (result) => {
+        queryClient.invalidateQueries({
+          queryKey: ["customers"],
+        });
+      },
+      onError: (error: any) => {
+        Toast.show({
+          type: "error",
+          text1: error?.response?.data?.message || "Error updating customer",
+        });
+      },
+    });
+
   return {
     customers,
     isLoadingCustomers,
@@ -137,6 +180,8 @@ function useCustomers() {
     refetchAllCustomers,
     isCustomerAdding,
     isCustomerAddingNotCompleted,
+    editCustomer,
+    isCustomerEditing,
   };
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, Text, TextInput } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 import { Formik } from "formik";
@@ -11,9 +11,12 @@ import Button from "@/components/Button";
 import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
 import Loading from "@/components/Loading";
 import { capitalizeStr } from "@/utils/utility";
+import { useAppContext } from "@/context/AppContext";
+import { commonStyles } from "@/commonStyles";
+import Toast from "react-native-toast-message";
 
 // Validation schema for adding a customer
-const addCustomerValidationSchema = Yup.object().shape({
+const EditCustomerValidationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   phone: Yup.string()
@@ -21,49 +24,45 @@ const addCustomerValidationSchema = Yup.object().shape({
     .required("Phone number is required"),
 });
 
-const AddCustomerScreen = () => {
+const EditCustomerScreen = () => {
   const { theme } = useThemeContext();
-  const { addCustomer, isCustomerAdding, isCustomerAddingNotCompleted } =
-    useCustomers();
+  const { editCustomer, isCustomerEditing } = useCustomers();
+  const { currentSelectedCustomer } = useAppContext();
 
-  const addCustomerHandler = (values: AddCustomerT) => {
-    if (!addCustomer) return;
-    addCustomer({
+  const editCustomerHandler = async (values: AddCustomerT) => {
+    if (!editCustomer) return;
+    await editCustomer({
       name: capitalizeStr(values.name),
       email: values.email.toLowerCase(),
       phone: values.phone,
       address: values.address,
     });
+    Toast.show({
+      type: "success",
+      text1: "Customer updated successfully",
+    });
+    router.dismiss();
   };
 
-  useEffect(() => {
-    /*
-  
-    Initally, isCustomerAdding -> false and isCustomerAddingNotCompleted -> true (so !false and !true) will yield false so the router.dismiss will not run.
-
-    When customer is adding, isCustomerAdding -> true, and isCustomerAddingNotCompleted -> false (so !true and !false ) is false, so it will not run.
-
-    When customer is added, isCustomerAdding -> false and isCustomerAddingNotCompleted -> false (so it will give true)
-
-    */
-    if (!isCustomerAdding && !isCustomerAddingNotCompleted) {
-      router.dismiss();
-    }
-  }, [isCustomerAddingNotCompleted, isCustomerAdding]);
-
-  if (isCustomerAdding) {
+  if (isCustomerEditing) {
     return <Loading />;
   }
+
+  if (!currentSelectedCustomer) {
+    return null;
+  }
+
+  const { name, email, phone, address } = currentSelectedCustomer;
 
   return (
     <>
       <HeaderLeftBackArrow />
 
       <Formik
-        initialValues={{ name: "", email: "", phone: "", address: "" }}
-        validationSchema={addCustomerValidationSchema}
+        initialValues={{ name, email, phone, address }}
+        validationSchema={EditCustomerValidationSchema}
         onSubmit={(values) => {
-          addCustomerHandler({
+          editCustomerHandler({
             name: values.name,
             email: values.email,
             phone: values.phone,
@@ -168,14 +167,32 @@ const AddCustomerScreen = () => {
               onBlur={handleBlur("address")}
               value={values.address}
             />
+            <View
+              style={[
+                commonStyles.rowSection,
+                { justifyContent: "space-between" },
+              ]}
+            >
+              <Button
+                color={theme.colors.error}
+                borderColor={theme.colors.error}
+                textColor={theme.colors.buttonText}
+                title="Cancel"
+                pressHandler={() => {
+                  router.dismiss();
+                }}
+                width={100}
+              />
 
-            <Button
-              color={theme.colors.primary}
-              borderColor={theme.colors.primary}
-              textColor={theme.colors.buttonText}
-              title="Add Customer"
-              pressHandler={handleSubmit}
-            />
+              <Button
+                color={theme.colors.primary}
+                borderColor={theme.colors.primary}
+                textColor={theme.colors.buttonText}
+                title="Save Customer"
+                pressHandler={handleSubmit}
+                width={180}
+              />
+            </View>
           </View>
         )}
       </Formik>
@@ -183,4 +200,4 @@ const AddCustomerScreen = () => {
   );
 };
 
-export default AddCustomerScreen;
+export default EditCustomerScreen;

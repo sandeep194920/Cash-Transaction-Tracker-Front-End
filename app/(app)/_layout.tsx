@@ -33,16 +33,6 @@ const AppLayout = () => {
           },
         }}
       />
-      <Stack.Screen
-        name="user_profile"
-        options={{
-          headerTitle: "Profile",
-          headerTintColor: theme.colors.buttonText,
-          headerStyle: {
-            backgroundColor: theme.colors.primary,
-          },
-        }}
-      />
 
       <Stack.Screen
         name="customer_transactions_list"
@@ -71,6 +61,18 @@ const AppLayout = () => {
         options={{
           presentation: "modal",
           headerTitle: "Add New Customer",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="edit_customer"
+        options={{
+          presentation: "modal",
+          headerTitle: "Edit Customer",
           headerTintColor: theme.colors.buttonText,
           headerStyle: {
             backgroundColor: theme.colors.primary,

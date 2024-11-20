@@ -14,8 +14,6 @@ const CustomDrawerContent = (props: any) => {
   const { loggedInUser, isLoading } = useAuthContext();
   const { logout } = useUser();
 
-  console.log("The loggedin user is", loggedInUser);
-
   if (!loggedInUser || isLoading) return <Loading />;
   const { name, email } = loggedInUser;
 
@@ -69,21 +67,6 @@ const CustomDrawerContent = (props: any) => {
         inactiveTintColor={theme.colors.secondaryText}
         labelStyle={
           props.state.index === 0
-            ? [styles.activeLabel, { color: theme.colors.text }]
-            : [styles.inactiveLabel, { color: theme.colors.secondaryText }]
-        }
-      />
-      <DrawerItem
-        label="Profile"
-        icon={({ color, size }) => (
-          <Icon name="person" color={theme.colors.primary} size={size} />
-        )}
-        focused={props.state.index === 1}
-        onPress={() => router.push("/(app)/user_profile")}
-        activeTintColor={theme.colors.primary}
-        inactiveTintColor={theme.colors.secondaryText}
-        labelStyle={
-          props.state.index === 1
             ? [styles.activeLabel, { color: theme.colors.text }]
             : [styles.inactiveLabel, { color: theme.colors.secondaryText }]
         }

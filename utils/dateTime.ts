@@ -41,7 +41,7 @@ export const formattedDateStr = (date: Date | string) => {
   const long = formatDate(date, "long");
   const short = formatDate(date, "short");
   return {
-    dateLong: `${long.day}, ${long.date}`,
+    dateLong: `${short.day}, ${long.date}`,
     dateShort: `${short.day}, ${short.date}`,
   };
 };
