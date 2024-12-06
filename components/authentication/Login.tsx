@@ -23,7 +23,6 @@ const LoginScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
       console.log("The status is", status);
       if (status === STATUS_CODES.SUCCESS) {
         // Take user to the app
-        console.log("WOW reached here");
         router.replace("/(app)/");
         Toast.show({
           type: "success",

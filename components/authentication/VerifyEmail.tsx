@@ -9,7 +9,7 @@ import {
 import Toast from "react-native-toast-message";
 import { useThemeContext } from "@/context/ThemeContext"; // Make sure you have this context
 import { authStyles } from "./authStyles";
-import { VERIFY_EMAIL_TIMER } from "@/constants/Generic";
+import { VERIFY_EMAIL_TIME } from "@/constants/Generic";
 import { formatTime } from "@/utils/dateTime";
 import { useAuthContext } from "@/context/AuthContext";
 import useUser from "@/hooks/useUser";
@@ -21,7 +21,7 @@ import { STATUS_CODES } from "@/constants/StatusCodes";
 
 const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
   const [code, setCode] = useState("");
-  const [timer, setTimer] = useState(VERIFY_EMAIL_TIMER);
+  const [timer, setTimer] = useState(VERIFY_EMAIL_TIME);
   const [isResendEnabled, setIsResendEnabled] = useState(false);
   const { theme } = useThemeContext(); // Access your theme
   const { emailTryingToAuthenticate, setEmailTryingToAuthenticate } =
@@ -37,6 +37,12 @@ const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
     return formatTime(timer);
   }, [timer]);
 
+  /* As soon as this page is shown (mounted), which is probably the first time after register/login, the timer should begin.
+  Once the timer ends, the interval is cleared and, the resend button will be available.
+
+  On component unmounting, the timer gets cleared so it doesn't stack up intervals in the background.
+  */
+
   useEffect(() => {
     // Start the timer
     const interval = setInterval(() => {
@@ -50,7 +56,10 @@ const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
       });
     }, 1000);
 
-    return () => clearInterval(interval); // Cleanup on unmount
+    // Cleanup on unmount
+    return () => {
+      return clearInterval(interval);
+    };
   }, [isResendEnabled]);
 
   const verifyEmail = async () => {
@@ -117,7 +126,8 @@ const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
       return;
     }
     try {
-      setTimer(VERIFY_EMAIL_TIMER);
+      setIsResendEnabled(false);
+      setTimer(VERIFY_EMAIL_TIME);
       await resendEmailVerificationCode(emailTryingToAuthenticate);
       Toast.show({
         type: "success",
