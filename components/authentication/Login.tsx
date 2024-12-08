@@ -12,6 +12,7 @@ import useUser from "@/hooks/useUser";
 import Loading from "../Loading";
 import axios from "axios";
 import { STATUS_CODES } from "@/constants/StatusCodes";
+import { commonStyles } from "@/commonStyles";
 
 const LoginScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
   const { theme } = useThemeContext();
@@ -93,6 +94,7 @@ const LoginScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
         <View
           style={[
             authStyles.container,
+            commonStyles.androidPadding,
             { backgroundColor: theme.colors.background },
           ]}
         >

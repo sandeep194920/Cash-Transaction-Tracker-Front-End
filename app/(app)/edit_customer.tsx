@@ -81,6 +81,7 @@ const EditCustomerScreen = () => {
           <View
             style={[
               authStyles.container,
+              commonStyles.androidPadding,
               { backgroundColor: theme.colors.background },
             ]}
           >

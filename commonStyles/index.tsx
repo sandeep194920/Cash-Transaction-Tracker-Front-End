@@ -48,7 +48,7 @@ export const commonStyles = StyleSheet.create({
   },
   androidPadding: {
     ...(Platform.OS === "android" && {
-      paddingHorizontal: 30,
+      paddingHorizontal: 18,
     }),
   },
 });

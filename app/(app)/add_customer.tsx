@@ -11,6 +11,7 @@ import Button from "@/components/Button";
 import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
 import Loading from "@/components/Loading";
 import { capitalizeStr } from "@/utils/utility";
+import { commonStyles } from "@/commonStyles";
 
 // Validation schema for adding a customer
 const addCustomerValidationSchema = Yup.object().shape({
@@ -82,6 +83,7 @@ const AddCustomerScreen = () => {
           <View
             style={[
               authStyles.container,
+              commonStyles.androidPadding,
               { backgroundColor: theme.colors.background },
             ]}
           >

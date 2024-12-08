@@ -6,9 +6,6 @@ export const authStyles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 10,
-    ...(Platform.OS === "android" && {
-      paddingHorizontal: 30,
-    }),
   },
   logo: {
     width: 120,

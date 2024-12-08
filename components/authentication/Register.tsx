@@ -11,6 +11,7 @@ import useUser from "@/hooks/useUser";
 import Loading from "../Loading";
 import { AuthScreensPropsT, RegisterUserT } from "@/types";
 import { STATUS_CODES } from "@/constants/StatusCodes";
+import { commonStyles } from "@/commonStyles";
 
 const RegisterScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
   const { theme } = useThemeContext();
@@ -77,6 +78,7 @@ const RegisterScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
         <View
           style={[
             authStyles.container,
+            commonStyles.androidPadding,
             { backgroundColor: theme.colors.background },
           ]}
         >
