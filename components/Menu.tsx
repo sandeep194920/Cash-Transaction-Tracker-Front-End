@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Menu, MenuDivider, MenuItem } from "react-native-material-menu";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useThemeContext } from "@/context/ThemeContext";
@@ -11,8 +11,25 @@ const MenuOptionsOnCard = ({
   hideMenu,
   editHandler,
   deleteHandler,
+  optionsToBeShown,
 }: MenuT) => {
   const { theme } = useThemeContext();
+
+  const options = useMemo(() => {
+    if (optionsToBeShown === "EDIT") {
+      return <MenuItem onPress={editHandler}>Edit</MenuItem>;
+    } else if (optionsToBeShown === "DELETE") {
+      return <MenuItem onPress={deleteHandler}>Delete</MenuItem>;
+    } else {
+      return (
+        <>
+          <MenuItem onPress={editHandler}>Edit</MenuItem>
+          <MenuItem onPress={deleteHandler}>Delete</MenuItem>
+          <MenuDivider />
+        </>
+      );
+    }
+  }, [optionsToBeShown]);
 
   return (
     <Menu
@@ -24,9 +41,7 @@ const MenuOptionsOnCard = ({
       }
       onRequestClose={hideMenu}
     >
-      <MenuItem onPress={editHandler}>Edit</MenuItem>
-      <MenuItem onPress={deleteHandler}>Delete</MenuItem>
-      <MenuDivider />
+      {options}
     </Menu>
   );
 };

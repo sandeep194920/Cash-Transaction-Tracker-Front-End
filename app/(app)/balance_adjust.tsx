@@ -117,6 +117,7 @@ const BalanceAdjust = () => {
         style={[
           styles.modalContainer,
           commonStyles.flex1,
+          commonStyles.androidPadding,
           { backgroundColor: theme.colors.background },
         ]}
       >

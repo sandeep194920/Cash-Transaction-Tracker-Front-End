@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput, StyleSheet, Platform } from "react-native";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import Button from "@/components/Button";
@@ -229,6 +229,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 5,
     gap: 10,
+    ...(Platform.OS === "android" && {
+      paddingHorizontal: 30,
+    }),
   },
   label: {
     fontSize: 16,

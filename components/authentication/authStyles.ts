@@ -1,11 +1,14 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 export const authStyles = StyleSheet.create({
   // Common styles for both Login and Register screens
   container: {
     flex: 1,
-    paddingHorizontal: 20,
     justifyContent: "center",
+    padding: 10,
+    ...(Platform.OS === "android" && {
+      paddingHorizontal: 30,
+    }),
   },
   logo: {
     width: 120,

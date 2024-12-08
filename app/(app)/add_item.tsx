@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { View, Text, TextInput } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 import { Formik } from "formik";
@@ -92,7 +92,6 @@ const AddItemScreen = () => {
 
       <Formik
         initialValues={formInitialValue}
-        // initialValues={{ name: "", price: "", quantity: "" }}
         validationSchema={addItemValidationSchema}
         onSubmit={addOrUpdateItemHandler}
       >
@@ -105,12 +104,15 @@ const AddItemScreen = () => {
           touched,
         }) => (
           <View
-            style={{
-              padding: 20,
-              paddingVertical: 60,
-              backgroundColor: theme.colors.background,
-              flex: 1,
-            }}
+            style={[
+              commonStyles.androidPadding,
+              {
+                padding: 20,
+                paddingVertical: 60,
+                backgroundColor: theme.colors.background,
+                flex: 1,
+              },
+            ]}
           >
             {/* As soon as Item name is added, we should display the card below */}
             {values.name && values.price && values.quantity && (
@@ -233,10 +235,13 @@ const ItemAdded = ({ name, quantity, price }: FormValues) => {
       style={[
         commonStyles.card,
         commonStyles.cardRow,
-        { backgroundColor: theme.colors.inputBackground, marginBottom: 40 },
+        {
+          backgroundColor: theme.colors.inputBackground,
+          marginBottom: 40,
+        },
       ]}
     >
-      <View style={commonStyles.rowSection}>
+      <View style={[commonStyles.rowSection]}>
         <Text style={[{ color: theme.colors.text }]}>{name}</Text>
         <Text style={[{ color: theme.colors.secondaryText }]}>
           {" "}

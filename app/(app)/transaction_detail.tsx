@@ -85,7 +85,11 @@ const TransactionDetail = () => {
 
   return (
     <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[
+        styles.container,
+        commonStyles.androidPadding,
+        { backgroundColor: theme.colors.background },
+      ]}
     >
       <View style={[commonStyles.flex1]}>
         <FlatList

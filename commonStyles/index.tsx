@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 export const commonStyles = StyleSheet.create({
   // CARD STYLES
@@ -45,5 +45,10 @@ export const commonStyles = StyleSheet.create({
     height: 1,
     backgroundColor: "#ccc",
     marginVertical: 20,
+  },
+  androidPadding: {
+    ...(Platform.OS === "android" && {
+      paddingHorizontal: 30,
+    }),
   },
 });

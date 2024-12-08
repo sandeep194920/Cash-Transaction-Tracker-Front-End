@@ -172,7 +172,7 @@ const RegisterScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
             </Text>
           </TouchableOpacity>
 
-          <SocialButtons />
+          {/* <SocialButtons /> */}
 
           <View style={authStyles.actionContainer}>
             <Text

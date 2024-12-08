@@ -1,5 +1,6 @@
 const URLS = {
-  LOCAL: "http://0.0.0.0:5001",
+  // LOCAL: "http://0.0.0.0:5001",
+  LOCAL: "http://10.0.0.77:5001",
   // LOCAL: "http://192.168.0.104:5001",
   PROD: "", //TODO: Add it after deployment
 } as const;

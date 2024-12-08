@@ -77,7 +77,11 @@ const CustomerTransactionsList = () => {
       />
 
       <View
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[
+          styles.container,
+          commonStyles.androidPadding,
+          { backgroundColor: theme.colors.background },
+        ]}
       >
         {!customerTransactions?.length ? (
           <View>

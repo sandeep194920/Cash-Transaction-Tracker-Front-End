@@ -61,7 +61,11 @@ const CustomersList = () => {
   return (
     <>
       <View
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[
+          styles.container,
+          commonStyles.androidPadding,
+          { backgroundColor: theme.colors.background },
+        ]}
       >
         <Stack.Screen
           options={{

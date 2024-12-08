@@ -43,7 +43,7 @@ const CustomDrawerContent = (props: any) => {
           ]}
         />
 
-        <View style={styles.profileTextContainer}>
+        <View>
           <Text style={[styles.profileName, { color: theme.colors.text }]}>
             {name}
           </Text>
@@ -122,14 +122,11 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 15,
   },
-  profileTextContainer: {
-    gap: 3,
-  },
   profileImage: {
     width: 40,
     height: 40,
     borderRadius: 25, // To make the image circular
-    marginRight: 20,
+    marginRight: 10,
   },
   profileName: {
     fontSize: 18,

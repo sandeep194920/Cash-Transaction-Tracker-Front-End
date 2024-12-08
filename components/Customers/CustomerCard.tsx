@@ -79,6 +79,7 @@ const CustomerCard = ({
               </View>
               <MenuOptionsOnCard
                 isMenuVisible={isMenuVisible}
+                optionsToBeShown="EDIT"
                 showMenu={handleShowMenu}
                 hideMenu={hideMenu}
                 editHandler={() => {
