@@ -18,7 +18,7 @@ const AppLayout = () => {
             backgroundColor: theme.colors.primary,
           },
 
-          headerTitle: "Home",
+          headerTitle: "Customers",
           headerLeft: () => {
             return (
               <Ionicons
@@ -33,10 +33,103 @@ const AppLayout = () => {
           },
         }}
       />
+
+      <Stack.Screen
+        name="customer_transactions_list"
+        options={{
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+          headerTitle: "Transactions",
+        }}
+      />
+
       <Stack.Screen
         name="settings"
         options={{
           headerTitle: "Settings",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="add_customer"
+        options={{
+          presentation: "modal",
+          headerTitle: "Add New Customer",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="edit_customer"
+        options={{
+          presentation: "modal",
+          headerTitle: "Edit Customer",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="transaction_detail"
+        options={{
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="add_item"
+        options={{
+          presentation: "modal",
+          headerTitle: "Add Item",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="add_transaction"
+        options={{
+          headerTitle: "New Transaction",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="confirm_transaction"
+        options={{
+          presentation: "modal",
+          headerTitle: "Confirm Transaction",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
+        name="balance_adjust"
+        options={{
+          presentation: "modal",
+          headerTitle: "Adjust Balance",
           headerTintColor: theme.colors.buttonText,
           headerStyle: {
             backgroundColor: theme.colors.primary,

@@ -2,20 +2,13 @@ import React, { useState } from "react";
 import LoginScreen from "./Login";
 import RegisterScreen from "./Register";
 import EmailVerificationScreen from "./VerifyEmail";
-import Loading from "../Loading";
-import { useAuthContext } from "@/context/AuthContext";
-
-export type CurrentAuthScreenT = "Login" | "Register" | "VerifyEmail";
+import { AuthScreensT } from "@/types";
 
 const Authentication = () => {
   const [currentAuthScreen, setCurrentAuthScreen] =
-    useState<CurrentAuthScreenT>("Login");
+    useState<AuthScreensT>("Login");
 
-  const { isLoading } = useAuthContext();
-
-  if (isLoading) return <Loading />;
-
-  const showAuthScreen = (screenName: CurrentAuthScreenT) => {
+  const showAuthScreen = (screenName: AuthScreensT) => {
     setCurrentAuthScreen(screenName);
   };
 
@@ -23,7 +16,7 @@ const Authentication = () => {
     case "Register":
       return <RegisterScreen showAuthScreen={showAuthScreen} />;
     case "VerifyEmail":
-      return <EmailVerificationScreen />;
+      return <EmailVerificationScreen showAuthScreen={showAuthScreen} />;
     case "Login":
     default:
       return <LoginScreen showAuthScreen={showAuthScreen} />;

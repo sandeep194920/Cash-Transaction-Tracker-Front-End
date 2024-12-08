@@ -2,26 +2,27 @@ import React from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { useThemeContext } from "@/context/ThemeContext";
 import { useAuthContext } from "@/context/AuthContext";
 import Toast from "react-native-toast-message";
 import Loading from "../Loading";
+import useUser from "@/hooks/useUser";
 
 const CustomDrawerContent = (props: any) => {
   const { theme } = useThemeContext();
-  const router = useRouter();
-  const { authenticateUser, userData } = useAuthContext();
+  const { loggedInUser, isLoading } = useAuthContext();
+  const { logout } = useUser();
 
-  if (!userData) return <Loading />;
-  const { name, email } = userData;
+  if (!loggedInUser || isLoading) return <Loading />;
+  const { name, email } = loggedInUser;
 
   const logoutHandler = () => {
     Toast.show({
       type: "success",
       text1: "Logging out.. Hope to see you soon!",
     });
-    authenticateUser(false);
+    logout();
   };
 
   return (
@@ -42,7 +43,7 @@ const CustomDrawerContent = (props: any) => {
           ]}
         />
 
-        <View style={styles.profileTextContainer}>
+        <View>
           <Text style={[styles.profileName, { color: theme.colors.text }]}>
             {name}
           </Text>
@@ -66,21 +67,6 @@ const CustomDrawerContent = (props: any) => {
         inactiveTintColor={theme.colors.secondaryText}
         labelStyle={
           props.state.index === 0
-            ? [styles.activeLabel, { color: theme.colors.text }]
-            : [styles.inactiveLabel, { color: theme.colors.secondaryText }]
-        }
-      />
-      <DrawerItem
-        label="Profile"
-        icon={({ color, size }) => (
-          <Icon name="person" color={theme.colors.primary} size={size} />
-        )}
-        focused={props.state.index === 1}
-        onPress={() => router.push("/(app)/user_profile")}
-        activeTintColor={theme.colors.primary}
-        inactiveTintColor={theme.colors.secondaryText}
-        labelStyle={
-          props.state.index === 1
             ? [styles.activeLabel, { color: theme.colors.text }]
             : [styles.inactiveLabel, { color: theme.colors.secondaryText }]
         }
@@ -136,14 +122,11 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 15,
   },
-  profileTextContainer: {
-    gap: 3,
-  },
   profileImage: {
     width: 40,
     height: 40,
     borderRadius: 25, // To make the image circular
-    marginRight: 20,
+    marginRight: 10,
   },
   profileName: {
     fontSize: 18,

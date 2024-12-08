@@ -1,32 +1,12 @@
-import { View, Text, Button } from "react-native";
 import React from "react";
-import { useRouter } from "expo-router";
-import { useAuthContext } from "@/context/AuthContext";
-import ListItems from "@/components/ListItem";
+import CustomersList from "@/components/Customers/CustomersList";
+import TransactionDetail from "./transaction_detail";
+import AddItem from "./add_item";
+import DatePicker from "@/components/DateSelection";
 
 const Home = () => {
-  const router = useRouter();
-  const { isLoggedIn } = useAuthContext();
-  // return (
-  //   <View>
-  //     <Text>Stack Home</Text>
-  //     <Text
-  //       onPress={() => {
-  //         router.push("/(app)/users");
-  //       }}
-  //     >
-  //       Go to users page
-  //     </Text>
-  //     <Button
-  //       title="Logout"
-  //       onPress={() => {
-  //         authenticateUser(false);
-  //       }}
-  //     />
-  //   </View>
-  // );
-
-  return <ListItems />;
+  return <CustomersList />;
+  // return <DatePicker />;
 };
 
 export default Home;

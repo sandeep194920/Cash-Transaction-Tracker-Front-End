@@ -1,10 +1,24 @@
+import { commonStyles } from "@/commonStyles";
+import CustomIcon from "@/components/CustomIcon";
+import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
+import { useAppContext } from "@/context/AppContext";
 import { useThemeContext } from "@/context/ThemeContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+} from "react-native";
 
 const SettingsScreen = () => {
   const { currentTheme, theme, switchTheme } = useThemeContext();
+  const [isPercentageEdit, setIsPercentageEdit] = useState(false);
+  const { unsettledTransaction, updateUnsettledTransaction } = useAppContext();
+  const [selectedPercentage, setSelectedPercentage] = useState(
+    unsettledTransaction.taxPercentage
+  );
 
   const themeStyles = {
     backgroundColor: theme.colors.background,
@@ -17,59 +31,136 @@ const SettingsScreen = () => {
     switchTheme(newTheme);
   };
 
-  return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: themeStyles.backgroundColor },
-      ]}
-    >
-      <Text style={[styles.title, { color: themeStyles.textColor }]}>
-        Select Theme
-      </Text>
+  const updateTaxPercentage = () => {
+    setIsPercentageEdit((prev) => !prev);
+    updateUnsettledTransaction({ taxPercentage: selectedPercentage });
+  };
 
-      {/* Light Theme Option */}
-      <View style={styles.option}>
-        <TouchableOpacity
-          style={styles.radioContainer}
-          onPress={() => handleThemeChange("light")}
-        >
-          <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
-            Light Theme
-          </Text>
-          <View
+  const taxContainer = (
+    <View style={commonStyles.rowSection}>
+      <View style={commonStyles.rowSection}>
+        {isPercentageEdit ? (
+          <TextInput
             style={[
-              styles.radioCircle,
-              { borderColor: themeStyles.radioFillColor },
-              currentTheme === "light" && {
-                backgroundColor: themeStyles.radioFillColor,
+              styles.input,
+
+              {
+                color: themeStyles.textColor,
+                borderColor: themeStyles.textColor,
               },
             ]}
+            value={selectedPercentage?.toString()}
+            keyboardType="numeric"
+            onChangeText={(text) => setSelectedPercentage(Number(text))}
+            autoFocus
           />
-        </TouchableOpacity>
+        ) : (
+          <Text style={{ color: themeStyles.textColor }}>
+            {selectedPercentage}
+          </Text>
+        )}
+        <CustomIcon
+          iconName="percent"
+          size={16}
+          color={theme.colors.primary}
+          marginLeft={0.01}
+          marginRight={15}
+        />
       </View>
 
-      {/* Dark Theme Option */}
-      <View style={styles.option}>
-        <TouchableOpacity
-          style={styles.radioContainer}
-          onPress={() => handleThemeChange("dark")}
-        >
-          <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
-            Dark Theme
-          </Text>
-          <View
-            style={[
-              styles.radioCircle,
-              { borderColor: themeStyles.radioFillColor },
-              currentTheme === "dark" && {
-                backgroundColor: themeStyles.radioFillColor,
-              },
-            ]}
-          />
-        </TouchableOpacity>
-      </View>
+      {isPercentageEdit ? (
+        <CustomIcon
+          iconName="check"
+          size={24}
+          color={theme.colors.success}
+          onPress={updateTaxPercentage}
+        />
+      ) : (
+        <CustomIcon
+          iconName="edit"
+          size={24}
+          color={theme.colors.primary}
+          onPress={() => {
+            setIsPercentageEdit((prev) => !prev);
+          }}
+        />
+      )}
     </View>
+  );
+
+  return (
+    <>
+      <HeaderLeftBackArrow />
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: themeStyles.backgroundColor },
+        ]}
+      >
+        <Text style={[styles.title, { color: themeStyles.textColor }]}>
+          Select Theme
+        </Text>
+
+        {/* Light Theme Option */}
+        <View style={styles.option}>
+          <TouchableOpacity
+            style={commonStyles.cardRow}
+            onPress={() => handleThemeChange("light")}
+          >
+            <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
+              Light Theme
+            </Text>
+            <View
+              style={[
+                styles.radioCircle,
+                { borderColor: themeStyles.radioFillColor },
+                currentTheme === "light" && {
+                  backgroundColor: themeStyles.radioFillColor,
+                },
+              ]}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Dark Theme Option */}
+        <View style={styles.option}>
+          <TouchableOpacity
+            style={commonStyles.cardRow}
+            onPress={() => handleThemeChange("dark")}
+          >
+            <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
+              Dark Theme
+            </Text>
+            <View
+              style={[
+                styles.radioCircle,
+                { borderColor: themeStyles.radioFillColor },
+                currentTheme === "dark" && {
+                  backgroundColor: themeStyles.radioFillColor,
+                },
+              ]}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Divider Line */}
+        <View style={commonStyles.divider} />
+
+        <Text style={[styles.title, { color: themeStyles.textColor }]}>
+          Select Tax Percentage
+        </Text>
+
+        {/* Light Theme Option */}
+
+        <View style={[commonStyles.cardRow, styles.option]}>
+          <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
+            Current Tax
+          </Text>
+
+          {taxContainer}
+        </View>
+      </View>
+    </>
   );
 };
 
@@ -87,11 +178,6 @@ const styles = StyleSheet.create({
   option: {
     marginVertical: 10,
   },
-  radioContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
   radioCircle: {
     height: 20,
     width: 20,
@@ -102,6 +188,12 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
+  },
+  input: {
+    borderBottomWidth: 1,
+    fontSize: 16,
+    width: 40,
+    textAlign: "center",
   },
 });
 

@@ -1,42 +1,35 @@
-import { URLS } from "@/constants/URLs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
+import { UserDataT } from "@/types";
+import { fetchUserData } from "@/utils/fetchUser";
 import React, {
   createContext,
   Dispatch,
   SetStateAction,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
-import Toast from "react-native-toast-message";
-
-type UserDataT = {
-  name: string;
-  email: string;
-  phone: string;
-};
 
 type CreateContextT = {
   isLoggedIn: boolean;
-  authenticateUser: (state?: boolean, token?: string) => void;
-  registeredUnverifiedUser: string;
-  setUnverifiedUser: (email: string) => void;
-  userData: UserDataT | null;
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
+  emailTryingToAuthenticate: string | null;
+  setEmailTryingToAuthenticate: Dispatch<SetStateAction<string | null>>;
+  loggedInUser: UserDataT | null;
+  setLoggedInUser: Dispatch<SetStateAction<UserDataT | null>>;
 };
 
 const AuthContext = createContext<CreateContextT>({
   isLoggedIn: false,
-  authenticateUser:
-    (state?: boolean, token = "") =>
-    () => {},
-  registeredUnverifiedUser: "",
-  setUnverifiedUser: (email: string) => () => {},
-  userData: null,
+  emailTryingToAuthenticate: null,
+  setEmailTryingToAuthenticate: (() => {}) as Dispatch<
+    SetStateAction<string | null>
+  >,
   isLoading: false,
   setIsLoading: (() => {}) as Dispatch<SetStateAction<boolean>>,
+  loggedInUser: null,
+  setLoggedInUser: (() => {}) as Dispatch<SetStateAction<UserDataT | null>>,
 });
 
 type AuthProviderT = {
@@ -44,73 +37,62 @@ type AuthProviderT = {
 };
 
 const AuthProvider = ({ children }: AuthProviderT) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [registeredUnverifiedUser, setRegisteredUnverifiedUser] = useState("");
+  const [emailTryingToAuthenticate, setEmailTryingToAuthenticate] = useState<
+    null | string
+  >("");
+  const [loggedInUser, setLoggedInUser] = useState<UserDataT | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [userData, setUserData] = useState<UserDataT | null>(null);
 
-  // Fetch user data from BE based on token
-  const fetchUserData = async (token: string) => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(`${URLS["LOCAL"]}/user-data`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUserData(response.data as UserDataT); // Set user data
-    } catch (error) {
-      console.log("Failed to fetch user data", error);
-      Toast.show({
-        type: "error",
-        text1: "Sorry, something went wrong. Please try again later",
-      });
-      // Optionally handle errors, such as invalid token
-    } finally {
-      setIsLoading(false); // Stop loading indicator
-    }
-  };
+  const isLoggedIn = useMemo(() => {
+    return !!loggedInUser;
+  }, [loggedInUser]);
 
-  const authenticateUser = async (loginState = true, token = "") => {
-    setIsLoggedIn(loginState);
-    if (loginState && token) {
-      await AsyncStorage.setItem("token", token); // Save token to AsyncStorage
-      fetchUserData(token); // Fetch user data after login
-    } else {
-      await AsyncStorage.removeItem("token");
-      setUserData(null); // Clear user data on logout
-    }
-  };
-
-  // Check if token exists on app load (useEffect hook)
   useEffect(() => {
-    const checkUserSession = async () => {
-      setIsLoading(true); // Show loading indicator while checking
-      const token = await AsyncStorage.getItem("token"); // Get token from AsyncStorage
-      if (token) {
-        setIsLoggedIn(true);
-        await fetchUserData(token); // Fetch user data if token exists
-      } else {
-        setIsLoading(false); // Stop loading if no token is found
+    setIsLoading(true);
+    const initializeAuth = async () => {
+      try {
+        const userData = await fetchUserData();
+        if (!userData) {
+          setLoggedInUser(null);
+        } else {
+          const { _id, name, email, userTotal } = userData;
+          setLoggedInUser({
+            _id,
+            name,
+            email,
+            userTotal,
+          });
+        }
+      } catch (error) {
+        console.error("Error initializing auth:", error);
+        setLoggedInUser(null);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    checkUserSession(); // Call the session check function when app loads
+    initializeAuth();
   }, []);
 
-  const setUnverifiedUser = (email: string) => {
-    setRegisteredUnverifiedUser(email);
-  };
-
-  const appValues = {
+  const appValues = useMemo(() => {
+    return {
+      isLoggedIn,
+      emailTryingToAuthenticate,
+      setEmailTryingToAuthenticate,
+      loggedInUser,
+      setLoggedInUser,
+      isLoading,
+      setIsLoading,
+    };
+  }, [
     isLoggedIn,
-    authenticateUser,
-    registeredUnverifiedUser,
-    setUnverifiedUser,
-    userData,
+    emailTryingToAuthenticate,
+    setEmailTryingToAuthenticate,
+    loggedInUser,
+    setLoggedInUser,
     isLoading,
     setIsLoading,
-  };
+  ]);
 
   return (
     <AuthContext.Provider value={appValues}>{children}</AuthContext.Provider>
