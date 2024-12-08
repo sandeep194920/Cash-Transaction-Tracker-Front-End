@@ -73,6 +73,7 @@ export type MenuT = {
   hideMenu: () => void;
   editHandler: () => void;
   deleteHandler: () => void;
+  optionsToBeShown?: "ALL" | "EDIT" | "DELETE"; // ALL by default
 };
 
 export type UnsettledTransactionT = Partial<
