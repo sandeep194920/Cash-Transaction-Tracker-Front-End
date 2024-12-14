@@ -116,3 +116,6 @@ export type StatusCodesT =
   | "SERVER_ERROR"
   | "EMAIL_NOT_VERIFIED"
   | "NOT_FOUND";
+
+// Themes
+export type ThemeOptionsT = "light" | "dark" | "system";

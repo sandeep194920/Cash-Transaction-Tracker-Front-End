@@ -2,7 +2,9 @@ import { commonStyles } from "@/commonStyles";
 import CustomIcon from "@/components/CustomIcon";
 import HeaderLeftBackArrow from "@/components/HeaderLeftBackArrow";
 import { useAppContext } from "@/context/AppContext";
-import { useThemeContext } from "@/context/ThemeContext";
+import { themeOptions, useThemeContext } from "@/context/ThemeContext";
+import { ThemeOptionsT } from "@/types";
+import { capitalizeStr } from "@/utils/utility";
 import React, { useState } from "react";
 import {
   View,
@@ -27,7 +29,7 @@ const SettingsScreen = () => {
     radioFillColor: theme.colors.primary,
   };
 
-  const handleThemeChange = (newTheme: "light" | "dark") => {
+  const handleThemeChange = (newTheme: ThemeOptionsT) => {
     switchTheme(newTheme);
   };
 
@@ -101,47 +103,31 @@ const SettingsScreen = () => {
           Select Theme
         </Text>
 
-        {/* Light Theme Option */}
-        <View style={styles.option}>
-          <TouchableOpacity
-            style={commonStyles.cardRow}
-            onPress={() => handleThemeChange("light")}
-          >
-            <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
-              Light Theme
-            </Text>
-            <View
-              style={[
-                styles.radioCircle,
-                { borderColor: themeStyles.radioFillColor },
-                currentTheme === "light" && {
-                  backgroundColor: themeStyles.radioFillColor,
-                },
-              ]}
-            />
-          </TouchableOpacity>
-        </View>
-
-        {/* Dark Theme Option */}
-        <View style={styles.option}>
-          <TouchableOpacity
-            style={commonStyles.cardRow}
-            onPress={() => handleThemeChange("dark")}
-          >
-            <Text style={[styles.optionText, { color: themeStyles.textColor }]}>
-              Dark Theme
-            </Text>
-            <View
-              style={[
-                styles.radioCircle,
-                { borderColor: themeStyles.radioFillColor },
-                currentTheme === "dark" && {
-                  backgroundColor: themeStyles.radioFillColor,
-                },
-              ]}
-            />
-          </TouchableOpacity>
-        </View>
+        {themeOptions.map((option) => {
+          return (
+            <View key={option} style={styles.option}>
+              <TouchableOpacity
+                style={commonStyles.cardRow}
+                onPress={() => handleThemeChange(option)}
+              >
+                <Text
+                  style={[styles.optionText, { color: themeStyles.textColor }]}
+                >
+                  {capitalizeStr(option)} Theme
+                </Text>
+                <View
+                  style={[
+                    styles.radioCircle,
+                    { borderColor: themeStyles.radioFillColor },
+                    option === currentTheme && {
+                      backgroundColor: themeStyles.radioFillColor,
+                    },
+                  ]}
+                />
+              </TouchableOpacity>
+            </View>
+          );
+        })}
 
         {/* Divider Line */}
         <View style={commonStyles.divider} />

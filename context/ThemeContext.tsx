@@ -1,16 +1,24 @@
 import { themes } from "@/constants/Colors";
+import { ThemeOptionsT } from "@/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useColorScheme } from "react-native";
 
 type ThemeT = typeof themes;
 
 type CurrentThemeT = keyof ThemeT;
 
 type ThemeContextT = {
-  currentTheme: CurrentThemeT;
-  theme: ThemeT[CurrentThemeT];
-  switchTheme: (theme: CurrentThemeT) => void;
+  currentTheme: ThemeOptionsT;
+  theme: ThemeT[CurrentThemeT]; // Always corresponds to either "light" or "dark"
+  switchTheme: (theme: CurrentThemeT | "system") => void; // Accept "system" in switchTheme
 };
+
+type ThemeProviderT = {
+  children: React.ReactNode;
+};
+
+// If you want to initialize the context
 
 const ThemeContext = createContext<ThemeContextT>({
   currentTheme: "light",
@@ -18,30 +26,56 @@ const ThemeContext = createContext<ThemeContextT>({
   switchTheme: () => {},
 });
 
-type ThemeProviderT = {
-  children: React.ReactNode;
-};
+// If you don't want to initialize the context
+// null as never will allow you to not have to define the initial values
+// const ThemeContext = createContext<ThemeContextT>(null as never);
+
+export const themeOptions: ThemeOptionsT[] = [
+  "dark",
+  "light",
+  "system",
+] as const;
 
 const ThemeProvider = ({ children }: ThemeProviderT) => {
-  const [currentTheme, setCurrentTheme] = useState<CurrentThemeT>("dark");
+  const colorScheme = useColorScheme();
+  // const [currentTheme, setCurrentTheme] = useState<CurrentThemeT | "system">(
+  //   colorScheme === "dark" || colorScheme === "light" ? colorScheme : "light"
+  // );
+  const [currentTheme, setCurrentTheme] = useState<CurrentThemeT | "system">(
+    "system"
+  );
 
-  const theme = themes[currentTheme];
+  // const resolvedTheme:CurrentThemeT = currentTheme === "system" && !!colorScheme? colorScheme : 'light'
+  const resolvedTheme: CurrentThemeT =
+    currentTheme === "system"
+      ? colorScheme === "dark"
+        ? "dark"
+        : "light"
+      : currentTheme;
 
-  const switchTheme = (theme: CurrentThemeT) => {
+  const theme = themes[resolvedTheme];
+
+  const switchTheme = (theme: CurrentThemeT | "system") => {
     setCurrentTheme(theme);
-    AsyncStorage.setItem("theme", theme);
+
+    if (theme !== "system") {
+      AsyncStorage.setItem("theme", theme);
+    } else {
+      // even though you remove this here, when user had set this to "system" before reloading the app, the useState's default is system so that gets set
+      AsyncStorage.removeItem("theme"); // Optional: Clear persisted theme for "system"
+    }
   };
 
-  // Fetch theme from AsyncStorage when the app loads
   useEffect(() => {
     const loadTheme = async () => {
       const storedTheme = await AsyncStorage.getItem("theme");
-      if (storedTheme && themes[storedTheme as CurrentThemeT]) {
+      if (storedTheme === "dark" || storedTheme === "light") {
         setCurrentTheme(storedTheme as CurrentThemeT);
       }
+      // No need of else here because if the AsyncStorage.getItem("theme") is null when it is system theme, then
+      // useState is already set at the beginning above and resolvedTheme handles that
     };
-
-    loadTheme(); // Call the function to load the theme
+    loadTheme();
   }, []);
 
   const appValues = {

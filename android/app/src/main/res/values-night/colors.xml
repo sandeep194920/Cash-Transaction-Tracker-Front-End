@@ -1,0 +1,7 @@
+<resources>
+  <color name="datePicker_colorAccent">#B0B0B0</color>
+  <color name="datePicker_colorControlActivated">#B0B0B0</color>
+  <color name="datePicker_colorControlHighlight">#1C1C1C</color>
+  <color name="timePicker_background">#383838</color>
+  <color name="timePicker_numbersBackgroundColor">#383838</color>
+</resources>
