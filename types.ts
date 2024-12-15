@@ -1,4 +1,4 @@
-// Auth and User related
+// Auth and User related types
 export type UserDataT = {
   _id: string;
   name: string;
@@ -24,8 +24,22 @@ export type LoginUserT = {
 
 export type AuthScreensT = "Login" | "Register" | "VerifyEmail";
 
+// function type that sets the screen
+export type ShowAuthScreenT = {
+  screenName: AuthScreensT;
+  previousScreen?: AuthScreensT;
+};
+
+// use state type that sets the screen
+export type AuthScreenStateT = {
+  currentAuthScreen: AuthScreensT;
+  previousAuthScreen?: AuthScreensT | null | undefined;
+};
+
+// props type for AuthScreensT
 export type AuthScreensPropsT = {
-  showAuthScreen: (screenName: AuthScreensT) => void;
+  showAuthScreen: ({ screenName, previousScreen }: ShowAuthScreenT) => void;
+  authScreen?: AuthScreenStateT;
 };
 
 // Customer related

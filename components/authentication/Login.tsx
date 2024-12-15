@@ -40,7 +40,7 @@ const LoginScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
             type: "error",
             text1: error.response?.data.message,
           });
-          showAuthScreen("Register");
+          showAuthScreen({ screenName: "Register" });
         } else if (error.status === STATUS_CODES.INVALID_CREDENTIALS) {
           Toast.show({
             type: "error",
@@ -55,7 +55,10 @@ const LoginScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
             text1: error.response?.data.message,
             text2: "Enter the code sent to your email!",
           });
-          showAuthScreen("VerifyEmail");
+          showAuthScreen({
+            screenName: "VerifyEmail",
+            previousScreen: "Login",
+          });
         }
         return;
       } else {
@@ -190,7 +193,9 @@ const LoginScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
             >
               New here?{" "}
             </Text>
-            <TouchableOpacity onPress={() => showAuthScreen("Register")}>
+            <TouchableOpacity
+              onPress={() => showAuthScreen({ screenName: "Register" })}
+            >
               <Text
                 style={[authStyles.linkText, { color: theme.colors.primary }]}
               >

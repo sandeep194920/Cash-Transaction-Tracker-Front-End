@@ -21,7 +21,10 @@ const RegisterScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
     try {
       const { data, status } = await registerUser({ name, email, password });
       if (status === STATUS_CODES.CREATED) {
-        showAuthScreen("VerifyEmail");
+        showAuthScreen({
+          screenName: "VerifyEmail",
+          previousScreen: "Register",
+        });
         Toast.show({
           type: "success",
           text1: data.message,
@@ -37,7 +40,7 @@ const RegisterScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
             text2: "Please login",
           });
         }
-        showAuthScreen("Login");
+        showAuthScreen({ screenName: "Login" });
       } else {
         console.error("An unexpected error occurred:", error);
         // TODO: Add alerts so you (developer) get notified (May be amplitude or any other tool)
@@ -185,7 +188,9 @@ const RegisterScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
             >
               Already have an account?{" "}
             </Text>
-            <TouchableOpacity onPress={() => showAuthScreen("Login")}>
+            <TouchableOpacity
+              onPress={() => showAuthScreen({ screenName: "Login" })}
+            >
               <Text
                 style={[authStyles.linkText, { color: theme.colors.primary }]}
               >

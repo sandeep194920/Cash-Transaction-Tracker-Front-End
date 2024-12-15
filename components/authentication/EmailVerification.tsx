@@ -18,8 +18,12 @@ import Loading from "../Loading";
 import axios from "axios";
 import { router } from "expo-router";
 import { STATUS_CODES } from "@/constants/StatusCodes";
+import { commonStyles } from "@/commonStyles";
 
-const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
+const EmailVerificationScreen = ({
+  showAuthScreen,
+  authScreen,
+}: AuthScreensPropsT) => {
   const [code, setCode] = useState("");
   const [timer, setTimer] = useState(VERIFY_EMAIL_TIME);
   const [isResendEnabled, setIsResendEnabled] = useState(false);
@@ -71,7 +75,7 @@ const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
           text1: "Something went wrong!",
           text2: "Try again",
         });
-        showAuthScreen("Register");
+        showAuthScreen({ screenName: "Register" });
         return;
       }
       //this sets the token and user
@@ -95,7 +99,7 @@ const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
             text1: "Looks like you haven't registered yet!",
             text2: error.message,
           });
-          showAuthScreen("Register");
+          showAuthScreen({ screenName: "Register" });
         } else {
           Toast.show({
             type: "error",
@@ -122,7 +126,9 @@ const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
         text1: "Something went wrong!",
         text2: "Try again",
       });
-      showAuthScreen("Register");
+      showAuthScreen({
+        screenName: authScreen?.previousAuthScreen || "Register",
+      });
       return;
     }
     try {
@@ -143,13 +149,13 @@ const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
             type: "error",
             text1: "Your email is already verified",
           });
-          showAuthScreen("Login");
+          showAuthScreen({ screenName: "Login" });
         } else if (error.status === STATUS_CODES.NOT_FOUND) {
           Toast.show({
             type: "error",
             text1: "Your email is not registered yet! Please register.",
           });
-          showAuthScreen("Register");
+          showAuthScreen({ screenName: "Register" });
         } else {
           // TODO: Add alerts so you (developer) get notified (May be amplitude or any other tool)
           Toast.show({
@@ -209,13 +215,28 @@ const EmailVerificationScreen = ({ showAuthScreen }: AuthScreensPropsT) => {
           ? "You can resend the code now."
           : `Resend code in ${formattedTime} seconds`}
       </Text>
-      {isResendEnabled && (
-        <TouchableOpacity onPress={resendCode} style={styles.resendLink}>
-          <Text style={[styles.linkText, { color: theme.colors.primary }]}>
-            Resend Code
+      <View style={[commonStyles.rowSection, { gap: 30 }]}>
+        {isResendEnabled && (
+          <TouchableOpacity onPress={resendCode} style={styles.resendLink}>
+            <Text style={[styles.linkText, { color: theme.colors.primary }]}>
+              Resend Code
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity
+          onPress={() =>
+            showAuthScreen({
+              screenName: authScreen?.previousAuthScreen || "Login",
+            })
+          }
+          style={[styles.resendLink]}
+        >
+          <Text style={[styles.linkText, { color: theme.colors.error }]}>
+            Cancel
           </Text>
         </TouchableOpacity>
-      )}
+      </View>
     </View>
   );
 };

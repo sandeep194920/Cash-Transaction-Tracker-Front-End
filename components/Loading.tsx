@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { Animated, StyleSheet, View, Image } from "react-native";
+import { Animated, StyleSheet, View } from "react-native";
 import { useThemeContext } from "@/context/ThemeContext";
 import { authStyles } from "./authentication/authStyles";
-import { CurrentAuthScreenT } from "./authentication/Authentication";
 
 const Loading = () => {
   const { theme } = useThemeContext();
