@@ -38,14 +38,11 @@ export const themeOptions: ThemeOptionsT[] = [
 
 const ThemeProvider = ({ children }: ThemeProviderT) => {
   const colorScheme = useColorScheme();
-  // const [currentTheme, setCurrentTheme] = useState<CurrentThemeT | "system">(
-  //   colorScheme === "dark" || colorScheme === "light" ? colorScheme : "light"
-  // );
+
   const [currentTheme, setCurrentTheme] = useState<CurrentThemeT | "system">(
     "system"
   );
 
-  // const resolvedTheme:CurrentThemeT = currentTheme === "system" && !!colorScheme? colorScheme : 'light'
   const resolvedTheme: CurrentThemeT =
     currentTheme === "system"
       ? colorScheme === "dark"
