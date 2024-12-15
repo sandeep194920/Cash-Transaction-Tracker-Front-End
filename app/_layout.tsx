@@ -10,6 +10,7 @@ import AppProvider from "@/context/AppContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "react-native-get-random-values"; // for uuid for react-native
 import Loading from "@/components/Loading";
+import { Dimensions } from "react-native";
 
 const AuthenticatedLayout = () => {
   return (
@@ -17,6 +18,7 @@ const AuthenticatedLayout = () => {
       <Drawer
         screenOptions={{
           headerShown: false,
+          drawerStyle: { width: Dimensions.get("window").width / 1.25 },
         }}
         drawerContent={DrawerContent}
       >
