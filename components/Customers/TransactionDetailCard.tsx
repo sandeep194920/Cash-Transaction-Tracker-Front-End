@@ -10,6 +10,7 @@ import { currency } from "@/constants/Generic";
 import CustomIcon from "../CustomIcon";
 import useMenu from "@/hooks/useMenu";
 import AnimatedView from "../AnimatedView";
+import React from "react";
 
 type TransactionDetailCardT = {
   transaction: TransactionT;
@@ -33,9 +34,16 @@ const TransactionDetailCard = ({
     items,
     transactionType,
   } = transaction;
-  const { isMenuVisible, showMenu, hideMenu } = useMenu();
   const { theme } = useThemeContext();
-  const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
+
+  const { borderColor, scaleAnim } = useCardAnimation({
+    shouldFlash: isNewlyAddedItem,
+    scaleDuration: 200,
+    borderDuration: 500,
+    animationType: "scale-border",
+    shouldLoop: false,
+  });
+
   const { dateLong } = formattedDateStr(transactionDate);
   const { setCurrentSelectedTransaction } = useAppContext();
 

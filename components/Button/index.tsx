@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ViewStyle,
+} from "react-native";
 import React from "react";
 import { ColorsT } from "@/constants/Colors";
 
@@ -12,6 +18,7 @@ type ButtonT = {
   height?: number;
   disabled?: boolean;
   pressHandler: () => void;
+  style?: StyleProp<ViewStyle>;
 };
 
 const Button = ({
@@ -24,6 +31,7 @@ const Button = ({
   fontSize = 18,
   pressHandler,
   disabled,
+  style,
 }: ButtonT) => {
   const buttonStyles = [
     styles.button,
@@ -48,7 +56,7 @@ const Button = ({
     <TouchableOpacity
       onPress={pressHandler}
       disabled={disabled}
-      style={[buttonStyles, { opacity: disabled ? 0.5 : 1 }]}
+      style={[buttonStyles, style, { opacity: disabled ? 0.5 : 1 }]}
     >
       <Text style={textStyles}>{title}</Text>
     </TouchableOpacity>

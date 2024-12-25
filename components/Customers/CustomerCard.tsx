@@ -25,7 +25,13 @@ const CustomerCard = ({
 }: CustomerCardT) => {
   const { name, totalBalance, phone, address, email } = customer;
   const { theme } = useThemeContext();
-  const { borderColor, scaleAnim } = useCardAnimation(isNewlyAddedItem);
+  const { borderColor, scaleAnim } = useCardAnimation({
+    shouldFlash: isNewlyAddedItem,
+    scaleDuration: 200,
+    borderDuration: 500,
+    animationType: "scale-border",
+    shouldLoop: false,
+  });
   const { setCurrentSelectedCustomer } = useAppContext();
   const { isMenuVisible, showMenu, hideMenu } = useMenu();
 
@@ -221,6 +227,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 3,
   },
+
   nameSection: {
     flexDirection: "row",
     alignItems: "center",

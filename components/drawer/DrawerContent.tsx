@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, SafeAreaView } from "react-native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { router } from "expo-router";
@@ -8,11 +8,21 @@ import { useAuthContext } from "@/context/AuthContext";
 import Toast from "react-native-toast-message";
 import Loading from "../Loading";
 import useUser from "@/hooks/useUser";
+import Button from "../Button";
+import AnimatedView from "../AnimatedView";
+import useCardAnimation from "@/hooks/useCardAnimation";
 
 const CustomDrawerContent = (props: any) => {
   const { theme } = useThemeContext();
   const { loggedInUser, isLoading } = useAuthContext();
   const { logout } = useUser();
+  // const { borderColor, scaleAnim } = useCardAnimation(true, true);
+  const { borderColor, scaleAnim } = useCardAnimation({
+    shouldFlash: true,
+    borderDuration: 2500,
+    animationType: "border",
+    shouldLoop: true,
+  });
 
   if (!loggedInUser || isLoading) return <Loading />;
   const { name, email } = loggedInUser;
@@ -33,77 +43,102 @@ const CustomDrawerContent = (props: any) => {
         flex: 1,
       }}
     >
-      {/* Profile Section */}
-      <View style={styles.profileContainer}>
-        <Image
-          source={require("@/assets/images/person.png")} // Replace with your image path
-          style={[
-            styles.profileImage,
-            { backgroundColor: theme.colors.primary },
-          ]}
-        />
+      <SafeAreaView style={{ flex: 1, justifyContent: "center" }}>
+        <View style={{ flex: 1 }}>
+          {/* Profile Section */}
+          <View style={styles.profileContainer}>
+            <Image
+              source={require("@/assets/images/person.png")} // Replace with your image path
+              style={[
+                styles.profileImage,
+                { backgroundColor: theme.colors.primary },
+              ]}
+            />
 
-        <View>
-          <Text style={[styles.profileName, { color: theme.colors.text }]}>
-            {name}
-          </Text>
-          <Text
-            style={[styles.profileEmail, { color: theme.colors.secondaryText }]}
-          >
-            {email}
-          </Text>
+            <View style={{ justifyContent: "center" }}>
+              <Text style={[styles.profileName, { color: theme.colors.text }]}>
+                {name}
+              </Text>
+              <Text
+                style={[
+                  styles.profileEmail,
+                  { color: theme.colors.secondaryText },
+                ]}
+              >
+                {email}
+              </Text>
+            </View>
+          </View>
+
+          {/* Drawer Items */}
+          <DrawerItem
+            label="Home"
+            icon={({ color, size }) => (
+              <Icon name="home" color={theme.colors.primary} size={size} />
+            )}
+            focused={props.state.index === 0}
+            onPress={() => {}}
+            activeTintColor={theme.colors.primary}
+            inactiveTintColor={theme.colors.secondaryText}
+            labelStyle={
+              props.state.index === 0
+                ? [styles.activeLabel, { color: theme.colors.text }]
+                : [styles.inactiveLabel, { color: theme.colors.secondaryText }]
+            }
+          />
+
+          {/* Settings with Expandable Theme Options */}
+          <DrawerItem
+            label="Settings"
+            icon={({ color, size }) => (
+              <>
+                <Icon
+                  name="settings"
+                  color={theme.colors.primary}
+                  size={size}
+                />
+              </>
+            )}
+            focused={props.state.index === 2}
+            onPress={() => router.push("/(app)/settings")}
+            activeTintColor={theme.colors.primary}
+            inactiveTintColor={theme.colors.secondaryText}
+            labelStyle={
+              props.state.index === 2
+                ? [styles.activeLabel, { color: theme.colors.text! }]
+                : [styles.inactiveLabel, { color: theme.colors.secondaryText! }]
+            }
+          />
+
+          {/* Sign Out */}
+          <DrawerItem
+            label="Sign Out"
+            icon={({ color, size }) => (
+              <Icon name="logout" color={theme.colors.primary} size={size} />
+            )}
+            onPress={logoutHandler}
+            inactiveTintColor={theme.colors.secondaryText}
+            labelStyle={[
+              styles.inactiveLabel,
+              { color: theme.colors.secondaryText },
+            ]}
+          />
         </View>
-      </View>
-
-      {/* Drawer Items */}
-      <DrawerItem
-        label="Home"
-        icon={({ color, size }) => (
-          <Icon name="home" color={theme.colors.primary} size={size} />
-        )}
-        focused={props.state.index === 0}
-        onPress={() => {}}
-        activeTintColor={theme.colors.primary}
-        inactiveTintColor={theme.colors.secondaryText}
-        labelStyle={
-          props.state.index === 0
-            ? [styles.activeLabel, { color: theme.colors.text }]
-            : [styles.inactiveLabel, { color: theme.colors.secondaryText }]
-        }
-      />
-
-      {/* Settings with Expandable Theme Options */}
-      <DrawerItem
-        label="Settings"
-        icon={({ color, size }) => (
-          <>
-            <Icon name="settings" color={theme.colors.primary} size={size} />
-          </>
-        )}
-        focused={props.state.index === 2}
-        onPress={() => router.push("/(app)/settings")}
-        activeTintColor={theme.colors.primary}
-        inactiveTintColor={theme.colors.secondaryText}
-        labelStyle={
-          props.state.index === 2
-            ? [styles.activeLabel, { color: theme.colors.text! }]
-            : [styles.inactiveLabel, { color: theme.colors.secondaryText! }]
-        }
-      />
-
-      {/* Sign Out */}
-      <DrawerItem
-        label="Sign Out"
-        icon={({ color, size }) => (
-          <Icon name="logout" color={theme.colors.primary} size={size} />
-        )}
-        onPress={logoutHandler}
-        inactiveTintColor={theme.colors.secondaryText}
-        labelStyle={[
-          styles.inactiveLabel,
-          { color: theme.colors.secondaryText },
-        ]}
-      />
+        <AnimatedView
+          borderColor={borderColor}
+          scaleAnim={scaleAnim}
+          style={{ width: 250, alignSelf: "center" }}
+        >
+          <Button
+            pressHandler={() => router.push("/(app)/ctt_plus")}
+            borderColor={theme.colors.primary}
+            textColor={theme.colors.primary}
+            title="Subscribe to CTT Plus"
+            width={250}
+            style={{ alignSelf: "center" }}
+          />
+        </AnimatedView>
+      </SafeAreaView>
     </DrawerContentScrollView>
   );
 };
@@ -118,7 +153,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    // alignItems: "center",
     paddingVertical: 20,
     paddingHorizontal: 15,
   },

@@ -26,6 +26,13 @@ export const commonStyles = StyleSheet.create({
   flex1: {
     flex: 1,
   },
+  cardShadow: {
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    shadowOffset: { width: 1, height: 2 },
+    elevation: 13,
+  },
 
   // TEXT STYLES
   placeAtCenter: {

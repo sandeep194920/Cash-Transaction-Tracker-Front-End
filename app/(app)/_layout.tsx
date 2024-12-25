@@ -57,6 +57,17 @@ const AppLayout = () => {
       />
 
       <Stack.Screen
+        name="ctt_plus"
+        options={{
+          headerTitle: "CTT+ Subscription",
+          headerTintColor: theme.colors.buttonText,
+          headerStyle: {
+            backgroundColor: theme.colors.primary,
+          },
+        }}
+      />
+
+      <Stack.Screen
         name="add_customer"
         options={{
           presentation: "modal",

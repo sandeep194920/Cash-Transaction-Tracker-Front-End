@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   ListRenderItemInfo,
+  SafeAreaView,
 } from "react-native";
 import CustomerCard from "./CustomerCard";
 import { router, Stack } from "expo-router";
@@ -72,6 +73,9 @@ const CustomersList = () => {
             headerTitle: customers?.length
               ? "Customers"
               : `Welcome to CTT, ${capitalizeStr(userData?.name) || ""}`,
+            ...(process.env.EXPO_PUBLIC_ENVIRONMENT === "LOCAL" && {
+              headerRight: () => <Text>Test</Text>,
+            }),
           }}
         />
         {!customers?.length ? (

@@ -118,7 +118,9 @@ export type IconNameT =
   | "expand-less"
   | "expand-more"
   | "edit"
-  | "check";
+  | "check"
+  | "check-circle"
+  | "cancel";
 
 // Status codes
 export type StatusCodesT =

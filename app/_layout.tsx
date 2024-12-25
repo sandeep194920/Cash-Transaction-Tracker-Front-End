@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "react-native-get-random-values"; // for uuid for react-native
 import Loading from "@/components/Loading";
 import { Dimensions } from "react-native";
+import PaymentProvider from "@/context/StripeProvider";
 
 const AuthenticatedLayout = () => {
   return (
@@ -18,7 +19,7 @@ const AuthenticatedLayout = () => {
       <Drawer
         screenOptions={{
           headerShown: false,
-          drawerStyle: { width: Dimensions.get("window").width / 1.25 },
+          // drawerStyle: { width: Dimensions.get("window").width / 1.25 },
         }}
         drawerContent={DrawerContent}
       >
@@ -43,6 +44,11 @@ const Layout = () => {
 };
 
 const RootLayout = () => {
+  // Reactotron - For network calls
+  if (__DEV__) {
+    require("../ReactotronConfig");
+  }
+
   const queryClient = new QueryClient();
 
   return (
@@ -50,7 +56,9 @@ const RootLayout = () => {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <AppProvider>
-            <Layout />
+            <PaymentProvider>
+              <Layout />
+            </PaymentProvider>
             <Toast position="top" topOffset={50} />
           </AppProvider>
         </AuthProvider>
